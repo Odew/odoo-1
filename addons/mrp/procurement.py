@@ -116,8 +116,28 @@ class procurement_order(osv.osv):
         for procurement in procurement_obj.browse(cr, uid, ids, context=context):
             if self.check_bom_exists(cr, uid, [procurement.id], context=context):
                 #create the MO as SUPERUSER because the current user may not have the rights to do it (mto product launched by a sale for example)
+# <<<<<<< HEAD
                 vals = self._prepare_mo_vals(cr, uid, procurement, context=context)
                 produce_id = production_obj.create(cr, SUPERUSER_ID, vals, context=context)
+# =======
+#                 produce_id = production_obj.create(cr, SUPERUSER_ID, {
+#                     'origin': procurement.origin,
+#                     'product_id': procurement.product_id.id,
+#                     'product_qty': procurement.product_qty,
+#                     'qty_to_disassemble': procurement.product_qty,
+#                     'product_uom': procurement.product_uom.id,
+#                     'product_uos_qty': procurement.product_uos and procurement.product_uos_qty or False,
+#                     'product_uos': procurement.product_uos and procurement.product_uos.id or False,
+#                     'location_src_id': procurement.location_id.id,
+#                     'location_dest_id': procurement.location_id.id,
+#                     'bom_id': bom_id,
+#                     'routing_id': routing_id,
+#                     'date_planned': newdate.strftime('%Y-%m-%d %H:%M:%S'),
+#                     'move_prod_id': res_id,
+#                     'company_id': procurement.company_id.id,
+#                 })
+
+# >>>>>>> [IMP] mrp: allow disassembling through MO
                 res[procurement.id] = produce_id
                 self.write(cr, uid, [procurement.id], {'production_id': produce_id})
                 self.production_order_create_note(cr, uid, procurement, context=context)

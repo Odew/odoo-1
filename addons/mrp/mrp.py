@@ -96,6 +96,12 @@ class mrp_workcenter(osv.osv):
             value = {'costs_hour': cost.standard_price}
         return {'value': value}
 
+class stock_move(osv.osv):
+    _inherit = 'stock.move'
+    _columns = {
+        'disassemble': fields.boolean('Disassemble'),
+    }
+
 class mrp_routing(osv.osv):
     """
     For specifying the routings of Work Centers.
@@ -494,13 +500,18 @@ class mrp_production(osv.osv):
         """ Return product quantity percentage """
         result = dict.fromkeys(ids, 100)
         for mrp_production in self.browse(cr, uid, ids, context=context):
-            if mrp_production.product_qty:
+            if abs(mrp_production.product_qty):
                 done = 0.0
                 for move in mrp_production.move_created_ids2:
                     if not move.scrapped and move.product_id == mrp_production.product_id:
                         done += move.product_qty
-                result[mrp_production.id] = done / mrp_production.product_qty * 100
+                result[mrp_production.id] = done / abs(mrp_production.product_qty) * 100
         return result
+
+    def create(self, cr, uid, values, context=None):
+        if values['product_qty'] < 0:
+            self._description = _('Disassemble Order')
+        return super(mrp_production, self).create(cr, uid, values, context=context)
 
     def _moves_assigned(self, cr, uid, ids, name, arg, context=None):
         """ Test whether all the consume lines are assigned """
@@ -574,6 +585,9 @@ class mrp_production(osv.osv):
                 When the production is over, the status is set to 'Done'."),
         'hour_total': fields.function(_production_calc, type='float', string='Total Hours', multi='workorder', store=True),
         'cycle_total': fields.function(_production_calc, type='float', string='Total Cycles', multi='workorder', store=True),
+        'disassemble': fields.boolean('Disassemble'),
+        'disassemble_doc': fields.char('Disassemble Document(s)', size=64, readonly=True, help="Reference of disassembled document(s) for this Manufacturing Order."),
+        'qty_to_disassemble': fields.float('Remaining Quantity to Disassemble', help="Available product quantity to disassemble", digits_compute=dp.get_precision('Product Unit of Measure')),
         'user_id': fields.many2one('res.users', 'Responsible'),
         'company_id': fields.many2one('res.company', 'Company', required=True),
         'ready_production': fields.function(_moves_assigned, type='boolean', string="Ready for production", store={'stock.move': (_mrp_from_move, ['state'], 10)}),
@@ -588,7 +602,9 @@ class mrp_production(osv.osv):
         'name': lambda x, y, z, c: x.pool.get('ir.sequence').next_by_code(y, z, 'mrp.production') or '/',
         'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'mrp.production', context=c),
         'location_src_id': _src_id_default,
-        'location_dest_id': _dest_id_default
+        'location_dest_id': _dest_id_default,
+        'disassemble': False,
+        'disassemble_doc': False
     }
 
     _sql_constraints = [
@@ -599,12 +615,12 @@ class mrp_production(osv.osv):
 
     def _check_qty(self, cr, uid, ids, context=None):
         for order in self.browse(cr, uid, ids, context=context):
-            if order.product_qty <= 0:
+            if order.product_qty == 0:
                 return False
         return True
 
     _constraints = [
-        (_check_qty, 'Order quantity cannot be negative or zero!', ['product_qty']),
+        (_check_qty, 'Order quantity cannot be zero!', ['product_qty']),
     ]
 
     def create(self, cr, uid, values, context=None):
@@ -632,6 +648,11 @@ class mrp_production(osv.osv):
         if src:
             return {'value': {'location_dest_id': src}}
         return {}
+
+    def onchange_product_qty(self, cr, uid, ids, quantity, context=None):
+        if quantity < 0:
+            return {'value': {'disassemble': True, 'qty_to_disassemble': 0.0}}
+        return {'value': {'disassemble': False, 'qty_to_disassemble': quantity}}
 
     def product_id_change(self, cr, uid, ids, product_id, product_qty=0, context=None):
         """ Finds UoM of changed product.
@@ -708,7 +729,7 @@ class mrp_production(osv.osv):
                 raise osv.except_osv(_('Error!'), _("Cannot find a bill of material for this product."))
 
             # get components and workcenter_lines from BoM structure
-            factor = uom_obj._compute_qty(cr, uid, production.product_uom.id, production.product_qty, bom_point.product_uom.id)
+            factor = uom_obj._compute_qty(cr, uid, production.product_uom.id, abs(production.product_qty), bom_point.product_uom.id)
             # product_lines, workcenter_lines
             results, results2 = bom_obj._bom_explode(cr, uid, bom_point, production.product_id, factor / bom_point.product_qty, properties, routing_id=production.routing_id.id, context=context)
 
@@ -729,6 +750,34 @@ class mrp_production(osv.osv):
         @return: No. of products.
         """
         return len(self._action_compute_lines(cr, uid, ids, properties=properties, context=context))
+
+    def action_disassemble(self, cr, uid, id, qty, context=None):
+        """ Disassemble the production order.
+        """
+        mo = self.browse(cr, uid, id, context=context)
+        values = {
+            'disassemble': True,
+            'origin': mo.name,
+            'routing_id': False,
+            'product_qty': qty,
+            'qty_to_disassemble': 0,
+        }
+        mo_id = self.copy(cr, uid, mo.id, values, context=context)
+        if mo_id:
+            source_doc = self.read(cr, uid, mo_id, ['name'], context=context)
+            mo.write({'disassemble_doc': mo.disassemble_doc and mo.disassemble_doc + ", " + source_doc['name'] or source_doc['name']}, context=context)
+        view_ref = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'mrp', 'mrp_production_form_view')
+        view_id = view_ref and view_ref[1] or False,
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Disassemble Manufacturing Order'),
+            'res_model': 'mrp.production',
+            'res_id': mo_id,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': False,
+            'target': 'current',
+        }
 
     def action_cancel(self, cr, uid, ids, context=None):
         """ Cancels the production order and related stock moves.
@@ -871,7 +920,7 @@ class mrp_production(osv.osv):
 
             # total qty of consumed product we need after this consumption
             if product_qty + produced_qty <= production_qty:
-                total_consume = ((product_qty + produced_qty) * sched_product_qty / production_qty)
+                total_consume = ((product_qty + produced_qty) * scheduled.product_qty / abs(production.product_qty))
             else:
                 total_consume = sched_product_qty
             qty = total_consume - consumed_qty
@@ -940,7 +989,7 @@ class mrp_production(osv.osv):
                 lot_id = False
                 if wiz:
                     lot_id = wiz.lot_id.id
-                qty = min(subproduct_factor * production_qty_uom, produce_product.product_qty) #Needed when producing more than maximum quantity
+                qty = min(subproduct_factor * production_qty_uom, abs(produce_product.product_qty) #Needed when producing more than maximum quantity
                 new_moves = stock_mov_obj.action_consume(cr, uid, [produce_product.id], qty,
                                                          location_id=produce_product.location_id.id, restrict_lot_id=lot_id, context=context)
                 stock_mov_obj.write(cr, uid, new_moves, {'production_id': production_id}, context=context)
@@ -1068,17 +1117,18 @@ class mrp_production(osv.osv):
             'date': production.date_planned,
             'product_id': production.product_id.id,
             'product_uom': production.product_uom.id,
-            'product_uom_qty': production.product_qty,
+            'product_uom_qty': abs(production.product_qty),
             'product_uos_qty': production.product_uos and production.product_uos_qty or False,
             'product_uos': production.product_uos and production.product_uos.id or False,
-            'location_id': source_location_id,
-            'location_dest_id': destination_location_id,
+            'location_id': production.disassemble and destination_location_id or source_location_id,
+            'location_dest_id': production.disassemble and source_location_id or destination_location_id,
             'move_dest_id': production.move_prod_id.id,
             'procurement_id': procurement and procurement.id,
             'company_id': production.company_id.id,
             'production_id': production.id,
             'origin': production.name,
             'group_id': procurement and procurement.group_id.id,
+            'state': production.disassemble and 'assigned' or 'waiting', # for products to produce
         }
         move_id = stock_move.create(cr, uid, data, context=context)
         #a phantom bom cannot be used in mrp order so it's ok to assume the list returned by action_confirm
@@ -1150,12 +1200,12 @@ class mrp_production(osv.osv):
             'name': production.name,
             'date': production.date_planned,
             'product_id': product.id,
-            'product_uom_qty': qty,
+            'product_uom_qty': abs(qty),
             'product_uom': uom_id,
             'product_uos_qty': uos_id and uos_qty or False,
             'product_uos': uos_id or False,
-            'location_id': source_location_id,
-            'location_dest_id': destination_location_id,
+            'location_id': production.disassemble and destination_location_id or source_location_id,
+            'location_dest_id': production.disassemble and source_location_id or destination_location_id,
             'company_id': production.company_id.id,
             'procure_method': prev_move and 'make_to_stock' or self._get_raw_material_procure_method(cr, uid, product, context=context), #Make_to_stock avoids creating procurement
             'raw_material_production_id': production.id,
@@ -1164,8 +1214,9 @@ class mrp_production(osv.osv):
             'origin': production.name,
             'warehouse_id': loc_obj.get_warehouse(cr, uid, production.location_src_id, context=context),
             'group_id': production.move_prod_id.group_id.id,
+            'disassemble': production.disassemble,
         }, context=context)
-        
+
         if prev_move:
             prev_move = self._create_previous_move(cr, uid, move_id, product, prod_location_id, source_location_id, context=context)
             stock_move.action_confirm(cr, uid, [prev_move], context=context)
