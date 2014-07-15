@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="hr_evaluation_evaluation_0" model="hr_evaluation.evaluation">
+            <field name="employee_id" ref="hr.employee_fp"/>
+            <field name="state">new</field>
+            <field name="date_close" eval="time.strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="mail_template_id" ref="send_appraisal_template"/>
+            <field name="appraisal_manager_survey_id" ref="hr_evaluation.opinion_form"/>
+            <field name="appraisal_colleagues" eval="True"/>
+            <field name="appraisal_colleagues_ids" eval="[(6,0,[ref('hr.employee_al')])]"/>
+            <field name="appraisal_colleagues_survey_id" ref="hr_evaluation.opinion_form"/>
+            <field name="appraisal_self" eval="True"/>
+            <field name="appraisal_employee">Pieter Parker</field>
+            <field name="appraisal_self_survey_id" ref="hr_evaluation.appraisal_form"/>
+            <field name="appraisal_subordinates" eval="True"/>
+            <field name="appraisal_subordinates_ids" eval="[(6,0,[ref('hr.employee_qdp')])]"/>
+            <field name="appraisal_subordinates_survey_id" ref="hr_evaluation.opinion_form"/>
+        </record>
+    </data>
+</odoo>
