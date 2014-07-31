@@ -208,7 +208,6 @@
 }
 .openerp .oe_mail .oe_msg.oe_msg_composer_compact, .openerp .oe_mail .oe_msg.oe_msg_expandable{
     padding:4px;
-    min-height:0px;
 }
 .openerp .oe_mail .oe_msg.oe_msg_composer_compact textarea{
     height: 24px;
@@ -238,6 +237,8 @@
     background: white;
     font-size: 14px;
     font-style: italic;
+    height: 31px;
+    float: left;
 }
 
 /* d) I.E. tweaks for Message action icons */

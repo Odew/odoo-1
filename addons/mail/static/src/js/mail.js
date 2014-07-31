@@ -454,6 +454,7 @@ var ThreadComposeMessage = MessageCommon.extend({
 
         this.display_attachments();
         this.bind_events();
+        this.options.root_thread.show_mark_all_btn();
     },
 
     on_cancel: function (event) {
@@ -815,6 +816,7 @@ var ThreadMessage = MessageCommon.extend({
 
         this.ds_notification = new data.DataSetSearch(this, 'mail.notification');
         this.ds_message = new data.DataSetSearch(this, 'mail.message');
+        this.options.root_thread.show_mark_all_btn();
     },
 
     /**
@@ -959,6 +961,7 @@ var ThreadMessage = MessageCommon.extend({
         );
         /*insert thread in parent message*/
         this.thread.insertAfter(this.$el);
+        this.thread.show_mark_all_btn();
     },
     
     /**
@@ -1499,6 +1502,7 @@ var Thread = Widget.extend({
         if (this.options.root_thread == this && !this.messages.length) {
             this.no_message();
         }
+        this.show_mark_all_btn();
         return false;
 
     },
@@ -1585,6 +1589,17 @@ var Thread = Widget.extend({
         message.destroy();
 
         return true;
+    },
+    /* If there is unread message in thread, displays Mark all read button, else hide it.
+        */
+    show_mark_all_btn: function(){
+        console.log('CALLED', mail_utils.show_mark_all_read, $(".oe_read").length);
+        if ($(".oe_read").length && mail_utils.show_mark_all_read) {
+            $(".mark_all_read").removeClass('hide');
+            console.log('>>>',$(".mark_all_read"));
+        } else {
+            $(".mark_all_read").addClass('hide');
+        }
     },
 });
 /**
@@ -1910,6 +1925,7 @@ var MailWall = Widget.extend({
      * Create the root thread widget and display this object in the DOM
      */
     message_render: function (search) {
+        mail_utils.show_mark_all_read = search && search['domain'].length ? true : false;
         var domain = this.domain.concat(search && search.domain ? search.domain : []);
         var context = _.extend(this.context, search && search.context ? search.context : {});
 
@@ -1922,6 +1938,7 @@ var MailWall = Widget.extend({
 
     bind_events: function () {
         var self=this;
+        this.$('.mark_all_read').on('click', _.bind(self.mark_all_read, this));
         this.$(".oe_write_full").click(function (event) {
             event.stopPropagation();
             var action = {
@@ -1939,7 +1956,14 @@ var MailWall = Widget.extend({
             web_client.action_manager.do_action(action);
         });
         this.$(".oe_write_onwall").click(function (event) { self.root.thread.on_compose_message(event); });
-    }
+    },
+    mark_all_read: function(){
+        if (confirm(_t('Are you sure you want to mark all unread messages as read?'))) {
+            _.each(this.root.thread.messages, function (thread) {
+                thread.on_message_read_unread(true);
+            });
+        }
+    },
 });
 core.action_registry.add('mail.wall', MailWall);
 
