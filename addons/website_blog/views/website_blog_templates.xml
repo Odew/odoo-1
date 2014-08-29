@@ -102,6 +102,13 @@
 <!-- Blog Post List: Displaying a list of Blog Posts -->
 <template id="blog_post_short" name="Blog Posts">
     <t t-call="website_blog.index">
+        <script type="text/javascript" class="website_blog_rss" t-att-data-blog-id="blog.id" >
+        $(document).ready(function() {
+            var href = $('.website_blog_rss').data('blog-id');
+            var link = '<link rel="alternate" type="application/rss+xml" href="/blog/' + href + '/rss" title="RSS"/>';
+            $("head").append(link)
+        });
+        </script>
         <div class="container">
             <t t-call="website.pager" >
                 <t t-set="classname">pull-right</t>
@@ -454,6 +461,7 @@
                 <a t-att-href="website.social_youtube" t-if="website.social_youtube"><i class="fa fa-youtube-play"/></a>
                 <a t-att-href="website.social_googleplus" t-if="website.social_googleplus"><i class="fa fa-google-plus-square"/></a>
                 <a t-att-href="website.social_github" t-if="website.social_github"><i class="fa fa-github"/></a>
+                <a t-att-href="'/blog/%s/rss' % (blog.id)"><i class="fa fa-rss-square"/></a>
             </h2>
         </section>
     </xpath>
@@ -487,5 +495,55 @@
          <li><a href="#" data-action="new_blog_post">New Blog Post</a></li>
     </xpath>
 </template>
+
+<!-- RSS Feed -->
+<template id="website_blog_rss" name="Blog RSS">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+    <rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+        <channel>
+            <title><t t-esc="blog.name" /></title>
+            <link t-att-href="'%s/blog/%s' % (base_url, slug(blog))" rel="alternate" />
+            <description><t t-esc="blog.name" /></description>
+            <atom t-att-href="'%s/blog/%s/atom' % (base_url, slug(blog))" rel="self" type="application/atom+xml" />
+            <lastBuildDate><t t-esc="blog.write_date" /></lastBuildDate>
+            <item t-foreach="blog.post_ids[:limit]" t-as="post">
+                <title><t t-esc="post.name" /></title>
+                <link t-att-href="base_url + post.website_url" rel="alternate" />
+                <description><t t-esc="post.subtitle" /></description>
+                <content><t t-esc="post.content" /></content> 
+                <author>
+                    <name><t t-esc="post.author_id.sudo().name" /></name>
+                    <email><t t-esc="post.author_id.sudo().email" /></email>
+                </author>
+                <pubDate><t t-esc="post.create_date" /></pubDate>
+            </item>
+        </channel>
+    </rss>
+</template>
+
+<!-- ATOM Feed -->
+<template id="website_blog_atom" name="Blog ATOM">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+    <feed xmlns:feed="http://www.w3.org/2005/Atom" xml="http://www.w3.org/XML/1998/namespace/en_US">
+        <id><t t-esc="blog.id"/></id>
+        <title><t t-esc="blog.name"/></title>
+        <updated><t t-esc="blog.write_date" /></updated>
+        <link t-att-href="'%s/blog/%s/atom' % (base_url, slug(blog))" rel="self" type="application/atom+xml"/>
+        <link t-att-href="'%s/blog/%s/rss' % (base_url, slug(blog))" rel="self" type="application/rss+xml"/>
+        <link t-att-href="'%s/blog/%s' % (base_url, slug(blog))" rel="alternate"/>
+        <subtitle><t t-esc="blog.subtitle"/></subtitle>
+        <entry t-foreach="blog.post_ids[:limit]" t-as="post">
+            <id><t t-esc="post.id"/></id>
+            <title><t t-esc="post.name" /></title>
+            <updated><t t-esc="post.write_date" /></updated>
+            <author>
+            <name><t t-esc="post.author_id.sudo().name"/></name>
+            <email><t t-esc="post.author_id.sudo().email"/></email>
+            </author>
+            <content><t t-esc="post.content or post.subtitle"/></content>
+            <link t-att-href="base_url + post.website_url" rel="alternate"/>
+            <published><t t-esc="post.create_date" /></published>
+        </entry>
+    </feed> 
+</template>
+
 </data>
 </openerp>

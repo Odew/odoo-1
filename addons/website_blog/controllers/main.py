@@ -170,6 +170,14 @@ class WebsiteBlog(http.Controller):
         response = request.website.render("website_blog.blog_post_short", values)
         return response
 
+    @http.route(['/blog/<model("blog.blog"):blog>/<any("atom","rss"):feed_type>'], type='http', auth="public", website=True)
+    def blog_feed(self, blog, feed_type, **post):
+        limit = int(post.get('limit', 15))
+        cr, uid = request.cr, request.uid
+        base_url = request.registry['ir.config_parameter'].get_param(cr, uid, 'web.base.url')
+        response = request.website.render("website_blog.website_blog_%s" % (feed_type), {'blog': blog, 'base_url': base_url, 'limit': limit})
+        return response
+
     @http.route([
             '''/blog/<model("blog.blog"):blog>/post/<model("blog.post", "[('blog_id','=',blog[0])]"):blog_post>''',
     ], type='http', auth="public", website=True)
