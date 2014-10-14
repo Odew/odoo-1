@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
+<odoo>
     <record model="ir.actions.act_window" id="action_fleet_reporting_costs">
       <field name="name">Costs Analysis</field>
       <field name="res_model">fleet.vehicle.cost</field>
@@ -76,5 +75,4 @@
               action="action_fleet_reporting_costs_non_effective"
               sequence="2"
               groups="group_fleet_manager"/>
-</data>
-</openerp>
+</odoo>
