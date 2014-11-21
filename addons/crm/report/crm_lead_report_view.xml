@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data>
+<odoo>
 
         <!-- Leads by user and team Graph View -->
         <record id="view_report_crm_lead_graph" model="ir.ui.view">
@@ -145,5 +144,4 @@
             groups="base.group_sale_manager"
             parent="base.next_id_64" action="action_report_crm_lead" sequence="1"/>
 
-    </data>
-</openerp>
+</odoo>

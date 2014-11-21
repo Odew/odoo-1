@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data>
+<odoo>
 
         <!-- Opportunities by user and team pivot View -->
         <record id="view_report_crm_opportunity_pivot" model="ir.ui.view">
@@ -138,5 +137,4 @@
         <menuitem name="Opportunities Analysis" id="menu_report_crm_opportunities_tree"
              parent="base.next_id_64" action="action_report_crm_opportunity" sequence="5"/>
 
-    </data>
-</openerp>
+</odoo>
