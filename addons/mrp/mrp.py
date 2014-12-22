@@ -989,7 +989,7 @@ class mrp_production(osv.osv):
                 lot_id = False
                 if wiz:
                     lot_id = wiz.lot_id.id
-                qty = min(subproduct_factor * production_qty_uom, abs(produce_product.product_qty) #Needed when producing more than maximum quantity
+                qty = min(subproduct_factor * production_qty_uom, abs(produce_product.product_qty)) #Needed when producing more than maximum quantity
                 new_moves = stock_mov_obj.action_consume(cr, uid, [produce_product.id], qty,
                                                          location_id=produce_product.location_id.id, restrict_lot_id=lot_id, context=context)
                 stock_mov_obj.write(cr, uid, new_moves, {'production_id': production_id}, context=context)
