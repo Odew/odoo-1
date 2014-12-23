@@ -303,14 +303,15 @@ class hr_analytic_timesheet(osv.osv):
         analytic_account_obj = self.pool['account.analytic.account']
         account_name_list = set()
         account_ids = set()
+        button_string = ''
         for analytic_account_record in analytic_account_obj.browse(cr, uid, analytic_account, context=context):
             if analytic_account_record.state in ('pending', 'cancelled', 'close') and context.get('analytic_account_status'):
                 # check state of analytic account on click "Approve" button.
-                account_name_list.add(analytic_account_record.name)
+                account_name_list.add(analytic_account_record.complete_name)
                 account_ids.add(analytic_account_record.id)
             elif analytic_account_record.state in ('cancelled', 'close') and not context.get('analytic_account_status'):
                 # check state of analytic account on create Timesheet Activities.
-                account_name_list.add(analytic_account_record.name)
+                account_name_list.add(analytic_account_record.complete_name)
                 account_ids.add(analytic_account_record.id)
 
         if account_name_list:
@@ -319,17 +320,22 @@ class hr_analytic_timesheet(osv.osv):
             model, action_id = ir_model_data_obj.get_object_reference(cr, uid, 'analytic', 'action_account_analytic_account_form')
             action = act_window_obj.read(cr, uid, action_id, [
                 'name', 'type', 'view_type', 'view_mode', 'res_model', 'views', 'view_id', 'domain'])
-            tree_view = ir_model_data_obj.get_object_reference(cr, uid, 'analytic', 'view_account_analytic_account_tree')[1]
             action['domain'] = [('id', 'in', list(account_ids))]
-            action['views'] = [(tree_view or False, 'list'), (False, 'form')]
 
             if len(account_name_list) == 1 and len(account_ids) == 1:
-                msg = _('''The %s Analytic Account is in "%s" state.\nYou should not work on this account !\n please renew it.\n''') \
+                form_view = ir_model_data_obj.get_object_reference(cr, uid, 'analytic', 'view_account_analytic_account_form')[1]
+                action['views'] = [(form_view or False, 'form'), (False, 'list')]
+                action['res_id'] = list(account_ids)[0]
+                button_string = _('Modify Contract')
+                msg = _('''The "%s" Analytic Account is in "%s" state.\nYou should not work on this account !\n please renew it.\n''') \
                     % (list(account_name_list)[0], analytic_account_obj.browse(cr, uid, list(account_ids)[0]).state)
             else:
+                tree_view = ir_model_data_obj.get_object_reference(cr, uid, 'analytic', 'view_account_analytic_account_tree')[1]
+                action['views'] = [(tree_view or False, 'list'), (False, 'form')]
+                button_string = _('Modify Contract(s)')
                 msg = _('''Analytic Account(s) mentioned below %s in "Closed/Cancelled/To Renew" state, please renew %s before Approve :\n%s.''') \
                     % (len(account_ids) > 1 and 'are' or 'is', len(account_ids) > 1 and 'them' or 'it', '-' + '\n- '.join(account_name_list))
-            raise openerp.exceptions.RedirectWarning(msg, action, _('Modify Contract(s)'))
+            raise openerp.exceptions.RedirectWarning(msg, action, button_string)
         return True
 
     def create(self, cr, uid, vals, context=None):
