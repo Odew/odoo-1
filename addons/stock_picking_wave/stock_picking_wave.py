@@ -3,21 +3,24 @@ from openerp.osv import fields, osv
 from openerp.tools.translate import _
 from openerp.exceptions import UserError
 
+
 class stock_picking_wave(osv.osv):
+    _inherit = "mail.thread"
     _name = "stock.picking.wave"
     _description = "Picking Wave"
     _order = "name desc"
+
     _columns = {
         'name': fields.char('Picking Wave Name', required=True, help='Name of the picking wave', copy=False),
-        'user_id': fields.many2one('res.users', 'Responsible', help='Person responsible for this wave'),
+        'user_id': fields.many2one('res.users', 'Responsible', track_visibility='onchange', help='Person responsible for this wave'),
         'picking_ids': fields.one2many('stock.picking', 'wave_id', 'Pickings', help='List of picking associated to this wave'),
-        'state': fields.selection([('draft', 'Draft'), ('in_progress', 'Running'), ('done', 'Done'), ('cancel', 'Cancelled')], string="State", required=True, copy=False),
+        'state': fields.selection([('draft', 'Draft'), ('in_progress', 'Running'), ('done', 'Done'), ('cancel', 'Cancelled')], string="State", track_visibility='onchange', required=True, copy=False),
     }
 
     _defaults = {
         'name': '/',
         'state': 'draft',
-        }
+    }
 
     def confirm_picking(self, cr, uid, ids, context=None):
         picking_todo = self.pool.get('stock.picking').search(cr, uid, [('wave_id', 'in', ids)], context=context)
@@ -56,10 +59,17 @@ class stock_picking_wave(osv.osv):
                     continue
                 if picking.state != 'assigned':
                     raise UserError(_('Some pickings are still waiting for goods. Please check or force their availability before setting this wave to done.'))
+                picking.message_post(body=_('<b>Transfered by </b>: Picking Wave <a href=#id=%s&view_type=form&model=stock.picking.wave>%s</a>') % (wave.id, wave.name,))
                 picking_todo.add(picking.id)
         if picking_todo:
             self.pool.get('stock.picking').action_done(cr, uid, list(picking_todo), context=context)
         return self.write(cr, uid, ids, {'state': 'done'}, context=context)
+
+    def _track_subtype(self, cr, uid, ids, init_values, context=None):
+        record = self.browse(cr, uid, ids[0], context=context)
+        if 'state' in init_values and record.state != 'draft':
+            return 'stock_picking_wave.state'
+        return super(stock_picking_wave, self)._track_subtype(cr, uid, ids, init_values, context=context)
 
 
 class stock_picking(osv.osv):
