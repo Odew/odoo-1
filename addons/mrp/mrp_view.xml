@@ -678,7 +678,7 @@
                 <form string="Manufacturing Orders">
                 <header>
                     <button name="button_confirm" string="Confirm Production" class="oe_highlight" attrs="{'invisible':['|',('disassemble', '=', True),('state','!=','draft')]}"/>
-                    <button name="button_confirm" string="Confirm Dismantling" class="oe_highlight" attrs="{'invisible':['|',('disassemble', '=', False),('state','!=','draft')]}"/>
+                    <button name="force_production" states="draft" string="Confirm Dismantling" type="object" class="oe_highlight"/>
                     <button name="%(act_mrp_product_produce)d" string="Produce" type="action" class="oe_highlight" attrs="{'invisible':['|',('disassemble', '=', True),('state','not in',('ready', 'in_production'))]}"/>
                     <button name="%(act_mrp_disassemble_product)d" string="Disassemble" type="action" class="oe_highlight" attrs="{'invisible':['|',('disassemble', '=', False),('state','not in',('ready', 'in_production'))]}"/>
                     <button name="action_assign" string="Check Availability" type="object" class="oe_highlight" attrs="{'invisible':['|',('disassemble', '=', True),('state','not in',('confirmed','picking_except'))]}"/>

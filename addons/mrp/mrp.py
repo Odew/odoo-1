@@ -1286,7 +1286,12 @@ class mrp_production(osv.osv):
         from openerp import workflow
         move_obj = self.pool.get('stock.move')
         for order in self.browse(cr, uid, ids):
-            move_obj.force_assign(cr, uid, [x.id for x in order.move_lines])
+            if order.product_qty < 0:
+                order.action_confirm()
+                move_obj.force_assign(cr, uid, [x.id for x in order.move_lines])
+                order.signal_workflow('moves_ready_disassemble')
+            else:
+                move_obj.force_assign(cr, uid, [x.id for x in order.move_lines])
             if self.pool.get('mrp.production').test_ready(cr, uid, [order.id]):
                 workflow.trg_validate(uid, 'mrp.production', order.id, 'moves_ready', cr)
         return True
