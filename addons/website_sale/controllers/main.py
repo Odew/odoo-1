@@ -200,6 +200,14 @@ class website_sale(http.Controller):
 
         product_obj = pool.get('product.template')
 
+        parent_category = []
+        if category:
+            parent_category = [category.id]
+            current_category = category
+            while current_category.parent_id:
+                parent_category.append(current_category.parent_id.id)
+                current_category = current_category.parent_id
+
         product_count = product_obj.search_count(cr, uid, domain, context=context)
         pager = request.website.pager(url=url, total=product_count, page=page, step=PPG, scope=7, url_args=post)
         product_ids = product_obj.search(cr, uid, domain, limit=PPG, offset=pager['offset'], order='website_published desc, website_sequence desc', context=context)
@@ -228,6 +236,7 @@ class website_sale(http.Controller):
             'attributes': attributes,
             'compute_currency': compute_currency,
             'keep': keep,
+            'parent_category': parent_category,
             'style_in_product': lambda style, product: style.id in [s.id for s in product.website_style_ids],
             'attrib_encode': lambda attribs: werkzeug.url_encode([('attrib',i) for i in attribs]),
         }
