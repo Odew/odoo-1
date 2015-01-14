@@ -61,10 +61,11 @@ class res_currency(osv.osv):
 
     def _decimal_places(self, cr, uid, ids, name, arg, context=None):
         res = {}
-        for id in ids:
-            rounding = self.browse(cr, uid, id, context=context).rounding
-            rounding = (0 < rounding < 1) and rounding or 1
-            res[id] = int(math.ceil(math.log10(1 / rounding)))
+        for element in self.browse(cr, uid, ids, context=context):
+            rounding = 1
+            if element.rounding > 0 and element.rounding < 1:
+                rounding = element.rounding
+            res[element.id] = int(math.ceil(math.log10(1 / rounding)))
         return res
 
     _name = "res.currency"

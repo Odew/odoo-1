@@ -6126,15 +6126,16 @@ instance.web.form.FieldMonetary = instance.web.form.FieldFloat.extend({
             this.set({"currency_info": null});
             return;
         }
-        return self.set({"currency_info": instance.web.get_currency(self.get("currency"))})
+        return self.set({"currency_info": self.session.get_currency(self.get("currency"))})
+    },
+    get_digits_precision: function() {
+        return this.node.attrs.digits || this.field.digits || (this.get('currency_info') && this.get('currency_info').digits);
     },
     parse_value: function(val, def) {
-        var digits_precision = this.node.attrs.digits || this.field.digits || (this.get('currency_info') && this.get('currency_info').digits)
-        return instance.web.parse_value(val, {type: "float", digits: digits_precision}, def);
+        return instance.web.parse_value(val, {type: "float", digits: this.get_digits_precision()}, def);
     },
     format_value: function(val, def) {
-        var digits_precision = this.node.attrs.digits || this.field.digits || (this.get('currency_info') && this.get('currency_info').digits)
-        return instance.web.format_value(val, {type: "float", digits: digits_precision}, def);
+        return instance.web.format_value(val, {type: "float", digits: this.get_digits_precision()}, def);
     },
 });
 
