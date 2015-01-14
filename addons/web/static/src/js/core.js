@@ -310,7 +310,7 @@ instance.web.Session.include( /** @lends instance.web.Session# */{
             var to_load = _.difference(result, self.module_list).join(',');
             self.module_list = all_modules;
 
-            var loaded = self.load_translations();
+            var loaded = $.when(instance.web.load_currency(), self.load_translations());
             var locale = "/web/webclient/locale/" + self.user_context.lang || 'en_US';
             var file_list = [ locale ];
             if(to_load.length) {
@@ -755,6 +755,23 @@ instance.web.unblockUI = function() {
         el.destroy();
     });
     return $.unblockUI.apply($, arguments);
+};
+
+var currencies = {};
+
+//Load currencies information needed for monetary widget
+instance.web.load_currency = function() {
+    currencies = {};
+    return (new openerp.web.Model("res.currency").query(["symbol", "position", "decimal_places"]).filter().all())
+            .then(function(value) {
+                _.each(value, function(k,v){
+                    currencies[k.id] = {'symbol': k.symbol, 'position': k.position, 'digits': [69,k.decimal_places]};
+                });
+            });
+};
+
+instance.web.get_currency = function(currency_id) {
+    return currencies[currency_id];
 };
 
 

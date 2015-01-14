@@ -2161,6 +2161,7 @@ instance.web.list.columns = new instance.web.Registry({
     'field.reference': 'instance.web.list.Reference',
     'field.many2many': 'instance.web.list.Many2Many',
     'button.toggle_button': 'instance.web.list.toggle_button',
+    'field.monetary': 'instance.web.list.Monetary',
 });
 instance.web.list.columns.for_ = function (id, field, node) {
     var description = _.extend({tag: node.tag}, field, node.attrs);
@@ -2412,5 +2413,24 @@ instance.web.list.toggle_button = instance.web.list.Column.extend({
             prefix: instance.session.prefix,
         });
     },
+});
+instance.web.list.Monetary = instance.web.list.Column.extend({
+    _format: function (row_data, options) {
+        //name of currency field is defined either by field attribute, in view options or we assume it is named currency_id
+        var currency_field = (this.options && this.options.currency_field) || this.currency_field || 'currency_id'
+        var currency_id = row_data[currency_field] && row_data[currency_field].value[0];
+        var currency = instance.web.get_currency(currency_id);
+        var digits_precision = this.digits || (currency && currency.digits);
+        var value = instance.web.format_value(row_data[this.id].value, {type: "float", digits: digits_precision}, options.value_if_empty);
+        if (currency) {
+            if (currency.position === "after") {
+                value += ' ' + currency.symbol;
+            }
+            else {
+                value = currency.symbol + ' ' + value;
+            }
+        }
+        return value;
+    }
 });
 })();

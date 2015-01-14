@@ -6114,7 +6114,6 @@ instance.web.form.FieldMonetary = instance.web.form.FieldFloat.extend({
         }
         this.on("change:currency", this, this.get_currency_info);
         this.get_currency_info();
-        this.ci_dm = new instance.web.DropMisordered();
     },
     start: function() {
         var tmp = this._super();
@@ -6127,16 +6126,15 @@ instance.web.form.FieldMonetary = instance.web.form.FieldFloat.extend({
             this.set({"currency_info": null});
             return;
         }
-        return this.ci_dm.add(self.alive(new instance.web.Model("res.currency").query(["symbol", "position"])
-            .filter([["id", "=", self.get("currency")]]).first())).then(function(res) {
-            self.set({"currency_info": res});
-        });
+        return self.set({"currency_info": instance.web.get_currency(self.get("currency"))})
     },
     parse_value: function(val, def) {
-        return instance.web.parse_value(val, {type: "float", digits: (this.node.attrs || {}).digits || this.field.digits}, def);
+        var digits_precision = this.node.attrs.digits || this.field.digits || (this.get('currency_info') && this.get('currency_info').digits)
+        return instance.web.parse_value(val, {type: "float", digits: digits_precision}, def);
     },
     format_value: function(val, def) {
-        return instance.web.format_value(val, {type: "float", digits: (this.node.attrs || {}).digits || this.field.digits}, def);
+        var digits_precision = this.node.attrs.digits || this.field.digits || (this.get('currency_info') && this.get('currency_info').digits)
+        return instance.web.format_value(val, {type: "float", digits: digits_precision}, def);
     },
 });
 

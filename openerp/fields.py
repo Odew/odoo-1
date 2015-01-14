@@ -996,6 +996,7 @@ class Float(Field):
     _digits = None              # digits argument passed to class initializer
     digits = None               # digits as computed by setup()
     group_operator = None       # operator for aggregating values
+    currency_field = None
 
     def __init__(self, string=None, digits=None, **kwargs):
         super(Float, self).__init__(string=string, _digits=digits, **kwargs)
@@ -1017,6 +1018,7 @@ class Float(Field):
     _related_group_operator = property(attrgetter('group_operator'))
 
     _description_digits = property(attrgetter('digits'))
+    _description_currency_field = property(attrgetter('currency_field'))
 
     _column_digits = property(lambda self: not callable(self._digits) and self._digits)
     _column_digits_compute = property(lambda self: callable(self._digits) and self._digits)

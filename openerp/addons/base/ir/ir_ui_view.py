@@ -722,6 +722,8 @@ class view(osv.osv):
                 field = model_fields.get(node.get('name'))
                 if field:
                     orm.transfer_field_to_modifiers(field, modifiers)
+                    if field.get('currency_field') and not node.get('widget'):
+                        node.set('widget', 'monetary')
 
         elif node.tag in ('form', 'tree'):
             result = Model.view_header_get(cr, user, False, node.tag, context)

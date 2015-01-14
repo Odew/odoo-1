@@ -59,6 +59,14 @@ class res_currency(osv.osv):
                 raise osv.except_osv(_('Error!'),_("No currency rate associated for currency '%s' for the given period" % (currency.name)))
         return res
 
+    def _decimal_places(self, cr, uid, ids, name, arg, context=None):
+        res = {}
+        for id in ids:
+            rounding = self.browse(cr, uid, id, context=context).rounding
+            rounding = (0 < rounding < 1) and rounding or 1
+            res[id] = int(math.ceil(math.log10(1 / rounding)))
+        return res
+
     _name = "res.currency"
     _description = "Currency"
     _columns = {
@@ -74,6 +82,7 @@ class res_currency(osv.osv):
         'rate_ids': fields.one2many('res.currency.rate', 'currency_id', 'Rates'),
         'accuracy': fields.integer('Computational Accuracy'),
         'rounding': fields.float('Rounding Factor', digits=(12,6)),
+        'decimal_places': fields.function(_decimal_places, string='Decimal Places', type='integer'),
         'active': fields.boolean('Active'),
         'company_id':fields.many2one('res.company', 'Company'),
         'base': fields.boolean('Base'),
