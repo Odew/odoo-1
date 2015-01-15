@@ -281,9 +281,10 @@ class sale_order_line(osv.osv):
 
         return {'value': result, 'warning': warning}
 
-    def _check_routing(self, cr, uid, product, warehouse, context=None):
+    def _check_routing(self, cr, uid, product, warehouse_id=False, context=None):
         isMto = False
-        if warehouse:
+        if warehouse_id:
+            warehouse = self.pool['stock.warehouse'].browse(cr, uid, warehouse_id, context=context)
             for product_route in product.route_ids:
                 if warehouse.mto_pull_id and warehouse.mto_pull_id.route_id and warehouse.mto_pull_id.route_id.id == product_route.id:
                     isMto = True
@@ -307,7 +308,6 @@ class sale_order_line(osv.osv):
         context = context or {}
         product_uom_obj = self.pool.get('product.uom')
         product_obj = self.pool.get('product.product')
-        warehouse_obj = self.pool['stock.warehouse']
         warning = {}
         #UoM False due to hack which makes sure uom changes price, ... in product_id_change
         res = self.product_id_change(cr, uid, ids, pricelist, product, qty=qty,
@@ -328,9 +328,8 @@ class sale_order_line(osv.osv):
         warning_msgs = res_packing.get('warning') and res_packing['warning']['message'] or ''
 
         if product_obj.type == 'product':
-            warehouse = warehouse_obj.browse(cr, uid, warehouse_id, context=context) if warehouse_id else False
             #determine if the product is MTO or not (for a further check)
-            isMto = self._check_routing(cr, uid, product_obj, warehouse, context=context)
+            isMto = self._check_routing(cr, uid, product_obj, warehouse_id, context=context)
 
             #check if product is available, and if not: raise a warning, but do this only for products that aren't processed in MTO
             if not isMto:
