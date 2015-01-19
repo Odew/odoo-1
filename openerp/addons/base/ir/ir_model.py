@@ -894,13 +894,9 @@ class ir_model_data(osv.osv):
         ('module_name_uniq', 'unique(name, module)', 'You cannot have multiple records with the same external ID in the same module!'),
     ]
 
-    def __init__(self, pool, cr):
-        osv.osv.__init__(self, pool, cr)
-        # also stored in pool to avoid being discarded along with this osv instance
-        if getattr(pool, 'model_data_reference_ids', None) is None:
-            self.pool.model_data_reference_ids = {}
-        # put loads on the class, in order to share it among all instances
-        type(self).loads = self.pool.model_data_reference_ids
+    @property
+    def loads(self):
+        return self.pool._model_data_reference_ids
 
     def _auto_init(self, cr, context=None):
         super(ir_model_data, self)._auto_init(cr, context)
@@ -1238,6 +1234,8 @@ class ir_model_data(osv.osv):
                 if model in self.pool:
                     _logger.info('Deleting %s@%s', res_id, model)
                     self.pool[model].unlink(cr, uid, [res_id])
+        # cleanup
+        self.loads.clear()
 
 class wizard_model_menu(osv.osv_memory):
     _name = 'wizard.ir.model.menu.create'
