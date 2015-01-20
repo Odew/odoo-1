@@ -367,6 +367,19 @@ class float(_column):
                                                                        precision_digits=scale),
                                                            precision_digits=scale))
 
+class monetary(_column):
+    _type = 'monetary'
+    _symbol_set = ('%s', lambda x: __builtin__.float(x or 0.0))
+    _symbol_get = lambda self,x: x or 0.0
+
+    def __init__(self, string='unknown', currency_field=None, **args):
+        _column.__init__(self, string=string, currency_field=currency_field, **args)
+
+    def to_field_args(self):
+        args = super(float, self).to_field_args()
+        args['currency_field'] = self.currency_field
+        return args
+
 class date(_column):
     _type = 'date'
 

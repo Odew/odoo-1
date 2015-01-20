@@ -73,7 +73,7 @@ instance.web.GraphView = instance.web.View.extend({
         this.fields = fields;
         _.each(fields, function (field, name) {
             if ((name !== 'id') && (field.store === true)) {
-                if (field.type === 'integer' || field.type === 'float') {
+                if (field.type === 'integer' || field.type === 'float' || field.type === 'monetary') {
                     self.measures[name] = field;
                 }
             }

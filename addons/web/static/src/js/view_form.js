@@ -6107,9 +6107,10 @@ instance.web.form.FieldMonetary = instance.web.form.FieldFloat.extend({
     init: function() {
         this._super.apply(this, arguments);
         this.set({"currency": false});
-        if (this.options.currency_field) {
-            this.field_manager.on("field_changed:" + this.options.currency_field, this, function() {
-                this.set({"currency": this.field_manager.get_field_value(this.options.currency_field)});
+        var currency_field = (this.options && this.options.currency_field) || this.currency_field || 'currency_id';
+        if (currency_field) {
+            this.field_manager.on("field_changed:" + currency_field, this, function() {
+                this.set({"currency": this.field_manager.get_field_value(currency_field)});
             });
         }
         this.on("change:currency", this, this.get_currency_info);
@@ -6117,7 +6118,7 @@ instance.web.form.FieldMonetary = instance.web.form.FieldFloat.extend({
     },
     start: function() {
         var tmp = this._super();
-        this.on("change:currency_info", this, this.reinitialize);
+        this.on("change:currency_info", this, this.update);
         return tmp;
     },
     get_currency_info: function() {
@@ -6127,6 +6128,13 @@ instance.web.form.FieldMonetary = instance.web.form.FieldFloat.extend({
             return;
         }
         return self.set({"currency_info": self.session.get_currency(self.get("currency"))})
+    },
+    update: function() {
+        if (this.view.options.is_list_editable){
+            return;
+        } else {
+            return this.reinitialize();
+        }
     },
     get_digits_precision: function() {
         return this.node.attrs.digits || this.field.digits || (this.get('currency_info') && this.get('currency_info').digits);

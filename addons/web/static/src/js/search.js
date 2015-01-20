@@ -712,6 +712,7 @@ instance.web.search.fields = new instance.web.Registry({
     'integer': 'instance.web.search.IntegerField',
     'id': 'instance.web.search.IntegerField',
     'float': 'instance.web.search.FloatField',
+    'monetary': 'instance.web.search.FloatField',
     'selection': 'instance.web.search.SelectionField',
     'datetime': 'instance.web.search.DateTimeField',
     'date': 'instance.web.search.DateField',
@@ -2097,6 +2098,7 @@ instance.web.search.custom_filters = new instance.web.Registry({
     'date': 'instance.web.search.ExtendedSearchProposition.Date',
     'integer': 'instance.web.search.ExtendedSearchProposition.Integer',
     'float': 'instance.web.search.ExtendedSearchProposition.Float',
+    'monetary': 'instance.web.search.ExtendedSearchProposition.Float',
     'boolean': 'instance.web.search.ExtendedSearchProposition.Boolean',
     'selection': 'instance.web.search.ExtendedSearchProposition.Selection',
 

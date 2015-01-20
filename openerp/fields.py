@@ -996,7 +996,6 @@ class Float(Field):
     _digits = None              # digits argument passed to class initializer
     digits = None               # digits as computed by setup()
     group_operator = None       # operator for aggregating values
-    currency_field = None
 
     def __init__(self, string=None, digits=None, **kwargs):
         super(Float, self).__init__(string=string, _digits=digits, **kwargs)
@@ -1018,7 +1017,6 @@ class Float(Field):
     _related_group_operator = property(attrgetter('group_operator'))
 
     _description_digits = property(attrgetter('digits'))
-    _description_currency_field = property(attrgetter('currency_field'))
 
     _column_digits = property(lambda self: not callable(self._digits) and self._digits)
     _column_digits_compute = property(lambda self: callable(self._digits) and self._digits)
@@ -1028,6 +1026,25 @@ class Float(Field):
         # apply rounding here, otherwise value in cache may be wrong!
         if self.digits:
             return float_round(float(value or 0.0), precision_digits=self.digits[1])
+        else:
+            return float(value or 0.0)
+
+
+class Monetary(Field):
+    type = 'monetary'
+    currency_field = None
+
+    def __init__(self, string=None, currency_field=None, **kwargs):
+        super(Monetary, self).__init__(string=string, currency_field=currency_field, **kwargs)
+
+    _column_currency_field = property(attrgetter('currency_field'))
+    _related_currency_field = property(attrgetter('currency_field'))
+    _description_currency_field = property(attrgetter('currency_field'))
+
+    def convert_to_cache(self, value, record, validate=True):
+        currency = record[self.currency_field]
+        if currency:
+            return currency.round(float(value or 0.0))
         else:
             return float(value or 0.0)
 

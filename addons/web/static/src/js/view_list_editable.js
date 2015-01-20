@@ -686,6 +686,7 @@
             this.form = new (this.options.formView)(
                 this, this.delegate.dataset, false, {
                     initial_mode: 'edit',
+                    is_list_editable: true,
                     disable_autofocus: true,
                     $buttons: $(),
                     $pager: $()
