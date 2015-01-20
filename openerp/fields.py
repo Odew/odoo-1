@@ -1031,6 +1031,12 @@ class Float(Field):
 
 
 class Monetary(Field):
+    """ 
+    :param currency_field: recquired the name of the currency_field on the model
+
+    The attribute `currency_field` is mandatory except in the case of related
+    fields.
+    """
     type = 'monetary'
     currency_field = None
 
