@@ -20,7 +20,7 @@
                         <tbody>
                             <tr>
                                 <td valign="center" style="text-align:center">
-                                    <p>&amp;nbsp; 
+                                    <p>&amp;nbsp;
                                     <a t-att-href="(website.company_id.website) or '#'" style="text-decoration:none">
                                         <img src="/logo.png" style="padding:10px;height:auto;max-width:600px;width:200px" alt="Your Logo" />
                                     </a>
@@ -33,14 +33,16 @@
             </div>
 
             <div name="Center Text" class="o_mail_block_header_center_text">
-                <div class="snippet_row" style="padding:0px;width:600px;margin:auto;background: #fff repeat top /100%;color:#414141">
-                    <table cellspacing="0" cellpadding="0" style="margin: 0 auto;border-collapse:collapse">
+                <div class="snippet_row bg-color" style="padding:0px;width:600px;margin:auto;background: #fff repeat top /100%;color:#414141">
+                    <table cellspacing="0" cellpadding="0" style="margin: 0 auto;border-collapse:collapse;width:600px">
                         <tbody>
                             <tr>
                                 <td style="font-size: 30px; text-align:center">
+                                    <p>&amp;nbsp;
                                     <a t-att-href="(website.company_id.website) or '#'" style="text-decoration:none;color:#414141">
                                         <strong>Your Company</strong>
                                     </a>
+                                    &amp;nbsp;</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -49,13 +51,15 @@
             </div>
 
             <div name="Logo - Social" class="o_mail_block_header_social">
-                <div class="snippet_row pictogram_colorpicker" style="padding:0px;width:600px;margin:auto;background: #ffffff repeat top /100%">
+                <div class="snippet_row bg-color pictogram_colorpicker" style="padding:0px;width:600px;margin:auto;background: #ffffff repeat top /100%">
                     <table cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse">
                         <tr>
                             <td valign="center" width="270" style="padding:10px 10px 10px 20px">
+                                <p>&amp;nbsp;
                                 <a t-att-href="(website.company_id.website) or '#'" style="text-decoration:none">
                                     <img src="/logo.png" style="padding:10px;height:auto;max-width:600px;width:200px" alt="Your Logo" />
                                 </a>
+                                &amp;nbsp;</p>
                             </td>
                             <td valign="center" width="270" style="padding:10px 15px 10px 10px;vertical-align:middle">
                                 <table border="0" cellpadding="0" cellspacing="0" align="right" style="border-collapse:collapse">
@@ -89,7 +93,7 @@
             </div>
 
             <div name="Text - Social" class="o_mail_block_header_text_social">
-                <div class="snippet_row pictogram_colorpicker" style="padding:0px;width:600px;margin:auto;background: #fff repeat top /100%;color:#414141">
+                <div class="snippet_row bg-color pictogram_colorpicker" style="padding:0px;width:600px;margin:auto;background: #fff repeat top /100%;color:#414141">
                     <table cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse">
                         <tr>
                             <td valign="center" width="270" style="padding:10px 10px 10px 20px">
@@ -133,7 +137,7 @@
         <div id="snippet_email_structure" class="tab-pane">
 
             <div name="Title - Subtitle" class="o_mail_block_title_sub">
-                <div class="bg_color_picker" style="padding:0px;width:600px;margin:auto;color:#414141;background-color:#FFFFFF">
+                <div class="bg-color" style="padding:0px;width:600px;margin:auto;color:#414141;background-color:#FFFFFF">
                     <table width="100%" cellspacing="0" cellpadding="0" style="background-color:inherit;border-collapse:collapse;color:inherit">
                           <tbody>
                               <tr>
@@ -161,7 +165,9 @@
                                     <p>Discount Code: <strong> 45A9E77DGW8455</strong></p>
                                 </td>
                                 <td class="col_mv color_picker" style="padding:20px;text-align:center;vertical-align:middle">
+                                    <p>&amp;nbsp;
                                     <img style="height:auto;max-width:600px;width:130px" alt="discount image" src="/fa_to_img/%EF%85%85/rgb(23,143,143)/130"/>
+                                    &amp;nbsp;</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -170,7 +176,7 @@
             </div>
 
             <div name="Discount Offer" class="o_mail_block_discount1">
-                <div class="snippet_row" style="padding:0px;width:600px;margin:auto;background: #F46B45 repeat top /100%;color:#933F24">
+                <div class="snippet_row bg-color" style="padding:0px;width:600px;margin:auto;background: #F46B45 repeat top /100%;color:#933F24">
                     <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;color:inherit">
                         <tbody>
                             <tr>
@@ -207,15 +213,17 @@
                 <div style="padding:0px;width:600px;margin:auto;text-align:center;color:#fff;max-width:600px">
                     <table style="width:100%;border-collapse:collapse;background-color:inherit;border-collapse:collapse">
                         <tr>
-                            <td class="col_mv bg_color_picker" style="width: 150px;height: 150px;padding: 0;margin: 0;background-color: rgb(72,72,72);text-align:center;vertical-align:middle;color:#fff">
+                            <td class="col_mv" style="width: 150px;height: 150px;padding: 0;margin: 0;background-color: rgb(72,72,72);text-align:center;vertical-align:middle;color:#fff">
                                 <time datetime="2014-07-20"> <span style="display: block;font-size: 50px;line-height: 1;padding-top: 10px">21</span> <span style="display: block;font-size: 30px;line-height: 1">Jul</span> <span style="display: block;font-size: 16px;line-height: 1;color: #fff;font-weight: 600">ALL DAY</span> </time>
                             </td>
-                            <td style="width: 150px;height: 150px;padding: 0;margin: 0;text-align: center;background-color: #44B7B7;color:#fff" class="col_mv color_picker">
+                            <td style="width: 150px;height: 150px;padding: 0;margin: 0;text-align: center;background-color: #44B7B7;color:#fff" class="col_mv bg-color">
                                 <div style="margin:27px auto">
+                                    <p>&amp;nbsp;
                                     <img src="/fa_to_img/%EF%81%B3/rgb(255,255,255)/90" style="width:95px;height:auto;max-width:600px" alt="event icon"/>
+                                    &amp;nbsp;</p>
                                 </div>
                             </td>
-                            <td style="background-color:#fff;color:rgb(77,191,191);position: relative;text-align: left;vertical-align:top;width:298px;height:150px;min-width:255px" class="col_mv color_picker">
+                            <td style="background-color:#fff;color:rgb(77,191,191);position: relative;text-align: left;vertical-align:top;width:298px;height:150px;min-width:255px" class="col_mv bg-color">
                                 <table style="width:100%;border-collapse:collapse;background-color:inherit;color:inherit">
                                     <tr>
                                         <td style="padding-top:20px;padding-left:20px;float:left" width="90%">
@@ -256,7 +264,7 @@
             </div>
 
             <div name="Content Table" class="o_mail_block_table_content">
-                <div class="snippet_row" style="padding:0px;width:600px;margin:auto;background: #F46B45 repeat top /100%;color:#933F24">
+                <div class="snippet_row bg-color" style="padding:0px;width:600px;margin:auto;background: #F46B45 repeat top /100%;color:#933F24">
                     <table cellspacing="0" cellpadding="0" style="margin: 0 auto;width:100%;border-collapse:collapse;color:inherit">
                         <tbody>
                             <tr>
@@ -285,7 +293,7 @@
                                                     <td>
                                                         <table cellspacing="0" cellpadding="0" style="width:500px;padding-top:30px;border-collapse:collapse" data-max-width="500px">
                                                             <thead style="color:#fff;background-color:#933F24">
-                                                                <tr class="row col bg_color_picker">
+                                                                <tr class="row col bg-color">
                                                                     <th style="padding: 10px 0px;text-align:center;border-left:none" class="mv">
                                                                       Plan
                                                                     </th>
@@ -298,7 +306,7 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody style="color:#933F24;background-color:#f7a084">
-                                                                <tr class="row bg_color_picker">
+                                                                <tr class="row bg-color">
                                                                     <td style="padding:10px 0px; text-align:center">
                                                                         Silver Plan
                                                                     </td>
@@ -340,12 +348,14 @@
                         <tbody>
                             <tr>
                                 <td style="padding:30px 15px;width:45%;text-align:center;background-color:#fff;color:#44B7B7;font-size:14px;line-height:1.4" class="col_mv color_picker">
-                                    <img style="height:auto;max-width:600px;padding:15px 0 30px 0;width:85px" alt="column1 image" src="/fa_to_img/%EF%80%AE/rgb(68,183,183)/200"/><br/>
+                                    <p>&amp;nbsp;
+                                    <img style="height:auto;max-width:600px;padding:15px 0 30px 0;width:85px" alt="column1 image" src="/fa_to_img/%EF%80%AE/rgb(68,183,183)/200"/>&amp;nbsp;</p>
                                     <p style="font-size:24px;font-weight:bold">Step 1</p>
                                     <p>We need you to update your account information. If there is ever a problem with your account, this information will make it easier for you to log back in.</p>
                                 </td>
                                 <td style="vertical-align:top; padding: 30px 15px; width:45%;text-align:center;background-color:#44B7B7;color:#fff;font-size:14px;line-height:1.4" class="col_mv color_picker">
-                                    <img style="height:auto;max-width:600px;padding:20px 0 30px 0;width:85px" alt="column2 image" src="/fa_to_img/%EF%81%81/rgb(255,255,255)/200"/><br/>
+                                    <p>&amp;nbsp;
+                                    <img style="height:auto;max-width:600px;padding:20px 0 30px 0;width:85px" alt="column2 image" src="/fa_to_img/%EF%81%81/rgb(255,255,255)/200"/>&amp;nbsp;</p>
                                     <p style="font-size:24px;font-weight:bold">Step 2</p>
                                     <p>We need you to update your account information. If there is ever a problem with your account, this information will make it easier for you to log back in.</p>
                                 </td>
@@ -356,9 +366,11 @@
             </div>
 
             <div name="Image" class="o_mail_block_image">
-                <div class="snippet_row" style="padding:0px;width:600px;margin:auto;background: #44B7B7 repeat top /100%;text-align:center;color:#168484">
+                <div class="snippet_row bg-color" style="padding:0px;width:600px;margin:auto;background: #44B7B7 repeat top /100%;text-align:center;color:#168484">
                     <div class="pictogram_colorpicker" style="color:#fff">
+                        <p>&amp;nbsp;
                         <img src="/fa_to_img/%EF%84%93/rgb(255,255,255)/200" style="height:auto;max-width:600px;padding-top:25px;width:200px"/>
+                        &amp;nbsp;</p>
                     </div>
                     <p style="color:#fff;padding-top:15px;font-size:30px">Good News!</p>
                     <p style="width:300px;margin:10px auto;color:#fff;font-size:14px;line-height:20px">
@@ -376,7 +388,8 @@
                         <tbody>
                             <tr>
                                 <td style="width:35%;padding-bottom:25px;padding-top:30px;background-color:rgb(72,72,72);text-align:center;vertical-align:middle" class="col_mv color_picker">
-                                    <img style="height:auto;max-width:600px;width:120px" alt="image" src="/fa_to_img/%EF%82%A1/rgb(68,183,183)/120"/>
+                                    <p>&amp;nbsp;
+                                    <img style="height:auto;max-width:600px;width:120px" alt="image" src="/fa_to_img/%EF%82%A1/rgb(68,183,183)/120"/>&amp;nbsp;</p>
                                 </td>
                                 <td class="col_mv bg_color_picker" style="padding-left: 40px;padding-right: 30px;text-align: left;vertical-align:middle">
                                     <p style="color:#fff;font-size:30px">Good news!</p>
@@ -393,10 +406,12 @@
 
             <div name="Button" class="o_mail_block_button">
                 <div class="snippet_row" style="padding:0;width:600px;max-width:600px;margin:0 auto;background: #fff repeat top /100%;color:#168484">
-                    <table style="width:90%;text-align:center;margin:0 auto;border-collapse:collapse">
+                    <table style="width:600px;text-align:center;margin:0 auto;border-collapse:collapse">
                         <tr>
                             <td class="row" style="padding:10px 0;text-align:center">
+                                <p>&amp;nbsp;
                                 <a href="#" style="-webkit-user-select: none; padding: 6px 12px; font-size: 14px; line-height: 20px; color: rgb(255,255,255); border: none; text-decoration: none; display: inline-block; margin-bottom: 0px; font-weight: 400; text-align: center; vertical-align: middle; cursor: pointer; white-space: nowrap; background-image: none; background-color: #168484;border-radius:4px">My Account</a>
+                                &amp;nbsp;</p>
                             </td>
                         </tr>
                     </table>
@@ -445,11 +460,13 @@
                 <div style="padding:0;width:600px;max-width:600px;margin:0 auto">
                     <table style="width:100%;text-align:justify;margin:0 auto;background-color:inherit;border-collapse:collapse">
                         <tr>
-                            <td style="padding:10px 0;background-color:#168484;color:#fff" class="col_mv color_picker">
+                            <td style="padding:10px 0;background-color:#168484;color:#fff" class="col_mv bg-color">
                                 <table style="border-collapse:collapse;background-color:inherit">
                                     <tr>
                                         <td rowspan="2" style="padding-left:10px">
+                                            <p>&amp;nbsp;
                                             <img src="/fa_to_img/%EF%80%8C/rgb(255,255,255)/50" alt="icon" style="max-width:600px;width:50px"/>
+                                            &amp;nbsp;</p>
                                         </td>
                                         <td style="padding-left:10px;color:#fff;font-size:14px">
                                             <p style="font-weight:bold;font-size:18px;margin-bottom:3px">Step 1:</p>
@@ -458,11 +475,13 @@
                                     </tr>
                                 </table>
                             </td>
-                            <td style="padding:10px 0;background-color:#FFFFFF;color:#808080" class="col_mv color_picker">
+                            <td style="padding:10px 0;background-color:#FFFFFF;color:#808080" class="col_mv bg-color">
                                 <table style="border-collapse:collapse;background-color:inherit">
                                     <tr>
                                         <td rowspan="2" style="padding-left:10px">
+                                            <p>&amp;nbsp;
                                             <img src="/fa_to_img/%EF%83%91/rgb(128,128,128)/50" alt="icon" style="max-width:600px;width:50px"/>
+                                            &amp;nbsp;</p>
                                         </td>
                                         <td style="padding-left:10px;color:#808080;font-size:14px">
                                             <p style="font-weight:bold;font-size:18px;margin-bottom:3px">Step 2:</p>
@@ -471,11 +490,13 @@
                                     </tr>
                                 </table>
                             </td>
-                            <td style="padding:10px 0;background-color:#FFFFFF;color:#808080" class="col_mv color_picker">
+                            <td style="padding:10px 0;background-color:#FFFFFF;color:#808080" class="col_mv bg-color">
                                 <table style="border-collapse:collapse;background-color:inherit">
                                     <tr>
                                         <td rowspan="2" style="padding-left:10px">
+                                            <p>&amp;nbsp;
                                             <img src="/fa_to_img/%EF%85%95/rgb(128,128,128)/50" alt="icon" style="max-width:600px;width:50px"/>
+                                            &amp;nbsp;</p>
                                         </td>
                                         <td style="padding-left:10px;color:#808080;font-size:14px">
                                             <div style="font-weight:bold;font-size:18px;margin-bottom:3px">Step 3:</div>
@@ -494,12 +515,13 @@
         <div id="snippet_email_footers" class="tab-pane">
 
             <div name="Social + Text" class="o_mail_block_footer_social">
-                <div class="snippet_row pictogram_colorpicker" style="padding:0px;width:600px;margin:auto;background: #414141 repeat top /100%;color:#44B7B7">
+                <div class="snippet_row bg-color" style="padding:0px;width:600px;margin:auto;background: #414141 repeat top /100%;color:#44B7B7">
                     <div style="padding:10px">
                         <table cellspacing="0" cellpadding="0" style="margin: 0 auto;width:100%;border-collapse:collapse;color:inherit;color:inherit">
                             <tbody>
                                 <tr>
                                     <td style="text-align:center">
+                                        <p style='margin:0'>&amp;nbsp;
                                         <a t-att-href="(website.social_facebook) or '#'">
                                             <img src="/fa_to_img/%EF%82%82/rgb(68,183,183)/40" alt="social icon" style="width:33px;height:auto;max-width:70px"/>
                                         </a>
@@ -512,11 +534,14 @@
                                         <a t-att-href="(website.social_twitter) or '#'">
                                             <img src="/fa_to_img/%EF%82%81/rgb(68,183,183)/40" alt="social icon" style="width:33px;height:auto;max-width:70px"/>
                                         </a>
+                                        &amp;nbsp;</p>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="font-size:12px;text-align:center;padding-top:10px;padding-bottom:5px">
+                                        <p style='margin:0'>&amp;nbsp;
                                         <a href="#" style="color:#44B7B7">View in browser</a> | <a t-att-href="base_url + '/unsubscribe_from_list'" style="color:#44B7B7">Unsubscribe</a> | <a t-att-href="base_url + '/page/contactus'" style="color:#44B7B7">Contact</a>
+                                        &amp;nbsp;</p>
                                     </td>
                                 </tr>
                             </tbody>
@@ -526,12 +551,13 @@
             </div>
 
             <div name="Text + Copyright" class="o_mail_block_footer_copyright">
-                <div class="snippet_row" style="padding:0px;width:600px;margin:auto;background: #414141 repeat top /100%;color:#fff">
+                <div class="snippet_row bg-color" style="padding:0px;width:600px;margin:auto;background: #414141 repeat top /100%;color:#fff">
                     <table cellspacing="0" cellpadding="0" style="margin: 0 auto;width:100%;border-collapse:collapse">
                         <tbody>
                             <tr>
                                 <td style="font-size:12px;text-align:center;padding-top:10px;color:#44B7B7;padding-bottom:5px">
-                                    <a href="#" style="color:#44B7B7">View in browser</a> | <a t-att-href="base_url + '/unsubscribe_from_list'" style="color:#44B7B7">Unsubscribe</a> | <a t-att-href="base_url + '/page/contactus'" style="color:#44B7B7">Contact</a>
+                                    <p style='margin:0'>&amp;nbsp;
+                                    <a href="#" style="color:#44B7B7">View in browser</a> | <a t-att-href="base_url + '/unsubscribe_from_list'" style="color:#44B7B7">Unsubscribe</a> | <a t-att-href="base_url + '/page/contactus'" style="color:#44B7B7">Contact</a>&amp;nbsp;</p>
                                 </td>
                             </tr>
                             <tr>
@@ -551,7 +577,9 @@
                             <tbody>
                                 <tr>
                                     <td valign="middle" align="right" style="font-size:12px;padding:10px;text-align:center">
+                                        <p style='margin:0'>&amp;nbsp;
                                         <a t-att-href="base_url + '/page/contactus'" style="color:#44B7B7">Contact Us</a> | <a t-att-href="(website.social_facebook) or '#'" style="color:#44B7B7">Facebook</a> | <a t-att-href="(website.social_twitter) or '#'" style="color:#44B7B7">Twitter</a> | <a href="#" style="color:#44B7B7">Support</a> | <a t-att-href="base_url + '/unsubscribe_from_list'" style="color:#44B7B7">Unsubscribe</a>
+                                        &amp;nbsp;</p>
                                     </td>
                                 </tr>
                             </tbody>
@@ -580,7 +608,7 @@
 
             <div name="Tag Line" class="o_mail_block_footer_tag_line">
                 <div class="bg_color_picker" style="padding:0px;width:600px;margin:auto;background:#44B7B7;color:#fff">
-                    <table style="margin: 0 auto;background-color:inherit;border-collapse:collapse;color:inherit" cellpadding="0" cellspacing="0">
+                    <table style="margin: 0 auto;background-color:inherit;width:600px;border-collapse:collapse;color:inherit" cellpadding="0" cellspacing="0">
                         <tbody>
                             <tr>
                                 <td valign="center" style="text-align:center;padding:5px">
@@ -604,7 +632,7 @@
 <template id="neopolitan_snippets_colors">
     <div class="note-palette-title mt8"> Mail Theme Colors</div>
     <div class="mail-colorpicker note-color-row">
-            <t t-set="colors" t-value="['#414141','#933F24','#4DBFBF']"/>
+            <t t-set="colors" t-value="['#414141', '#808080', '#168484', '#44B7B7', '#4DBFBF', '#933F24', '#F46B45', '#F5774E']"/>
             <t t-foreach="colors" t-as="c"><button type="button" class="note-color-btn" t-attf-style="background-color:#{c};" t-attf-data-value="#{c}" t-attf-title="#{c}" data-toggle="button" tabindex="-1"></button></t>
     </div>
 </template>

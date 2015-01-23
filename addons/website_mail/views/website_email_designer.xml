@@ -43,10 +43,10 @@
             </div>
             <div class="container">
                 <div id="email_designer" class="mb32" t-att-style="mode != 'email_designer' and 'display: none' or ''">
-                    <a class="btn btn-default pull-right css_editable_mode_hidden email_template_theme_select" style="margin-left:10px;">
+                    <a class="btn btn-default pull-right editable_mode_hidden email_template_theme_select" style="margin-left:10px;">
                         <i class="fa fa-tint"></i> Change Theme
                     </a>
-                    <a class="btn btn-primary pull-right css_editable_mode_hidden" 
+                    <a class="btn btn-primary pull-right editable_mode_hidden" 
                       t-attf-href="/web#return_label=Website&amp;model=#{model}&amp;id=#{res_id}&amp;action=#{action}&amp;view_type=form">
                         Continue
                     </a>

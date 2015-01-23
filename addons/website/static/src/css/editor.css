@@ -162,7 +162,7 @@
   display: none !important;
 }
 
-.editor_enable .css_editable_mode_hidden {
+.o_editable .css_editable_mode_hidden {
   display: none;
 }
 
