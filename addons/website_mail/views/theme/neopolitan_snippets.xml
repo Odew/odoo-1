@@ -64,26 +64,34 @@
                             <td valign="center" width="270" style="padding:10px 15px 10px 10px;vertical-align:middle">
                                 <table border="0" cellpadding="0" cellspacing="0" align="right" style="border-collapse:collapse">
                                     <tr>
-                                        <td align="right">
-                                            <a t-att-href="(website.social_facebook) or '#'">
-                                                <img src="/fa_to_img/%EF%82%82/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
-                                            </a>
-                                        </td>
-                                        <td align="right" style="padding-left:5px">
-                                            <a t-att-href="(website.social_googleplus) or '#'">
-                                                <img src="/fa_to_img/%EF%83%94/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
-                                            </a>
-                                        </td>
-                                        <td align="right" style="padding-left:5px">
-                                            <a t-att-href="(website.social_linkedin) or '#'">
-                                                <img src="/fa_to_img/%EF%82%8C/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
-                                            </a>
-                                        </td>
-                                        <td align="right" style="padding-left:5px">
-                                            <a t-att-href="(website.social_twitter) or '#'">
-                                                <img src="/fa_to_img/%EF%82%81/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
-                                            </a>
-                                        </td>
+                                        <t t-if="website.social_facebook">
+                                            <td align="right">
+                                                <a t-att-href="website.social_facebook">
+                                                    <img src="/fa_to_img/%EF%82%82/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
+                                                </a>
+                                            </td>
+                                        </t>
+                                        <t t-if="website.social_googleplus">
+                                            <td align="right" style="padding-left:5px">
+                                                <a t-att-href="website.social_googleplus">
+                                                    <img src="/fa_to_img/%EF%83%94/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
+                                                </a>
+                                            </td>
+                                        </t>
+                                        <t t-if="website.social_linkedin">
+                                            <td align="right" style="padding-left:5px">
+                                                <a t-att-href="website.social_linkedin">
+                                                    <img src="/fa_to_img/%EF%82%8C/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
+                                                </a>
+                                            </td>
+                                        </t>
+                                        <t t-if="website.social_twitter">
+                                            <td align="right">
+                                                <a t-att-href="website.social_twitter">
+                                                    <img src="/fa_to_img/%EF%82%81/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
+                                                </a>
+                                            </td>
+                                        </t>
                                     </tr>
                                 </table>
                             </td>
@@ -104,26 +112,34 @@
                             <td valign="center" width="270" style="padding:10px 15px 10px 10px;vertical-align:middle">
                                 <table border="0" cellpadding="0" cellspacing="0" align="right" style="border-collapse:collapse">
                                     <tr>
-                                        <td align="right">
-                                            <a t-att-href="(website.social_facebook) or '#'">
-                                                <img src="/fa_to_img/%EF%82%82/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
-                                            </a>
-                                        </td>
-                                        <td align="right" style="padding-left:5px">
-                                            <a t-att-href="(website.social_googleplus) or '#'">
-                                                <img src="/fa_to_img/%EF%83%94/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
-                                            </a>
-                                        </td>
-                                        <td align="right" style="padding-left:5px">
-                                            <a t-att-href="(website.social_linkedin) or '#'">
-                                                <img src="/fa_to_img/%EF%82%8C/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
-                                            </a>
-                                        </td>
-                                        <td align="right" style="padding-left:5px">
-                                            <a t-att-href="(website.social_twitter) or '#'">
-                                                <img src="/fa_to_img/%EF%82%81/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
-                                            </a>
-                                        </td>
+                                        <t t-if="website.social_facebook">
+                                            <td align="right">
+                                                <a t-att-href="website.social_facebook">
+                                                    <img src="/fa_to_img/%EF%82%82/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
+                                                </a>
+                                            </td>
+                                        </t>
+                                        <t t-if="website.social_googleplus">
+                                            <td align="right" style="padding-left:5px">
+                                                <a t-att-href="website.social_googleplus">
+                                                    <img src="/fa_to_img/%EF%83%94/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
+                                                </a>
+                                            </td>
+                                        </t>
+                                        <t t-if="website.social_linkedin">
+                                            <td align="right" style="padding-left:5px">
+                                                <a t-att-href="website.social_linkedin">
+                                                    <img src="/fa_to_img/%EF%82%8C/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
+                                                </a>
+                                            </td>
+                                        </t>
+                                        <t t-if="website.social_twitter">
+                                            <td align="right" style="padding-left:5px">
+                                                <a t-att-href="website.social_twitter">
+                                                    <img src="/fa_to_img/%EF%82%81/rgb(68,183,183)/40" alt="social icon" style="width: 33px;height:auto;max-width:70px"/>
+                                                </a>
+                                            </td>
+                                        </t>
                                     </tr>
                                 </table>
                             </td>
@@ -238,21 +254,20 @@
                                         </td>
                                         <td style="width: 60px;vertical-align:middle;display: table-cell">
                                             <ul style="border-left:1px solid #e6e6e6;list-style-type:none;padding-left:16px">
-                                                <li style="width:33%;margin-left:0">
-                                                    <a t-att-href="(website.social_facebook) or '#'">
-                                                        <img src="/fa_to_img/%EF%82%82/rgb(75,110,168)/30" style="width:30px;height:auto;max-width:70px" alt="social icon"/>
-                                                    </a>
-                                                </li>
-                                                <li style="width:34%;margin-left:0">
-                                                    <a t-att-href="(website.social_twitter) or '#'">
-                                                        <img src="/fa_to_img/%EF%82%81/rgb(79,213,248)/30" style="width:30px;height:auto;max-width:70px" alt="social icon"/>
-                                                    </a>
-                                                </li>
-                                                <li style="width:33%;margin-left:0">
-                                                    <a t-att-href="(website.social_googleplus) or '#'">
-                                                        <img src="/fa_to_img/%EF%83%94/rgb(221,75,57)/30" style="width:30px;height:auto;max-width:70px" alt="social icon"/>
-                                                    </a>
-                                                </li>
+                                                <t t-if="website.social_facebook">
+                                                    <li style="width:33%;margin-left:0">
+                                                        <a t-att-href="website.social_facebook">
+                                                            <img src="/fa_to_img/%EF%82%82/rgb(75,110,168)/30" style="width:30px;height:auto;max-width:70px" alt="social icon"/>
+                                                        </a>
+                                                    </li>
+                                                </t>
+                                                <t t-if="website.social_twitter">
+                                                    <li style="width:34%;margin-left:0">
+                                                        <a t-att-href="website.social_twitter">
+                                                            <img src="/fa_to_img/%EF%82%81/rgb(79,213,248)/30" style="width:30px;height:auto;max-width:70px" alt="social icon"/>
+                                                        </a>
+                                                    </li>
+                                                </t>
                                             </ul>
                                         </td>
                                     </tr>
@@ -522,18 +537,26 @@
                                 <tr>
                                     <td style="text-align:center">
                                         <p style='margin:0'>&amp;nbsp;
-                                        <a t-att-href="(website.social_facebook) or '#'">
-                                            <img src="/fa_to_img/%EF%82%82/rgb(68,183,183)/40" alt="social icon" style="width:33px;height:auto;max-width:70px"/>
-                                        </a>
-                                        <a t-att-href="(website.social_googleplus) or '#'">
-                                            <img src="/fa_to_img/%EF%83%94/rgb(68,183,183)/40" alt="social icon" style="width:33px;height:auto;max-width:70px"/>
-                                        </a>
-                                        <a t-att-href="(website.social_linkedin) or '#'">
-                                            <img src="/fa_to_img/%EF%82%8C/rgb(68,183,183)/40" alt="social icon" style="width:33px;height:auto;max-width:70px"/>
-                                        </a>
-                                        <a t-att-href="(website.social_twitter) or '#'">
-                                            <img src="/fa_to_img/%EF%82%81/rgb(68,183,183)/40" alt="social icon" style="width:33px;height:auto;max-width:70px"/>
-                                        </a>
+                                            <t t-if="website.social_facebook">
+                                                <a t-att-href="website.social_facebook">
+                                                    <img src="/fa_to_img/%EF%82%82/rgb(68,183,183)/40" alt="social icon" style="width:33px;height:auto;max-width:70px"/>
+                                                </a>
+                                            </t>
+                                            <t t-if="website.social_googleplus">
+                                                <a t-att-href="website.social_googleplus">
+                                                    <img src="/fa_to_img/%EF%83%94/rgb(68,183,183)/40" alt="social icon" style="width:33px;height:auto;max-width:70px"/>
+                                                </a>
+                                            </t>
+                                            <t t-if="website.social_linkedin">
+                                                <a t-att-href="website.social_linkedin">
+                                                    <img src="/fa_to_img/%EF%82%8C/rgb(68,183,183)/40" alt="social icon" style="width:33px;height:auto;max-width:70px"/>
+                                                </a>
+                                            </t>
+                                            <t t-if="website.social_twitter">
+                                                <a t-att-href="website.social_twitter">
+                                                    <img src="/fa_to_img/%EF%82%81/rgb(68,183,183)/40" alt="social icon" style="width:33px;height:auto;max-width:70px"/>
+                                                </a>
+                                            </t>
                                         &amp;nbsp;</p>
                                     </td>
                                 </tr>
@@ -577,9 +600,20 @@
                             <tbody>
                                 <tr>
                                     <td valign="middle" align="right" style="font-size:12px;padding:10px;text-align:center">
+<<<<<<< HEAD
                                         <p style='margin:0'>&amp;nbsp;
                                         <a t-att-href="base_url + '/page/contactus'" style="color:#44B7B7">Contact Us</a> | <a t-att-href="(website.social_facebook) or '#'" style="color:#44B7B7">Facebook</a> | <a t-att-href="(website.social_twitter) or '#'" style="color:#44B7B7">Twitter</a> | <a href="#" style="color:#44B7B7">Support</a> | <a t-att-href="base_url + '/unsubscribe_from_list'" style="color:#44B7B7">Unsubscribe</a>
                                         &amp;nbsp;</p>
+=======
+                                        <a t-att-href="base_url + '/page/contactus'" style="color:#44B7B7">Contact Us</a> | 
+                                        <t t-if="website.social_facebook">
+                                            <a t-att-href="website.social_facebook" style="color:#44B7B7">Facebook</a> |
+                                        </t>
+                                        <t t-if="website.social_twitter">
+                                            <a t-att-href="website.social_twitter" style="color:#44B7B7">Twitter</a> | 
+                                        </t>
+                                        <a t-att-href="base_url + '/unsubscribe_from_list'" style="color:#44B7B7">Unsubscribe</a>
+>>>>>>> Remove support link + remove social links if not set
                                     </td>
                                 </tr>
                             </tbody>
