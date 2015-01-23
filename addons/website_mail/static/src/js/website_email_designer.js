@@ -63,24 +63,41 @@
         var dom = $.summernote.core.dom;
         var range = $.summernote.core.range;
         $.summernote.pluginEvents.backColor = function (event, editor, layoutInfo, backColor) {
-          var $editable = layoutInfo.editable();
-          var r = range.create();
-          if (r.isCollapsed() && r.isOnCell()) {
-            var cell = dom.ancestor(r.sc, dom.isCell);
-            if(! $(cell).hasClass("color_picker")){
-                var $div = $(cell).parents('.bg-color');
-                if($div.length != 0){
-                    cell = $div[0];
+            var $editable = layoutInfo.editable();
+            var r = range.create();
+            if (r.isCollapsed() && r.isOnCell()) {
+                var cell = dom.ancestor(r.sc, dom.isCell);
+                if(! $(cell).hasClass("color_picker")){
+                    var $div = $(cell).parents('.bg-color');
+                    if($div.length != 0){
+                        cell = $div[0];
+                    }
                 }
+                if (backColor !== 'inherit') {
+                  cell.style.backgroundColor = backColor;
+                }
+                return;
             }
-            if (backColor !== 'inherit') {
-              cell.style.backgroundColor = backColor;
-            }
-            return;
-          }
           $.summernote.pluginEvents.applyFont(event, editor, layoutInfo, null, backColor, null);
           editor.afterCommand($editable);
         };
+        $.summernote.pluginEvents.foreColor = function (event, editor, layoutInfo, foreColor) {
+            var $editable = layoutInfo.editable();
+            var r = range.create();
+            var $el = $(dom.ancestor(r.sc, dom.isCell));
+            if($el.length != 0){
+                $el.find('img').each(function(){
+                    var src = $(this).attr('src');
+                    if(src && src.indexOf("fa_to_img") != -1){
+                        var match = src.match(/fa_to_img\/[^/]*\/([^/]*)\//); 
+                        $(this).attr('src', src.replace(match[1], encodeURIComponent(foreColor).replace(/ /g, '')))
+                        return;
+                    }
+                })
+            }
+            $.summernote.pluginEvents.applyFont(event, editor, layoutInfo, foreColor, null, null);
+            editor.afterCommand($editable);
+        };  
         // For Converting Selected Font Awesome Pictograms to PNG images
         website.editor.FontIconsDialog.include({
             start:function(){
