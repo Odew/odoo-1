@@ -5,11 +5,6 @@
 
     <t t-raw="0"/>
 
-    <div data-js='resize'
-        data-selector="div.snippet_row"
-        data-drop-in=".oe_structure, [data-oe-type=html]">
-    </div>
-    
     <div data-js='width-x'
         data-selector="img, .mv, .col_mv">
     </div>
@@ -40,6 +35,12 @@
         data-drop-in="[data-oe-field='body_html']">
     </div>
 
+
+    <div data-js='resize'
+        data-selector="div.snippet_row"
+        data-drop-in=".oe_structure, [data-oe-type=html]">
+    </div>
+    
     <div data-js='background'
         data-selector="div.snippet_row">
         <li class="dropdown-submenu" data-background="">

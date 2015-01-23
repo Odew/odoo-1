@@ -81,11 +81,6 @@
     width: 600px !important;
 }
 
-.colpick_label{
-    color: grey;
-    font-weight: bold;
-    font-size: 11px;
-}
 .template_options{
     position: absolute;
     width: 88%;

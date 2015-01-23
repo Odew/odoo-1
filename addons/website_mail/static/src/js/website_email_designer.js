@@ -18,21 +18,69 @@
     }
     website.if_dom_contains('#email_designer', function () {
         //To Remove Table handler classes as we do not want summernote table handlers here.
+        var current_theme = false;
         var fn_popover_update = $.summernote.eventHandler.popover.update;
+
         $.summernote.eventHandler.popover.update = function ($popover, oStyle, isAirMode) {
             fn_popover_update.call(this, $popover, oStyle, isAirMode);
             $("span.o_table_handler, div.note-table").remove()
         };
+
         website.snippet.BuildingBlock.include({
             _get_snippet_url: function () {
                 var url_data = website.parseQS(window.location.search.substring(1));
                 if ( url_data.theme_id && url_data.theme_id != 'basic_theme') {
+                    current_theme = url_data.theme_id;
+                    load_qweb([current_theme + "_colors"])
                     return '/website_mail/snippets/' + url_data.theme_id;
                 }
                 return '/website_mail/snippets';
             },
             hide: function () {},
         });
+
+        //loaded custom color palette based on theme
+        var fn_createPalette = $.summernote.renderer.createPalette;
+        $.summernote.renderer.createPalette = function ($container, options) {
+            fn_createPalette.call(this, $container, options);
+            var color_pallette = current_theme+'_colors';
+            if (!openerp.qweb.has_template(color_pallette)) {
+                return;
+            }
+
+            var $color = $container.find('.note-color');
+            $container.find('.colorpicker').remove();
+            var html = openerp.qweb.render(color_pallette);
+            $color.find('.note-color-palette').append(html);
+            var $bg = $color.find('.mail-colorpicker:first button');
+            var $fore = $color.find('.mail-colorpicker:last button');
+
+            $bg.each(function () { $(this).attr('data-event', 'backColor'); });
+            $fore.each(function () { $(this).attr('data-event', 'foreColor'); });
+        };
+
+        var range = $.summernote.core.range;
+        var dom = $.summernote.core.dom;
+        var range = $.summernote.core.range;
+        $.summernote.pluginEvents.backColor = function (event, editor, layoutInfo, backColor) {
+          var $editable = layoutInfo.editable();
+          var r = range.create();
+          if (r.isCollapsed() && r.isOnCell()) {
+            var cell = dom.ancestor(r.sc, dom.isCell);
+            if(! $(cell).hasClass("color_picker")){
+                var $div = $(cell).parents('.bg-color');
+                if($div.length != 0){
+                    cell = $div[0];
+                }
+            }
+            if (backColor !== 'inherit') {
+              cell.style.backgroundColor = backColor;
+            }
+            return;
+          }
+          $.summernote.pluginEvents.applyFont(event, editor, layoutInfo, null, backColor, null);
+          editor.afterCommand($editable);
+        };
         // For Converting Selected Font Awesome Pictograms to PNG images
         website.editor.FontIconsDialog.include({
             start:function(){

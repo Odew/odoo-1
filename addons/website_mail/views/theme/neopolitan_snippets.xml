@@ -15,14 +15,16 @@
         <div id="snippet_email_headers" class="tab-pane active">
 
             <div name="Center Logo" class="o_mail_block_header_center_logo">
-                <div class="snippet_row" style="padding:0px;width:600px;margin:auto;background: #fff repeat top /100%">
-                    <table style="margin: 0 auto;border-collapse:collapse" cellpadding="0" cellspacing="0">
+                <div class="snippet_row bg-color" style="padding:0px;width:600px;margin:auto;background: #fff repeat top /100%">
+                    <table style="margin: 0 auto;width:600px;" cellpadding="0" cellspacing="0">
                         <tbody>
                             <tr>
                                 <td valign="center" style="text-align:center">
+                                    <p>&amp;nbsp; 
                                     <a t-att-href="(website.company_id.website) or '#'" style="text-decoration:none">
                                         <img src="/logo.png" style="padding:10px;height:auto;max-width:600px;width:200px" alt="Your Logo" />
                                     </a>
+                                    &amp;nbsp; </p>
                                 </td>
                             </tr>
                         </tbody>
@@ -593,59 +595,18 @@
         </div>
 
         <div id="snippet_options" class="hidden">
-            <t t-call="website_mail.snippet_options">
-                <div data-js='inline_bg_colorpicker'
-                    data-selector="div.snippet_row, .color_picker, .bg_color_picker">
-                    <li class="dropdown-submenu">
-                        <a tabindex="-1" href="#">Background Color</a>
-                        <ul class="dropdown-menu">
-                        <li>
-                            <t t-call="website_mail.neopolitan_theme_colors"></t>
-                        </li>
-                        </ul>
-                    </li>
-                </div>
-                <div data-js='inline_pictogram_colorpicker'
-                    data-selector=".color_picker, .pictogram_colorpicker">
-                    <li class="dropdown-submenu">
-                        <a tabindex="-1" href="#">Pictogram Color</a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <t t-call="website_mail.neopolitan_theme_colors"></t>
-                            </li>
-                        </ul>
-                    </li>
-                </div>
-            </t>
+            <t t-call="website_mail.snippet_options"></t>
         </div>
 
     </div>
-
 </div>
 </template>
-
-<template id="neopolitan_theme_colors">
-    <div class='text-center colpick_label'>Mail Theme Colors</div>
-    <table class="colorpicker" style="margin:0px">
-        <tr>
-            <td><button class="no_color" title="Remove Color"/></td>
-            <td><button style="background:#FFFFFF" title="Mail Color"/></td>
-            <td><button style="background:#1F1F1F" title="Mail Color"/></td>
-            <td><button style="background:#414141" title="Mail Color"/></td>
-            <td><button style="background:#808080" title="Mail Color"/></td>
-            <td><button style="background:#168484" title="Mail Color"/></td>
-            <td><button style="background:#44B7B7" title="Mail Color"/></td>
-            <td><button style="background:#4DBFBF" title="Mail Color"/></td>
-        </tr>
-        <tr>
-            <td><button style="background:#933F24" title="Mail Color"/></td>
-            <td><button style="background:#F46B45" title="Mail Color"/></td>
-            <td><button style="background:#F5774E" title="Mail Color"/></td>
-        </tr>
-        <tr><td colspan="8"><hr style="width: 100%; height: 1px"/></td></tr>
-    </table>
-    <div class='text-center colpick_label'>Website Theme Colors</div>
-    <t t-call="website.colorpicker"/>
+<template id="neopolitan_snippets_colors">
+    <div class="note-palette-title mt8"> Mail Theme Colors</div>
+    <div class="mail-colorpicker note-color-row">
+            <t t-set="colors" t-value="['#414141','#933F24','#4DBFBF']"/>
+            <t t-foreach="colors" t-as="c"><button type="button" class="note-color-btn" t-attf-style="background-color:#{c};" t-attf-data-value="#{c}" t-attf-title="#{c}" data-toggle="button" tabindex="-1"></button></t>
+    </div>
 </template>
 
 </odoo>
