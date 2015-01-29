@@ -187,6 +187,12 @@ var QWeb2 = {
                         }
                       }
                 }
+
+                _.each(Object.keys(old_dict), function(z) {
+                    if (new_dict[z] != old_dict[z]){
+                        old_dict[z] = new_dict[z];
+                    }
+                });
             } else {
                 this.exception("No enumerator given to foreach", context);
             }
