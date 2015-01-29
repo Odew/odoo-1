@@ -421,8 +421,7 @@ class QWeb(orm.AbstractModel):
             ru.append(self.render_element(element, template_attributes, generated_attributes, copy_qwebcontext))
 
         for k in qwebcontext.keys():
-            if k in copy_qwebcontext and qwebcontext[k] != copy_qwebcontext[k]:
-                qwebcontext[k] = copy_qwebcontext[k]
+            qwebcontext[k] = copy_qwebcontext[k]
 
         return "".join(ru)
 
