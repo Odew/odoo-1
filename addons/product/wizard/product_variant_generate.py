@@ -31,14 +31,11 @@ class product_variant_generate(osv.osv_memory):
         'product_id': fields.many2one('product.template'),
     }
 
-
     def default_get(self, cr, uid, fields, context=None):
         if context is None:
             context = {}
         res = {}
-        product_variant = self.pool.get('product.template')
-        res['product_id'] = context.active_id 
-        # res['attribute_line_ids'] =   
+        res['product_id'] = context['active_id'] 
         return res
 
 
@@ -46,12 +43,29 @@ class product_variant_generate(osv.osv_memory):
         if context is None:
             context = {}
         product_template_obj = self.pool.get('product.template')
+        product_attribute_line_obj = self.pool.get('product.attribute.line')
+
         for wizard in self.browse(cr, uid, ids, context=context):
-            for line in wizard.attribute_line_ids:
-                product_template_obj.write(cr, uid, [wizard.product_id], {'attribute_line_ids': [(2, id,  attribute_line_ids)]})
-                                
+            lines = []
+            actual_product_attribute = [att.id for att in wizard.product_id.attribute_line_ids]
+            for wiz_line in wizard.attribute_line_ids:
+                if wiz_line.attribute_id.id not in actual_product_attribute:
+                    # need to add 
+                    value_ids = [(4, v.id) for v in wiz_line.value_ids]
+                    attribute_line_value = {
+                        'product_tmpl_id': wizard.product_id.id,
+                        'attribute_id': wiz_line.attribute_id.id,
+                        'value_ids': value_ids
+                    }
+                    lines.append((0, False , attribute_line_value))
 
-<field name="attribute_id"/>
-                            <field name="value_ids"
+            actual_wizard_attribute = [att.id for att in wizard.attribute_line_ids]
+            for prod_line in wizard.product_id.attribute_line_ids:
+                if prod_line.attribute_id.id not in actual_wizard_attribute:
+                    # need to remove
+                    product_attribute_line_obj.unlink(cr, uid, [prod_line.id], context=context)
 
-        return product_template_obj.write(cr, uid, [product_id], {'attribute_line_ids': [(3, account_type_id)]})
+            # final and only WRITE
+            product_template_obj.write(cr, uid, [wizard.product_id.id], {'attribute_line_ids': lines})
+
+                

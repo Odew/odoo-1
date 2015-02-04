@@ -642,7 +642,7 @@ class product_template(osv.osv):
     def create_variant_ids(self, cr, uid, ids, context=None):
         product_obj = self.pool.get("product.product")
         ctx = context and context.copy() or {}
-
+        print 'cacacacacacacacacacaccacacacacacacacacacacacacacacacacaccaaccacacacacacacacacaccacacacacacacacacacacac'
         if ctx.get("create_product_variant"):
             return None
 
