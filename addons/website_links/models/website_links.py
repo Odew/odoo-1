@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import random
+import re
 import string
 
 from lxml.html import parse
@@ -17,6 +18,8 @@ def VALIDATE_URL(url):
         return 'http://' + url
 
     return url
+
+URL_REGEX = r'(\bhref=[\'"]([^\'"]+)[\'"])'
 
 
 class website_links(models.Model):
@@ -40,6 +43,33 @@ class website_links(models.Model):
     redirected_url = fields.Char(string='Redirected URL', compute='_compute_redirected_url')
     short_url_host = fields.Char(string='Host of the short URL', compute='_compute_short_url_host')
     icon_src = fields.Char(string='Favicon Source', compute='_compute_icon_src')
+
+    # List of link's href that will not be converted by the shortener
+    links_backlist = ['/unsubscribe_from_list']
+
+    @api.model
+    def convert_links_in_html(self, html, utm_mixin):
+        for match in re.findall(URL_REGEX, html):
+            href = match[0]
+            long_url = match[1]
+
+            if not [s for s in self.links_backlist if s in long_url]:
+                vals = {'url': long_url}
+
+                if utm_mixin.campaign_id:
+                    vals['campaign_id'] = utm_mixin.campaign_id.id
+                if utm_mixin.source_id:
+                    vals['source_id'] = utm_mixin.source_id.id
+                if utm_mixin.medium_id:
+                    vals['medium_id'] = utm_mixin.medium_id.id
+
+                link = self.create(vals)
+                shorten_url = self.browse(link.id)[0].short_url
+
+                if shorten_url:
+                    new_href = href.replace(long_url, shorten_url)
+                    html = html.replace(href, new_href)
+        return html
 
     @api.one
     @api.depends('link_click_ids.link_id')
