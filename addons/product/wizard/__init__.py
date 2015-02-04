@@ -19,3 +19,4 @@
 #
 ##############################################################################
 import product_price
+import product_variant_generate

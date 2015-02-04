@@ -28,10 +28,30 @@ class product_variant_generate(osv.osv_memory):
 
     _columns = {
         'attribute_line_ids': fields.one2many('product.attribute.line', 'product_tmpl_id', 'Product Attributes'),
+        'product_id': fields.many2one('product.template'),
     }
+
+
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        product_variant = self.pool.get('product.template')
+        res['product_id'] = context.active_id 
+        # res['attribute_line_ids'] =   
+        return res
+
 
     def write_attribute(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
-            
-        return 
+        product_template_obj = self.pool.get('product.template')
+        for wizard in self.browse(cr, uid, ids, context=context):
+            for line in wizard.attribute_line_ids:
+                product_template_obj.write(cr, uid, [wizard.product_id], {'attribute_line_ids': [(2, id,  attribute_line_ids)]})
+                                
+
+<field name="attribute_id"/>
+                            <field name="value_ids"
+
+        return product_template_obj.write(cr, uid, [product_id], {'attribute_line_ids': [(3, account_type_id)]})
