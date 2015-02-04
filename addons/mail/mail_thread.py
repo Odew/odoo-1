@@ -372,7 +372,6 @@ class mail_thread(osv.AbstractModel):
         for key, val in context.iteritems():
             if key.startswith('default_'):
                 create_values[key[8:]] = val
-        self.message_auto_subscribe(cr, uid, [thread_id], create_values.keys(), context=context, values=create_values)
 
         # track values
         track_ctx = dict(context)
@@ -383,6 +382,7 @@ class mail_thread(osv.AbstractModel):
             if tracked_fields:
                 initial_values = {thread_id: dict.fromkeys(tracked_fields, False)}
                 self.message_track(cr, uid, [thread_id], tracked_fields, initial_values, context=track_ctx)
+        self.message_auto_subscribe(cr, uid, [thread_id], create_values.keys(), context=context, values=create_values)
         return thread_id
 
     def write(self, cr, uid, ids, values, context=None):
@@ -409,12 +409,12 @@ class mail_thread(osv.AbstractModel):
 
         # Perform write, update followers
         result = super(mail_thread, self).write(cr, uid, ids, values, context=context)
-        self.message_auto_subscribe(cr, uid, ids, values.keys(), context=context, values=values)
 
         # Perform the tracking
         if tracked_fields:
             self.message_track(cr, uid, ids, tracked_fields, initial_values, context=track_ctx)
 
+        self.message_auto_subscribe(cr, uid, ids, values.keys(), context=context, values=values)
         return result
 
     def unlink(self, cr, uid, ids, context=None):
@@ -1811,12 +1811,7 @@ class mail_thread(osv.AbstractModel):
                 message_obj = self.pool.get('mail.message')
                 msg_ids = message_obj.search(cr, SUPERUSER_ID, [
                     ('model', '=', self._name),
-                    ('res_id', '=', record_id),
-                    ('type', '=', 'email')], limit=1, context=context)
-                if not msg_ids:
-                    msg_ids = message_obj.search(cr, SUPERUSER_ID, [
-                        ('model', '=', self._name),
-                        ('res_id', '=', record_id)], limit=1, context=context)
+                    ('res_id', '=', record_id)], limit=1, context=context)
                 if msg_ids:
                     self.pool.get('mail.notification')._notify(cr, uid, msg_ids[0], partners_to_notify=partner_ids, context=context)
 
