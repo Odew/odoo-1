@@ -232,8 +232,34 @@
             </field>
         </record>
 
+<!--         <record id="product_wizard_form_view" model="ir.ui.view">
+            <field name="name">product.product.light.form</field>
+            <field name="model">product.product</field>
+            <field eval="7" name="priority"/>
+            <field name="arch" type="xml">
+                <form name="string">
+                    <field name="active"/>
+                    <field name="barcode"/>
+                    <field name="default_code"/>
+                    <field name="lst_price"/>
+                    <field name="name" attrs="{'invisible': [('id', '!=', False)]}"/>
+                    <field name="product_tmpl_id" class="oe_inline" readonly="1" attrs="{'invisible': [('id', '=', False)], 'required': [('id', '!=', False)]}"/>
+                    <field name="standard_price" attrs="{'invisible':[('product_variant_count','=', 1)]}"/>
+                    <group name="weight">
+                        <group name="weight" string="Weights" attrs="{'invisible':['|', ('type','=','service'), ('product_variant_count','=',1)]}">
+                            <field digits="(14, 3)" name="volume"/>
+                            <field digits="(14, 3)" name="weight"/>
+                            <field digits="(14, 3)" name="weight_net"/>
+                        </group>
+                    </group>
+                    <field name="attribute_value_ids" widget="many2many_tags"/>
+                </form>
+            </field>
+        </record>
+ -->
 
-        <!-- view specific to product.template -->
+
+       <!-- view specific to product.template -->
         <record id="product_template_only_form_view" model="ir.ui.view">
             <field name="name">product.template.product.form</field>
             <field name="model">product.template</field>
@@ -250,23 +276,52 @@
                 </field>
                 <xpath expr="//page[@string='Sales']" position="after">
                     <page name="variants" string="Variants">
+                        <div class="oe_left">
+                            <button class="oe_inline" string="Generate Variants" name="%(product.product_variant_generation_action)d" type="action" icon="fa-magic"/>
+                        </div>
                         <div class="oe_right">
                             <button class="oe_inline oe_stat_button" string="Variant Prices"  name="%(variants_template_action)d" type="action" icon="fa-strikethrough"/>
-                            <button class="oe_inline oe_stat_button" name="%(product.product_variant_action)d" type="action" icon="fa-sitemap">
-                                <field string="List of Variants" name="product_variant_count" widget="statinfo" />
-                            </button>
                         </div>
-                        <p class="oe_grey">
-                            <strong>Warning</strong>: adding or deleting attributes
-                            will delete and recreate existing variants and lead
-                            to the loss of their possible customizations.
-                        </p>
-                        <field name="attribute_line_ids" widget="one2many_list" context="{'show_attribute': False}">
-                            <tree string="Variants" editable="bottom">
-                                <field name="attribute_id"/>
-                                <field name="value_ids" widget="many2many_tags" options="{'no_create_edit': True}" domain="[('attribute_id', '=', attribute_id)]" context="{'default_attribute_id': attribute_id}"/>
-                            </tree>
-                        </field>
+                        <group string="Product Variants">
+                            <field name="product_variant_ids" widget="one2many_list" nolabel="1">
+                                <!-- TODO : Put this form view outside with a form_view_ref -->
+                                <form string="Variant Information">
+                                    <div class="oe_left" style="width: 500px;">
+                                        <field name="image_variant" widget="image" class="oe_avatar oe_left"/>
+                                        <div class="oe_title" style="width: 390px;">
+                                            <label class="oe_edit_only" for="name" string="Product Name"/>
+                                            <h1><field name="name" class="oe_inline"/></h1>
+                                        </div>
+                                    </div>
+                                    <group string="Attributes">
+                                        <field name="attribute_value_ids" widget="many2many_tags"/>
+                                    </group>
+                                    <group>
+                                        <group name="codes" string="Codes">
+                                            <field name="barcode"/>
+                                            <field name="default_code"/>
+                                        </group>
+                                        <group>
+                                            <field name="active"/>
+                                            <field name="product_tmpl_id" class="oe_inline" readonly="1"/>
+                                        </group>
+                                    </group>
+                                    <group>
+                                        <group name="pricing" string="Pricing">
+                                            <field name="lst_price"/>
+                                            <field name="standard_price"/>
+                                        </group>
+                                        <group name="weight">
+                                            <group name="weight" string="Weights">
+                                                <field digits="(14, 3)" name="volume"/>
+                                                <field digits="(14, 3)" name="weight"/>
+                                                <field digits="(14, 3)" name="weight_net"/>
+                                            </group>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
                     </page>
                 </xpath>
             </field>
