@@ -1,23 +1,22 @@
 <?xml version="1.0"?>
-<openerp>
-
+<odoo>
     <data noupdate="1">
         <!-- After installation of the module, open the related menu -->
-        <record id="action_client_livechat_menu" model="ir.actions.client">
+        <record id="ir_action_client_open_livechat_menu" model="ir.actions.client">
             <field name="name">Open Livechat Channel Menu</field>
             <field name="tag">reload</field>
-            <field name="params" eval="{'menu_id': ref('support_channels')}"/>
+            <field name="params" eval="{'menu_id': ref('im_livechat_channel_menu')}"/>
         </record>
 
         <record id="base.open_menu" model="ir.actions.todo">
-            <field name="action_id" ref="action_client_livechat_menu"/>
+            <field name="action_id" ref="ir_action_client_open_livechat_menu"/>
             <field name="state">open</field>
         </record>
     </data>
 
     <data>
         <!-- Custom Filters -->
-        <record id="filter_session_by_day" model="ir.filters">
+        <record id="im_livechat_report_filter_session_by_day" model="ir.filters">
             <field name="name">Sessions by day</field>
             <field name="model_id">im_livechat.report</field>
             <field name="domain">[('nbr_speakers','&gt;', 1)]</field>
@@ -26,7 +25,7 @@
             <field name="user_id" eval="False"/>
         </record>
 
-        <record id="filter_session_last_24h" model="ir.filters">
+        <record id="im_livechat_report_filter_session_last_24h" model="ir.filters">
             <field name="name">Last 24h stats</field>
             <field name="model_id">im_livechat.report</field>
             <field name="domain">[('start_date','&gt;', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d') )]</field>
@@ -34,14 +33,12 @@
             <field name="user_id" eval="False"/>
         </record>
 
-        <record id="filter_operator_stats" model="ir.filters">
+        <record id="im_livechat_report_filter_operator_stats" model="ir.filters">
             <field name="name">Operators stats</field>
             <field name="model_id">im_livechat.report</field>
             <field name="domain">[('nbr_speakers','&gt;', 1), ('user_id', '!=', False)]</field>
             <field name="context">{'group_by': ['start_date:month',  'user_id', 'uuid']}</field>
             <field name="user_id" eval="False"/>
         </record>
-
-
     </data>
-</openerp>
+</odoo>

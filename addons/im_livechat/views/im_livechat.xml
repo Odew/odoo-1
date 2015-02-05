@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data>
 
         <!-- Template rendering the external HTML support page -->
@@ -85,7 +85,7 @@
         <template id="internal_loader" name="All the scripts to launch the LiveSupport from an internal Web Page">
             <!-- css style -->
             <link t-att-href="'%s/web/css/im_livechat.internal_lib' % (url)" rel="stylesheet"/>
-            <!-- js of all the required lib (internal and external) -->
+            <!-- js of all the required lib -->
             <script t-att-src="'%s/web/js/im_livechat.internal_lib' % (url)" type="text/javascript" />
             <!-- the loader -->
             <script t-att-src="'%s/im_livechat/loader/%s/%i' % (url, dbname, channel)" type="text/javascript" />
@@ -136,4 +136,4 @@
         </template>
 
     </data>
-</openerp>
+</odoo>
