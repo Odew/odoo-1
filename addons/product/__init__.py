@@ -23,3 +23,4 @@ import pricelist
 import report
 import partner
 import wizard
+import res_config

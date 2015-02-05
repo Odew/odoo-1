@@ -275,7 +275,7 @@
                     <field name="default_code" attrs="{'invisible': [('product_variant_count', '>', 1)]}"/>
                 </field>
                 <xpath expr="//page[@string='Sales']" position="after">
-                    <page name="variants" string="Variants">
+                    <page name="variants" string="Variants" groups="product.group_product_variant">
                         <div class="oe_left">
                             <button class="oe_inline oe_stat_button" string="Generate Variants" name="%(product.product_variant_generation_action)d" type="action" icon="fa-magic"/>
                         </div>
@@ -350,7 +350,7 @@
                                              <field name="name"/> 
                                         </a>
                                     </h4>
-                                    <a name="%(product.product_variant_action)d" type="action">
+                                    <a name="%(product.product_variant_action)d" type="action" groups="product.group_product_variant">
                                         <t t-esc="record.product_variant_count.value"/> Variants
                                     </a>
                                     <div name="tags"/>

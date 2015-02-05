@@ -19,7 +19,7 @@
                             <button type="object" name="open_company" string="Configure your company data" icon="gtk-execute" class="oe_inline oe_link"/>
                         </p>
                     </div>
-                    <group>
+                    <group name="options">
                         <label for="id" string="Options"/>
                         <div>
                             <div name="multi_company">
