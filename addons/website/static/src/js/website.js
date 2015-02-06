@@ -360,6 +360,10 @@ dom_ready.then(function () {
             });
     });
 
+    $('.js_submit_loading').on('submit',function (){
+        $(this).find('#btn-loading').button('loading');
+    });
+
     /* ----- KANBAN WEBSITE ---- */
     $('.js_kanban').each(function () {
         init_kanban(this);
