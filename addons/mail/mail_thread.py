@@ -1618,7 +1618,7 @@ class mail_thread(osv.AbstractModel):
 
         # 3. Attachments
         #   - HACK TDE FIXME: Chatter: attachments linked to the document (not done JS-side), load the message
-        attachment_ids = self._message_preprocess_attachments(cr, uid, attachments, kwargs.pop('attachment_ids', []), model, thread_id, context)
+        attachment_ids = self._message_preprocess_attachments(cr, uid, attachments, kwargs.pop('attachment_ids', []), model or 'mail.message', thread_id, context)
 
         # 4: mail.message.subtype
         subtype_id = False
