@@ -1,8 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<openerp>
-<data>
+<odoo>
     <record model="ir.ui.view" id="certification_certification_tree">
-        <field name="name">view.certification.certification.tree</field>
+        <field name="name">certification.certification.tree</field>
         <field name="model">certification.certification</field>
         <field name="arch" type="xml">
             <tree string="Granted Certifications">
@@ -15,7 +14,7 @@
         </field>
     </record>
     <record model="ir.ui.view" id="certification_certification_form">
-        <field name="name">view.certification.certification.form</field>
+        <field name="name">certification.certification.form</field>
         <field name="model">certification.certification</field>
         <field name="arch" type="xml">
             <form string="Granted Certification">
@@ -32,7 +31,7 @@
         </field>
     </record>
     <record model="ir.ui.view" id="certification_certification_search">
-        <field name="name">view.certification.certification.search</field>
+        <field name="name">certification.certification.search</field>
         <field name="model">certification.certification</field>
         <field name="arch" type="xml">
             <search string="Search Certification">
@@ -54,5 +53,4 @@
     </record>
     <menuitem name="Certifications" id="menu_certifications" parent="base.menu_marketing_config_root" sequence="3" />
     <menuitem name="Certifications" id="menu_certifications_list" action="action_certifications_list" parent="menu_certifications" sequence="1"/>
-</data>
-</openerp>
+</odoo>
