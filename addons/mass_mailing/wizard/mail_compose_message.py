@@ -20,6 +20,45 @@ class MailComposeMessage(osv.TransientModel):
         ),
     }
 
+    # List of link's href that will not be converted by the shortener
+    links_backlist = ['/unsubscribe_from_list', '#']
+
+    def convert_links(self, cr, uid, ids, context=None):
+        res = {}
+        for mass_mailing in self.browse(cr, uid, ids, context=context):
+            utm_mixin = mass_mailing.mass_mailing_campaign_id if mass_mailing.mass_mailing_campaign_id else mass_mailing
+            html = mass_mailing.body_html if mass_mailing.body_html else ''
+
+            for match in re.findall(URL_REGEX, html):
+                href = match[0]
+                long_url = match[1]
+
+                if not [s for s in self.links_backlist if s == long_url]:
+                    vals = {
+                        'url': long_url,
+                        'mass_mailing_id': mass_mailing.id
+                    }
+
+                    if mass_mailing.mass_mailing_campaign_id:
+                        vals['mass_mailing_campaign_id'] = mass_mailing.mass_mailing_campaign_id.id
+
+                    if utm_mixin.campaign_id:
+                        vals['campaign_id'] = utm_mixin.campaign_id.id
+                    if utm_mixin.source_id:
+                        vals['source_id'] = utm_mixin.source_id.id
+                    if utm_mixin.medium_id:
+                        vals['medium_id'] = utm_mixin.medium_id.id
+
+                    link = self.pool.get('website.links').create(cr, uid, vals, context)
+                    shorten_url = self.pool.get('website.links').browse(cr, uid, link, context)[0].short_url
+
+                    if shorten_url:
+                        new_href = href.replace(long_url, shorten_url)
+                        html = html.replace(href, new_href)
+
+            res[mass_mailing.id] = html
+        return res
+
     def get_mail_values(self, cr, uid, wizard, res_ids, context=None):
         """ Override method that generated the mail content by creating the
         mail.mail.statistics values in the o2m of mail_mail, when doing pure
