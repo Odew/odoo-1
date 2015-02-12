@@ -94,7 +94,7 @@
                     <tr>
                         <td><label for="db_name">Select a database name:</label></td>
                         <td>
-                            <input type="text" name="db_name" class="required" matches="^[a-zA-Z0-9][a-zA-Z0-9_-]+$" autofocus="true" placeholder="e.g. mycompany"/>
+                            <input type="text" name="db_name" class="required" matches="^[a-zA-Z0-9][a-zA-Z0-9_-]+$" autofocus="true" placeholder="e.g. mycompany"/> 
                         </td>
                     </tr>
                     <tr>
@@ -340,10 +340,10 @@
 </t>
 
 <t t-name="Menu.needaction_counter">
-    <div id="menu_counter" class="badge pull-right">
-        <t t-if="widget.needaction_counter &gt; 99"> 99+ </t>
-        <t t-if="widget.needaction_counter &lt;= 99"> <t t-esc="widget.needaction_counter"/> </t>
-    </div>
+    <span id="menu_counter" class="badge pull-right">
+        <t t-if="widget.needaction_counter &gt; 99">99+</t>
+        <t t-if="widget.needaction_counter &lt;= 99"><t t-esc="widget.needaction_counter"/></t>
+    </span>
 </t>
 
 <t t-name="UserMenu">
@@ -469,8 +469,8 @@
 <div t-name="ActionManager" class="oe_application" />
 
 <t t-name="ControlPanel">
-    <div class="oe-control-panel">
-        <div class="container-fluid">
+    <div class="row o-control-panel">
+        <div class="col-md-12">
             <div class="row">
                 <div class="col-md-6 oe-cp-title">
                     <ol class="oe-view-title breadcrumb">
@@ -502,13 +502,16 @@
     </div>
 </t>
 
-<div t-name="ViewManager" class="oe-view-manager">
-    <div class="oe-view-manager-content">
-        <t t-foreach="widget.views" t-as="view">
-            <div t-attf-class="oe-view-manager-view-#{view} fade"/>
-        </t>
+<div t-name="ViewManager" class="row o-view-manager">
+    <div class="col-md-12">
+        <div class="oe-view-manager-content">
+            <t t-foreach="widget.views" t-as="view">
+                <div t-attf-class="oe-view-manager-view-#{view} fade"/>
+            </t>
+        </div>
     </div>
 </div>
+
 <t t-name="ViewManager.switch-buttons">
     <t t-foreach="views" t-as="view">
         <button type="button" t-attf-class="btn btn-default fa oe-cp-switch-#{view.type}" t-att-data-view-type="view.type" t-att-title="view.label"/>
@@ -580,6 +583,7 @@
     </div>
 </t>
 <span t-name="ViewPager">
+    <!-- it will not work -->
     <div class="oe_pager_value" style="display: inline-block">
         <t t-raw="0"/>
     </div>
@@ -629,6 +633,7 @@
                             <i class="fa fa-trash-o"/>
                         </span>
                     </a>
+                     <a t-if="section.name == 'files' and !item.callback" class="oe_sidebar_delete_item" t-att-data-id="item.id" title="Delete this attachment">x</a>
                 </li>
                 <li t-if="section.name == 'files'" class="oe_sidebar_add_attachment">
                     <t t-call="HiddenInputFile">
@@ -769,7 +774,7 @@
 </tr>
 <t t-extend="ListView.buttons">
     <t t-jquery="button.oe_list_add" t-operation="after">
-        <button class="oe_button oe_list_save oe_highlight"
+        <button class="btn btn-sm oe_button oe_list_save oe_highlight"
                 type="button">Save</button>
         <span class="oe_alternative">
             <span class="oe_fade">or</span>

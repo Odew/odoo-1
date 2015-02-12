@@ -7,7 +7,7 @@ var session = require('web.session');
 var WebClient = require('web.WebClient');
 
 var QWeb = core.qweb;
-
+return;
 WebClient.include({
     show_application: function() {
         return $.when(this._super.apply(this, arguments)).then(this.proxy('show_announcement_bar'));
@@ -42,7 +42,7 @@ WebClient.include({
                     session.set_cookie('ab', 'c', ttl);
                     $bar.slideUp();
                     setTimeout(function () {
-                        $('.openerp_webclient_container').css('height', 'calc(100% - 34px)');                            
+                        $('.openerp_webclient_container').css('height', 'calc(100% - 34px)');
                     }, 400);
                 };
                 /*
@@ -50,7 +50,7 @@ WebClient.include({
                     with an animation of 350ms and the computed height might be wrong if we don't wait
                 */
                 setTimeout(function(){
-                    var height = $('#announcement_bar_table').outerHeight() 
+                    var height = $('#announcement_bar_table').outerHeight()
                                 + $('#oe_main_menu_navbar').outerHeight();
                     $('.openerp_webclient_container').css('height', 'calc(100% - ' + height + 'px)');
                     $bar.find('.close').on('click', close);

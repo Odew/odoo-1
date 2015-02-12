@@ -46,6 +46,12 @@ var WebClient = Widget.extend({
             this.toggle_bars.apply(this, arguments);
         });
 
+
+        this.$('[data-toggle="offcanvas"]').click(function () {
+            $('.o-web-client-row').toggleClass('js_o-secondary-menu-shown');
+        });
+
+
         return session.session_bind(this.origin).then(function() {
             self.bind_events();
             return self.show_common();
@@ -110,9 +116,10 @@ var WebClient = Widget.extend({
         self.notification = new Notification(this);
         self.notification.appendTo(self.$('.openerp'));
         self.loading = new Loading(self);
-        self.loading.appendTo(self.$('.openerp_webclient_container'));
+        self.loading.appendTo(self.$('.o-web-client'));
         self.action_manager = new ActionManager(self);
-        self.action_manager.replace(self.$('.oe_application'));
+        self.action_manager.setElement(self.$('.o-action-manager'));
+        self.action_manager.start();
 
         core.bus.on('display_notification_warning', this, function (title, message) {
             self.notification.warn(title, message);

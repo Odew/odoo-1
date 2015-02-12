@@ -130,7 +130,6 @@ var ViewManagerAction = WidgetAction.extend({
 });
 
 var ActionManager = Widget.extend({
-    template: "ActionManager",
     init: function(parent) {
         this._super(parent);
         this.action_stack = [];
