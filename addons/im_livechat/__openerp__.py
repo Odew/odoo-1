@@ -23,10 +23,10 @@ Help your customers with this chat, and analyse their feedback.
         "views/im_livechat_view.xml",
         "views/im_livechat.xml",
         "report/im_livechat_report.xml",
-        "im_livechat_data.xml"
+        "data/im_livechat_data.xml"
     ],
     'demo': [
-        "im_livechat_demo.xml",
+        "data/im_livechat_demo.xml",
     ],
     'depends' : ["mail", "rating", "im_chat"],
     'installable': True,

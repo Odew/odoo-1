@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 {
     'name' : 'Instant Messaging',
     'version': '1.0',
-    'summary': 'OpenERP Chat',
-    'author': 'OpenERP SA',
+    'summary': 'Chat between users',
+    'author': 'Odoo SA',
     'sequence': '18',
     'category': 'Tools',
     'complexity': 'easy',
@@ -11,7 +12,6 @@
         """
 Instant Messaging
 =================
-
 Allows users to chat with each other in real time. Find other users easily and
 chat in real time. It support several chats in parallel.
         """,
@@ -19,6 +19,8 @@ chat in real time. It support several chats in parallel.
         'security/ir.model.access.csv',
         'security/im_security.xml',
         'views/im_chat.xml',
+        'views/im_chat_view.xml',
+        'data/im_chat_data.xml',
     ],
     'depends' : ['base', 'web', 'bus'],
     'qweb': ['static/src/xml/*.xml'],
