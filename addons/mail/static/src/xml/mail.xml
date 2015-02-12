@@ -170,9 +170,9 @@
         wall main template
         Template used to display the communication history in the wall.
         -->
-    <div t-name="mail.wall" class="oe-view-manager oe_mail_wall oe_view_manager_current">
-        <div class="oe-control-panel">
-            <div class="container-fluid">
+    <t t-name="mail.wall">
+        <div class="row o-control-panel">
+            <div class="col-md-12 oe-view-manager-header">
                 <div class="row">
                     <div class="col-md-6 oe-cp-title">
                         <ol class="oe-view-title breadcrumb">
@@ -188,11 +188,11 @@
                 </div>
             </div>
         </div>
-        <div class="oe-view-manager-content">
+        <div class="row oe-view-manager-content o-view-manager">
             <div class="oe_mail-placeholder"></div>
             <aside class="oe_mail_wall_aside"></aside>
         </div>
-    </div>
+    </t>
 
     <!--
         Empty template that holds the sidebar of the Wall
