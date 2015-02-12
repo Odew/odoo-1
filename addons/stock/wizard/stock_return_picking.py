@@ -19,6 +19,7 @@
 #
 ##############################################################################
 
+from lxml import etree
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
@@ -43,7 +44,27 @@ class stock_return_picking(osv.osv_memory):
     _columns = {
         'product_return_moves': fields.one2many('stock.return.picking.line', 'wizard_id', 'Moves'),
         'move_dest_exists': fields.boolean('Chained Move Exists', readonly=True, help="Technical field used to hide help tooltip if not needed"),
+        'location_id': fields.many2one('stock.location', 'Return Location'),
     }
+  
+    def fields_view_get(self, cr, uid, view_id=None, view_type=False, context=None, toolbar=False, submenu=False):
+        if not context: context = {}
+        res = super(stock_return_picking, self).fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
+        if view_type == 'form' and context.get('active_id'):
+            picking = self.pool.get('stock.picking').browse(cr, uid, context.get('active_id'), context=context)
+            location_id = picking.move_lines.location_id.id
+            if picking.picking_type_code == 'incoming':
+                domain = "[('return_location', '=', True), ('usage', '=', 'supplier'), ('id', '!=', '%s')]" % location_id
+            if picking.picking_type_code == 'outgoing':
+                domain = "[('return_location', '=', True), ('usage', '=', 'internal'), ('id', '!=', '%s')]" % location_id
+            if picking.picking_type_code == 'internal':
+                domain = "[('return_location', '=', True), ('usage', '!=', 'view'), ('id', '!=', '%s')]" % location_id
+            doc = etree.XML(res['arch'])
+            nodes = doc.xpath("//field[@name='location_id']")
+            for node in nodes:
+                node.set('domain', domain)
+            res['arch'] = etree.tostring(doc)
+        return res
 
     def default_get(self, cr, uid, fields, context=None):
         """
@@ -140,6 +161,7 @@ class stock_return_picking(osv.osv_memory):
                     move_dest_id = False
 
                 returned_lines += 1
+                location_id = data['location_id'] and data['location_id'][0] or move.location_id.id
                 move_obj.copy(cr, uid, move.id, {
                     'product_id': data_get.product_id.id,
                     'product_uom_qty': new_qty,
@@ -147,13 +169,12 @@ class stock_return_picking(osv.osv_memory):
                     'picking_id': new_picking,
                     'state': 'draft',
                     'location_id': move.location_dest_id.id,
-                    'location_dest_id': move.location_id.id,
+                    'location_dest_id': location_id,
                     'origin_returned_move_id': move.id,
                     'procure_method': 'make_to_stock',
                     'restrict_lot_id': data_get.lot_id.id,
                     'move_dest_id': move_dest_id,
                 })
-
         if not returned_lines:
             raise UserError(_("Please specify at least one non-zero quantity."))
 
