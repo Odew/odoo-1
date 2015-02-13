@@ -484,8 +484,8 @@
                     <div class="oe-cp-sidebar"></div>
                 </div>
                 <div class="col-md-6">
-                    <div class="oe-search-options btn-group"/>
-                    <div class="oe-right-toolbar">
+                    <div class="oe-search-options btn-group pull-left"/>
+                    <div class="oe-right-toolbar pull-right">
                         <div class="oe-cp-pager"></div>
                         <div class="oe-cp-switch-buttons btn-group btn-group-sm"></div>
                     </div>
@@ -1627,14 +1627,14 @@
 <div t-name="SearchView.FacetView"
      class="oe_tag oe_searchview_facet"
      tabindex="0">
-    <span class="oe_facet_remove">x</span>
     <span t-if="widget.model.has('icon')"
             t-att-class="'label label-default fa ' + widget.model.get('icon')">
     </span>
     <span class="label label-default" t-if="!widget.model.has('icon')">
         <t t-esc="widget.model.get('category')"/>
     </span >
-    <span class="oe_facet_values"/>
+    <span class="oe_facet_values"></span>
+    <span class="oe_facet_remove">x</span>
 </div>
 <span t-name="SearchView.FacetView.Value" class="oe_facet_value">
     <t t-esc="widget.model.get('label')"/>
@@ -1643,7 +1643,7 @@
     <li t-foreach="widget.filters" t-as="filter" t-if="!filter.visible || filter.visible()"
             t-att-title="filter.attrs.string ? filter.attrs.help : undefined"
             t-att-data-index="filter_index">
-        <a>
+        <a href="#">
             <t t-esc="filter.attrs.string or filter.attrs.help or filter.attrs.name or 'Ω'"/>
         </a>
     </li>
@@ -1709,8 +1709,8 @@
         <span class="fa fa-filter"/> Filters <span class="caret"/>
     </button>
     <ul class="dropdown-menu filters-menu" role="menu">
-        <li class="oe-add-filter closed-menu"><a>Add Custom Filter</a></li>
-        <li class="oe-add-filter-menu"><button type="button" class="btn btn-default oe-apply-filter">Apply</button><a class="oe-add-condition"><span class="fa fa-plus-circle"/> Add a condition</a></li>
+        <li class="oe-add-filter closed-menu"><a href="#">Add Custom Filter</a></li>
+        <li class="oe-add-filter-menu"><button type="button" class="btn btn-default oe-apply-filter">Apply</button><a href="#" class="oe-add-condition"><span class="fa fa-plus-circle"/> Add a condition</a></li>
     </ul>
 </div>
 
@@ -1720,7 +1720,7 @@
     </button>
     <ul class="dropdown-menu group-by-menu" role="menu">
         <li class="divider"/>
-        <li class="add-custom-group closed-menu"><a>Add custom group</a></li>
+        <li class="add-custom-group closed-menu"><a href="#">Add custom group</a></li>
     </ul>
 </div>
 
@@ -1738,7 +1738,7 @@
     </button>
     <ul class="dropdown-menu favorites-menu" role="menu">
         <li class="divider"/>
-        <li class="oe-save-search closed-menu"><a>Save current search</a></li>
+        <li class="oe-save-search closed-menu"><a href="#">Save current search</a></li>
         <li class="oe-save-name"><input type="text" class="form-control"></input></li>
         <li class="oe-save-name">
             <span><input type="checkbox"/>Use by default</span>

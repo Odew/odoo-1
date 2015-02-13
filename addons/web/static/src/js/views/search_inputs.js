@@ -605,6 +605,7 @@ var FilterGroup = Input.extend(/** @lends instance.web.search.FilterGroup# */{
         });
     },
     toggle_filter: function (e) {
+        e.preventDefault();
         e.stopPropagation();
         this.toggle(this.filters[Number($(e.target).parent().data('index'))]);
     },

@@ -60,7 +60,7 @@
 </t>
 
 <t t-name="SearchView.addtodashboard">
-    <li class="add-to-dashboard closed-menu"><a>Add to my Dashboard</a></li>
+    <li class="add-to-dashboard closed-menu"><a href="#">Add to my Dashboard</a></li>
     <li class="add-to-dashboard"><input class="form-control" type="text"/></li>
     <li class="add-to-dashboard"><button type="button" class="btn btn-default">Add</button></li>
 </t>
