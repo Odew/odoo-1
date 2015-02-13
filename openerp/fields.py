@@ -1188,6 +1188,37 @@ class Datetime(Field):
         return timestamp
 
     @staticmethod
+    def utc_today_date(record, timestamp=None):
+        """ Returns the midnight date of the present day (in user timezone) converted into UTC.
+            This method should not be used to compute default values, but to do search on datetime fields.
+            For instance :
+            :param datetime timestamp: optional datetime value to use instead of
+                the current date and time (must be a datetime, regular dates
+                can't be converted between timezones.)
+            :returns the UTC datetime representing the midnight of the present day in user timezone
+            :rtype datetime
+        """
+        today = timestamp or datetime.datetime.utcnow()
+        tz_name = record._context.get('tz') or record.env.user.tz or 'UTC'
+        try:
+            # prepare timezones
+            tz_utc = pytz.utc
+            tz_user = pytz.timezone(tz_name)
+            # get utc datetime at the present moment (and localise it as UTC)
+            datetime_utc = tz_utc.localize(today, is_dst=True)
+            # convert to user tz
+            datetime_user = datetime_utc.astimezone(tz_user)
+
+            # truncate : get the start day (H-0 of the current day in user tz)
+            today_user = datetime_user.replace(hour=0, minute=0, second=0)
+            # return the truncated user tz date into utc tz
+            timestamp = today_user.astimezone(tz_utc)
+        except Exception:
+            _logger.debug("failed to convert context/client-specific truncated datetime into UTC date", exc_info=True)
+            timestamp = timestamp.replace(hour=0, minute=0, second=0)
+        return timestamp
+
+    @staticmethod
     def from_string(value):
         """ Convert an ORM `value` into a :class:`datetime` value. """
         value = value[:DATETIME_LENGTH]
