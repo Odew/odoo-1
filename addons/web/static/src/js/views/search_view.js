@@ -289,7 +289,7 @@ var FacetView = Widget.extend({
     },
     start: function () {
         var self = this;
-        var $e = this.$('> span:last-child');
+        var $e = this.$('.oe_facet_values').last();
         return $.when(this._super()).then(function () {
             return $.when.apply(null, self.model.values.map(function (value) {
                 return new FacetValueView(self, value).appendTo($e);
