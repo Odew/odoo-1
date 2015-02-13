@@ -15,7 +15,11 @@ return Widget.extend({
         'click li': function (event) {
             event.stopImmediatePropagation();
         },
-        'click .oe-save-search a': function () {
+        'click li a': function (event) {
+            event.preventDefault();
+        },
+        'click .oe-save-search a': function (event) {
+            event.preventDefault();
             this.toggle_save_menu();
         },
         'click .oe-save-name button': 'save_favorite',
@@ -203,7 +207,7 @@ return Widget.extend({
             $filter = $('<li></li>')
                 .insertBefore(this.$divider)
                 .toggleClass('oe_searchview_custom_default', filter.is_default)
-                .append($('<a>').text(filter.name));
+                .append($('<a>', {'href': '#'}).text(filter.name));
 
             this.$filters[key] = $filter;
             this.$filters[key].addClass(filter.user_id ? 'oe_searchview_custom_private'
@@ -263,9 +267,13 @@ return Widget.extend({
     template: 'SearchView.FilterMenu',
     events: {
         'click .oe-add-filter': function () {
+            event.preventDefault();
             this.toggle_custom_filter_menu();
         },
-        'click li': function (event) {event.stopImmediatePropagation();},
+        'click li': function (event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        },
         'hidden.bs.dropdown': function () {
             this.toggle_custom_filter_menu(false);
         },
@@ -377,7 +385,8 @@ return Widget.extend({
         'hidden.bs.dropdown': function () {
             this.toggle_add_menu(false);
         },
-        'click .add-custom-group a': function () {
+        'click .add-custom-group a': function (event) {
+            event.preventDefault();
             this.toggle_add_menu();
         },
     },

@@ -347,7 +347,8 @@ FavoriteMenu.include({
             this.$add_dashboard_link = $add_to_dashboard.first();
             var title = this.searchview.get_title();
             this.$add_dashboard_input.val(title);
-            this.$add_dashboard_link.click(function () {
+            this.$add_dashboard_link.click(function (event) {
+                event.preventDefault();
                 self.toggle_dashboard_menu();
             });
             this.$add_dashboard_btn.click(this.proxy('add_dashboard'));
