@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from openerp import models, fields, api
-from openerp.tools.translate import _
+from openerp import api, fields, models, _
 from openerp.addons.website.models.website import slug
 
 
-class event_track_tag(models.Model):
+class EventTrackTag(models.Model):
     _name = "event.track.tag"
     _description = 'Track Tag'
     _order = 'name'
@@ -14,14 +13,14 @@ class event_track_tag(models.Model):
     track_ids = fields.Many2many('event.track', string='Tracks')
 
 
-class event_track_location(models.Model):
+class EventTrackLocation(models.Model):
     _name = "event.track.location"
     _description = 'Track Location'
 
     name = fields.Char('Room')
 
 
-class event_track(models.Model):
+class EventTrack(models.Model):
     _name = "event.track"
     _description = 'Event Track'
     _order = 'priority, date'
@@ -57,13 +56,13 @@ class event_track(models.Model):
 
     @api.model
     def create(self, vals):
-        res = super(event_track, self).create(vals)
+        res = super(EventTrack, self).create(vals)
         res.message_subscribe(res.speaker_ids.ids)
         return res
 
     @api.multi
     def write(self, vals):
-        res = super(event_track, self).write(vals)
+        res = super(EventTrack, self).write(vals)
         if vals.get('speaker_ids'):
             self.message_subscribe([speaker['id'] for speaker in self.resolve_2many_commands('speaker_ids', vals['speaker_ids'], ['id'])])
         return res
@@ -71,11 +70,12 @@ class event_track(models.Model):
     @api.multi
     @api.depends('name')
     def _website_url(self, field_name, arg):
-        res = super(event_track, self)._website_url(field_name, arg)
+        res = super(EventTrack, self)._website_url(field_name, arg)
         res.update({(track.id, '/event/%s/track/%s' % (slug(track.event_id), slug(track))) for track in self})
         return res
 
-    def read_group(self, cr, uid, domain, fields, groupby, offset=0, limit=None, context=None, orderby=False, lazy=True):
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         """ Override read_group to always display all states. """
         if groupby and groupby[0] == "state":
             # Default result structure
@@ -88,7 +88,7 @@ class event_track(models.Model):
                 'state_count': 0,
             } for state_value, state_name in states]
             # Get standard results
-            read_group_res = super(event_track, self).read_group(cr, uid, domain, fields, groupby, offset=offset, limit=limit, context=context, orderby=orderby)
+            read_group_res = super(EventTrack, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby)
             # Update standard results with default results
             result = []
             for state_value, state_name in states:
@@ -99,10 +99,11 @@ class event_track(models.Model):
                 result.append(res[0])
             return result
         else:
-            return super(event_track, self).read_group(cr, uid, domain, fields, groupby, offset=offset, limit=limit, context=context, orderby=orderby)
+            return super(EventTrack, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby)
 
-    def open_track_speakers_list(self, cr, uid, track_id, context=None):
-        track_id = self.browse(cr, uid, track_id, context=context)
+    @api.multi
+    def open_track_speakers_list(self):
+        self.ensure_one()
         return {
             'name': _('Speakers'),
             'domain': [('id', 'in', [partner.id for partner in track_id.speaker_ids])],
@@ -114,7 +115,7 @@ class event_track(models.Model):
         }
 
 
-class event_event(models.Model):
+class Event(models.Model):
     _inherit = "event.event"
 
     @api.one
@@ -143,7 +144,7 @@ class event_event(models.Model):
 
     @api.one
     def _get_new_menu_pages(self):
-        result = super(event_event, self)._get_new_menu_pages()[0]  # TDE CHECK api.one -> returns a list with one item ?
+        result = super(Event, self)._get_new_menu_pages()[0]  # TDE CHECK api.one -> returns a list with one item ?
         if self.show_tracks:
             result.append((_('Talks'), '/event/%s/track' % slug(self)))
             result.append((_('Agenda'), '/event/%s/agenda' % slug(self)))
@@ -154,7 +155,7 @@ class event_event(models.Model):
         return result
 
 
-class event_sponsors_type(models.Model):
+class EventSponsorsType(models.Model):
     _name = "event.sponsor.type"
     _order = "sequence"
 
@@ -162,7 +163,7 @@ class event_sponsors_type(models.Model):
     sequence = fields.Integer('Sequence')
 
 
-class event_sponsors(models.Model):
+class EventSponsors(models.Model):
     _name = "event.sponsor"
     _order = "sequence"
 
