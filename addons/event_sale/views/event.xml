@@ -1,6 +1,5 @@
-<?xml version="1.0"?>
-<openerp>
-    <data>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
 
         <record model="ir.ui.view" id="view_event_registration_ticket_search">
             <field name="name">event.registration.ticket.search</field>
@@ -44,7 +43,7 @@
         </record>
         
         <record model="ir.ui.view" id="view_event_form_inherit_ticket">
-            <field name="name">view_event_form_inherit_tichet</field>
+            <field name="name">event.form.inherit</field>
             <field name="model">event.event</field>
             <field name="inherit_id" ref="event.view_event_form"/>
             <field name="arch" type="xml">
@@ -75,5 +74,4 @@
                </data>
             </field>
         </record>
-    </data>
-</openerp>
+</odoo>
