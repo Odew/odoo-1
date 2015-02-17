@@ -161,8 +161,8 @@
     <xpath expr="//*[@name='blog_post_data']" position="inside">
         <p class="post-meta text-muted text-center" t-if="len(blog_post.tag_ids)">
             <span class="fa fa-tags"/>
-            <t t-foreach="blog_post.tag_ids" t-as="tag">
-                <a t-attf-href="#{blog_url(tag=tag)}" t-esc="tag.name"/> &amp;nbsp;
+            <t t-foreach="blog_post.tag_ids" t-as="t">
+                <a t-attf-href="#{blog_url(tag=t)}" t-esc="t.name"/> &amp;nbsp;
             </t>
         </p>
     </xpath>
