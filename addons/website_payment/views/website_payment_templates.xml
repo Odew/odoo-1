@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<!-- Page -->
-<data>
+<odoo>
 <template id="cc_form" name="Paypal (Test)" page="True">
     <div class="row">
         <h3>Paypal payment: server 2 server</h3>
@@ -27,5 +25,4 @@
         </form>
     </div>
 </template>
-</data>
-</openerp>
+</odoo>

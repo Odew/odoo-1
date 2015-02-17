@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data>
+<odoo>
         <record id="website_settings_payment" model="ir.ui.view">
             <field name="name">website.form</field>
             <field name="model">website</field>
@@ -18,5 +17,4 @@
                 </xpath>
             </field>
         </record>
-    </data>
-</openerp>
+</odoo>
