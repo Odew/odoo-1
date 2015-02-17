@@ -1257,3 +1257,11 @@ class product_template(osv.Model):
         'sales_count': fields.function(_sales_count, string='# Sales', type='integer'),
 
     }
+
+
+class account_invoice_line(osv.Model):
+    _inherit = 'account.invoice.line'
+
+    _columns= {
+        'sale_line_ids': fields.many2many('sale.order.line', 'sale_order_line_invoice_rel', 'invoice_id', 'order_line_id', 'Sale Order Lines', readonly=True, copy=False)
+    }

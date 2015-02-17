@@ -1657,7 +1657,6 @@ class account_invoice_line(osv.Model):
     """ Override account_invoice_line to add the link to the purchase order line it is related to"""
     _inherit = 'account.invoice.line'
     _columns = {
-        'purchase_line_id': fields.many2one('purchase.order.line',
-            'Purchase Order Line', ondelete='set null', select=True,
-            readonly=True),
+        'purchase_line_ids': fields.many2many('purchase.order.line', 'purchase_order_line_invoice_rel', 'invoice_id','order_line_id',
+                                              'Purchase Order Lines', readonly=True, copy=False)
     }
