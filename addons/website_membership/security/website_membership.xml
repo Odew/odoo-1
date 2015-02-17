@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
-    <record id="membership_product_product_public" model="ir.rule">
+<odoo>
+    <record id="membership_product_product_public_rule" model="ir.rule">
         <field name="name">Product membership: Public</field>
         <field name="model_id" ref="product.model_product_template"/>
         <field name="domain_force">[('website_published', '=', True), ('product_variant_ids.membership', '=', True)]</field>
@@ -21,5 +20,4 @@
         <field name="perm_create" eval="False"/>
         <field name="perm_unlink" eval="False"/>
     </record>
-</data>
-</openerp>
+</odoo>

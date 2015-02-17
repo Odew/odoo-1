@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 {
     'name': 'Associations: Members',
     'summary': 'Online Directory of Members',
@@ -8,7 +9,7 @@
 Website for browsing Associations, Groups and Memberships
 =========================================================
 """,
-    'author': 'OpenERP SA',
+    'author': 'Odoo S.A.',
     'depends': ['website_partner', 'website_google_map', 'association', 'website_sale'],
     'data': [
         'views/website_membership.xml',
@@ -16,6 +17,5 @@ Website for browsing Associations, Groups and Memberships
         'security/website_membership.xml',
     ],
     'demo': ['demo/membership.xml'],
-    'qweb': ['static/src/xml/*.xml'],
     'installable': True,
 }
