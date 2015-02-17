@@ -189,6 +189,9 @@ var QWeb2 = {
                 }
 
                 _.each(Object.keys(old_dict), function(z) {
+                    if (z == as) {
+                        console.log('JKE-JS-ERROR-' + as);
+                    }
                     old_dict[z] = new_dict[z];
                 });
             } else {

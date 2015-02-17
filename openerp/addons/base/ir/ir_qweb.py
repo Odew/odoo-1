@@ -416,6 +416,8 @@ class QWeb(orm.AbstractModel):
             ru.append(self.render_element(element, template_attributes, generated_attributes, copy_qwebcontext))
 
         for k in qwebcontext.keys():
+            if k == varname:
+                print "JKE-PY-ERROR-%s" % varname
             qwebcontext[k] = copy_qwebcontext[k]
 
         return "".join(ru)
