@@ -1,17 +1,16 @@
 <?xml version="1.0"?>
-<openerp>
-    <data>
+<odoo>
         <record model="ir.ui.view" id="sale_order_form_quote">
-            <field name="name">sale.order.form.payment</field>
+            <field name="name">sale.order.form.payment.inherit</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//header/button[@name='action_button_confirm']" position="before">
-                    <button name="open_quotation" string="Preview Quotation" type="object" class="oe_highlight"
+                    <button name="action_open_quotation" string="Preview Quotation" type="object" class="oe_highlight"
                         attrs="{'invisible': ['|','&amp;',('template_id','=',False),('state','=','draft'),('quote_viewed','=',True)]}"/>
                 </xpath>
                 <xpath expr="//header/button[@name='action_button_confirm']" position="before">
-                    <button name="open_quotation" string="Preview Quotation" type="object" 
+                    <button name="action_open_quotation" string="Preview Quotation" type="object" 
                         attrs="{'invisible': ['|','&amp;',('template_id','=',False),('state','!=','draft'),('quote_viewed','=',False)]}"/>
                 </xpath>
                 <xpath expr="//header/button[@name='action_quotation_send'][1]" position="replace">
@@ -31,7 +30,7 @@
                         <field name="quote_viewed" invisible="1"/>
                         <field name="options">
                             <tree string="Sales Quotation Template Lines" editable="bottom">
-                                    <field name="product_id" on_change="on_change_product_id(product_id)"/>
+                                    <field name="product_id"/>
                                     <field name="name"/>
                                     <field name="quantity"/>
                                     <field name="uom_id" groups="product.group_uom"/>
@@ -43,7 +42,7 @@
                     </page>
                 </xpath>
                 <xpath expr="//field[@name='payment_term']" position="after">
-                    <field name="template_id" on_change="onchange_template_id(template_id, partner_id, fiscal_position)"/>                    
+                    <field name="template_id"/>
                 </xpath>
                 <xpath expr="//field[@name='client_order_ref']" position="after">
                     <field name="website_description" invisible="1"/>
@@ -58,7 +57,7 @@
             <field name="arch" type="xml">
                 <form string="Sale Quotation Template">
                     <sheet>
-                        <button string="Edit Template" type="object" name="open_template" class="oe_highlight oe_right"/>
+                        <button string="Edit Template" type="object" name="action_open_template" class="oe_highlight oe_right"/>
                         <div class="oe_title">
                             <label for="name" class="oe_edit_only"/>
                             <h1>
@@ -79,7 +78,7 @@
                                 <form string="Sales Quotation Template Lines">
                                     <group>
                                         <group>
-                                            <field name="product_id" on_change="on_change_product_id(product_id)"/>
+                                            <field name="product_id"/>
                                             <label for="product_uom_qty"/>
                                             <div>
                                                 <field
@@ -103,7 +102,7 @@
                                 </form>
                                 <tree string="Sales Quotation Template Lines" editable="bottom">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="product_id" on_change="on_change_product_id(product_id)"/>
+                                    <field name="product_id"/>
                                     <field name="name"/>
                                     <field name="product_uom_qty"/>
                                     <field name="product_uom_id" groups="product.group_uom"/>
@@ -116,7 +115,7 @@
                         <page string="Suggested Products">
                             <field name="options">
                               <tree string="Sales Quotation Template Lines" editable="bottom">
-                                <field name="product_id" on_change="on_change_product_id(product_id)"/>
+                                <field name="product_id"/>
                                 <field name="name"/>
                                 <field name="quantity"/>
                                 <field name="uom_id" groups="product.group_uom"/>
@@ -178,5 +177,4 @@
         </record>
 
         <menuitem action="action_sale_quotation_template" id="menu_sale_quote_template" parent="base.menu_sales_config" sequence="1" name="Quotation Templates" groups="base.group_sale_salesman,base.group_sale_manager"/>
-    </data>
-</openerp>
+</odoo>

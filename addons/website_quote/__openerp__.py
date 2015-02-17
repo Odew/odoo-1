@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 {
     'name': 'Online Proposals',
     'category': 'Website',
@@ -5,11 +7,11 @@
     'website': 'https://www.odoo.com/page/quote-builder',
     'version': '1.0',
     'description': """
-OpenERP Sale Quote Roller
+Odoo Sale Quote Roller
 =========================
 
         """,
-    'author': 'OpenERP SA',
+    'author': 'Odoo SA',
     'depends': ['website', 'sale', 'mail', 'web_tip'],
     'data': [
         'quotation_report.xml',
