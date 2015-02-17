@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 {
     'name': 'Website Google Map',
     'category': 'Hidden',
@@ -8,11 +10,10 @@ OpenERP Website Google Map
 ==========================
 
         """,
-    'author': 'OpenERP SA',
+    'author': 'Odoo SA',
     'depends': ['base_geolocalize', 'website_partner', 'crm_partner_assign'],
     'data': [
         'views/google_map.xml',
     ],
     'installable': True,
-    'auto_install': False,
 }
