@@ -189,7 +189,9 @@ var QWeb2 = {
                 }
 
                 _.each(Object.keys(old_dict), function(z) {
-                    old_dict[z] = new_dict[z];
+                    if (z!=as){
+                        old_dict[z] = new_dict[z];
+                    }
                 });
             } else {
                 this.exception("No enumerator given to foreach", context);
