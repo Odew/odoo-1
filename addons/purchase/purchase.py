@@ -1620,6 +1620,12 @@ class account_invoice(osv.Model):
         orders, logging the invoice receipt or payment. """
     _inherit = 'account.invoice'
 
+    _columns = {
+        'purchase_ids': fields.many2many('purchase.order', 'purchase_invoice_rel', 'invoice_id',
+                                        'purchase_id', 'Purchases', copy=False,
+                                        help="Purchases linked to this invoice")
+    }
+
     def invoice_validate(self, cr, uid, ids, context=None):
         res = super(account_invoice, self).invoice_validate(cr, uid, ids, context=context)
         purchase_order_obj = self.pool.get('purchase.order')
@@ -1652,6 +1658,7 @@ class account_invoice(osv.Model):
         for po_id in po_ids:
             purchase_order_obj.message_post(cr, user_id, po_id, body=_("Invoice paid"), context=context)
         return res
+
 
 class account_invoice_line(osv.Model):
     """ Override account_invoice_line to add the link to the purchase order line it is related to"""

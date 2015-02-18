@@ -464,12 +464,18 @@ class stock_picking(osv.osv):
         'sale_id': fields.function(_get_sale_id, type="many2one", relation="sale.order", string="Sale Order"),
     }
 
-    def _create_invoice_from_picking(self, cr, uid, picking, vals, context=None):
+    def _prepare_invoice_from_picking(self, cr, uid, picking, vals, context=None):
         sale_obj = self.pool.get('sale.order')
         sale_line_obj = self.pool.get('sale.order.line')
         invoice_line_obj = self.pool.get('account.invoice.line')
-        invoice_id = super(stock_picking, self)._create_invoice_from_picking(cr, uid, picking, vals, context=context)
-        return invoice_id
+        invoice_vals = super(stock_picking, self)._prepare_invoice_from_picking(cr, uid, picking, vals, context=context)
+        if picking.group_id:
+            sale_ids = sale_obj.search(cr, uid, [('procurement_group_id', '=', picking.group_id.id)], context=context)
+            if sale_ids:
+                sale_line_ids = sale_line_obj.search(cr, uid, [('order_id', 'in', sale_ids), ('product_id.type', '=', 'service'), ('invoiced', '=', False)], context=context)
+                if sale_line_ids:
+                    invoice_line_data = sale_line_obj.invoice_line_create(cr, uid, sale_line_ids, context=context)
+        return invoice_vals
 
     def _get_invoice_vals(self, cr, uid, key, inv_type, journal_id, move, context=None):
         inv_vals = super(stock_picking, self)._get_invoice_vals(cr, uid, key, inv_type, journal_id, move, context=context)

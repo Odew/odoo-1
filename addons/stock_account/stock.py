@@ -250,7 +250,7 @@ class stock_picking(osv.osv):
             invoices += self._invoice_create_line(cr, uid, moves, journal_id, type, context=context)
         return invoices
 
-    def _get_invoice_vals(self, cr, uid, key, inv_type, journal_id, move, context=None):
+    def _get_invoice_vals(self, cr, uid, key, inv_type, journal_id, moves, context=None):
         if context is None:
             context = {}
         partner, currency_id, company_id, user_id = key
@@ -278,34 +278,51 @@ class stock_picking(osv.osv):
         invoice_obj = self.pool.get('account.invoice')
         move_obj = self.pool.get('stock.move')
         invoices = {}
+        invoices_moves = {}
+        # First group by inoices
         for move in moves:
             company = move.company_id
-            origin = move.picking_id.name
-            partner, _user_id, currency_id = move_obj._get_master_data(cr, uid, move, company, context=context)
+            #origin = move.picking_id.name
+            partner, user_id, currency_id = move_obj._get_master_data(cr, uid, move, company, context=context)
+            key = (partner, currency_id, company.id, uid) #Force user to be current user instead
 
-            # Force user_id to be current user, to avoid creating multiple invoices when lines
-            # have been sold by different salesmen
-            _user_id = uid
 
-            key = (partner, currency_id, company.id, _user_id)
-            invoice_vals = self._get_invoice_vals(cr, uid, key, inv_type, journal_id, move, context=context)
-
-            if key not in invoices:
-                # Get account and payment terms
-                invoice_id = self._create_invoice_from_picking(cr, uid, move.picking_id, invoice_vals, context=context)
-                invoices[key] = invoice_id
+            if key not in invoices_moves:
+                invoices_moves[key] = [move]
             else:
-                invoice = invoice_obj.browse(cr, uid, invoices[key], context=context)
-                if not invoice.origin or invoice_vals['origin'] not in invoice.origin.split(', '):
-                    invoice_origin = filter(None, [invoice.origin, invoice_vals['origin']])
-                    invoice.write({'origin': ', '.join(invoice_origin)})
+                invoices_moves[key] += [move]
+
+        for key in invoices_moves.keys():
+            # Get account and payment terms
+            moves_key = invoices_moves[key]
+            invoice_vals = self._get_invoice_vals(cr, uid, key, inv_type, journal_id, moves_key, context=context)
+            partner, currency_id, company_id, user_id = key
+            invoice_line_vals = []
+            for move in moves_key:
+                line_vals = move_obj._get_invoice_line_vals(cr, uid, move, partner, inv_type, context=context)
+                invoice_line_vals += [(0, 0, line_vals)]
+            invoice_vals['invoice_line'] = invoice_line_vals
+            move_obj.write(cr, uid, [x.id for x in moves_key], {'invoice_state': 'invoiced'}, context=context)
+            # Finally create invoice
+
+
+
+
+            else:
+                inv = invoices[key]
+                if not inv['origin'] or origin not in inv['origin'].split(', '):
+                #if not invoice.origin or invoice_vals['origin'] not in invoice.origin.split(', '):
+                    invoice_origin = filter(None, [inv['origin'], invoice_vals['origin']])
+                    invoices[key]['origin'] = ', '.join(invoice_origin)
 
             invoice_line_vals = move_obj._get_invoice_line_vals(cr, uid, move, partner, inv_type, context=context)
             invoice_line_vals['invoice_id'] = invoices[key]
             invoice_line_vals['origin'] = origin
 
-            move_obj._create_invoice_line_from_vals(cr, uid, move, invoice_line_vals, context=context)
+            #move_obj._create_invoice_line_from_vals(cr, uid, move, invoice_line_vals, context=context)
             move_obj.write(cr, uid, move.id, {'invoice_state': 'invoiced'}, context=context)
+
+        #Create invoice at once where all the line values (sale_lines / purchase_lines) should go into
 
         invoice_obj.button_compute(cr, uid, invoices.values(), context=context, set_total=(inv_type in ('in_invoice', 'in_refund')))
         return invoices.values()
