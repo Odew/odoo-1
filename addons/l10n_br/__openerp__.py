@@ -64,12 +64,11 @@ come with any additional paid permission for online use of 'private modules'.
     'version': '0.6',
     'depends': ['account'],
     'data': [
-                'data/account.account.type.csv',
-                'data/account.account.template.csv',
                 'data/account_chart_template.xml',
+                'data/account.account.template.csv',
                 'data/account_tax_template.xml',
                 'account_view.xml',
                 'l10n_br_wizard.xml',
     ],
-    'installable': False,
+    'installable': True,
 }
