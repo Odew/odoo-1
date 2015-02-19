@@ -169,39 +169,37 @@ var WebClient = Widget.extend({
         document.title = tmp;
     },
     show_application: function() {
-        var self = this;
-        self.toggle_bars(true);
+        this.toggle_bars(true);
 
-        self.update_logo();
+        this.update_logo();
 
         // Menu is rendered server-side thus we don't want the widget to create any dom
-        self.menu = new Menu(self);
-        self.menu.setElement(this.$el.parents().find('.oe_application_menu_placeholder'));
-        self.menu.on('menu_click', this, this.on_menu_action);
+        this.menu = new Menu(this);
+        this.menu.setElement(this.$('.oe_application_menu_placeholder'),
+            this.$('.oe_secondary_menus_container'), this.$('.o-menu-slide'), this.$('.o-menu-brand'));
+        this.menu.on('menu_click', this, this.on_menu_action);
 
         // Create the user menu (rendered client-side)
-        self.user_menu = new UserMenu(self);
-        var user_menu_loaded = self.user_menu.appendTo(this.$el.parents().find('.oe_user_menu_placeholder'));
-        self.user_menu.on('user_logout', self, self.on_logout);
-        self.user_menu.do_update();
+        this.user_menu = new UserMenu(this);
+        var user_menu_loaded = this.user_menu.appendTo(this.$('.oe_user_menu_placeholder'));
+        this.user_menu.on('user_logout', this, this.on_logout);
+        this.user_menu.do_update();
 
         // Create the systray menu (rendered server-side)
-        self.systray_menu = new SystrayMenu(self);
-        self.systray_menu.setElement(this.$el.parents().find('.oe_systray'));
-        var systray_menu_loaded = self.systray_menu.start();
+        this.systray_menu = new SystrayMenu(this);
+        this.systray_menu.setElement(this.$('.oe_systray'));
+        var systray_menu_loaded = this.systray_menu.start();
 
         // Start the menu once both systray and user menus are rendered
         // to prevent overflows while loading
-        $.when(systray_menu_loaded, user_menu_loaded).done(function() {
-            self.menu.start();
-        });
+        $.when(systray_menu_loaded, user_menu_loaded).done(this.menu.start.bind(this.menu));
 
-        self.bind_hashchange();
-        self.set_title();
-        self.check_timezone();
-        if (self.client_options.action_post_login) {
-            self.action_manager.do_action(self.client_options.action_post_login);
-            delete(self.client_options.action_post_login);
+        this.bind_hashchange();
+        this.set_title();
+        this.check_timezone();
+        if (this.client_options.action_post_login) {
+            this.action_manager.do_action(this.client_options.action_post_login);
+            delete(this.client_options.action_post_login);
         }
     },
     update_logo: function() {
@@ -303,14 +301,12 @@ var WebClient = Widget.extend({
         if (_.isEmpty(state) || state.action == "login") {
             self.menu.is_bound.done(function() {
                 new Model("res.users").call("read", [session.uid, ["action_id"]]).done(function(data) {
-                    if(data.action_id) {
+                    if (data.action_id) {
                         self.action_manager.do_action(data.action_id[0]);
-                        self.menu.open_action(data.action_id[0]);
+                        self.menu.decorate_action(data.action_id[0]);
                     } else {
-                        var first_menu_id = self.menu.$el.find("a:first").data("menu");
-                        if(first_menu_id) {
-                            self.menu.menu_click(first_menu_id);
-                        }                    }
+                         self.menu.open_default_action();
+                    }
                 });
             });
         } else {
@@ -324,7 +320,7 @@ var WebClient = Widget.extend({
             var state = event.getState(true);
             if(!state.action && state.menu_id) {
                 self.menu.is_bound.done(function() {
-                    self.menu.menu_click(state.menu_id);
+                    self.menu.open_menu(state.menu_id);
                 });
             } else {
                 state._push_me = false;  // no need to push state back...
@@ -375,6 +371,16 @@ var WebClient = Widget.extend({
         this.$('.oe_webclient').toggleClass(
             'oe_content_full_screen', fullscreen);
     },
+     /**
+     * Toggle the display of a pseudo-element on the webclient.
+     * @param state: optional
+     */
+     toggle_overlay: function (state) {
+         this.$('.o-web-client').toggleClass('overlay', state);
+     },
+     overlay_shown: function () {
+         return this.$('.o-web-client').hasClass('overlay');
+     },
 });
 
 return WebClient;

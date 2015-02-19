@@ -1,19 +1,88 @@
 // ------------------------------------------------------------------
 // Base layout
 // ------------------------------------------------------------------
+// Variables
 @navbar-height: 33px;
+@o-menu-width: 220px;
+@o-menu-width-mobile: 100%;
+// Note: tooltip's z-indexes are the highest z-indexes
+@o-primary-menu-zindex: @zindex-tooltip + 3;
+@o-secondary-menu-zindex: @zindex-tooltip + 2;
+@o-overlay-zindex: @zindex-tooltip + 1;
 
+// Mixins
+.o-menu-boilerplate() {
+    position: absolute;
+    top: @navbar-height + 1;
+    bottom: 0;
+    width: @o-menu-width;
+    overflow: auto;
+}
+
+// Rules
 html {
     height: 100%;
 
     body {
         height: 100%;
 
+        .o-primary-menu {
+            z-index: @o-primary-menu-zindex;
+            .o-menu-boilerplate;
+            left: -@o-menu-width;
+
+            &.slided {
+                left: 0;
+            }
+
+            @media (max-width: @screen-xs-max) {
+                width: @o-menu-width-mobile;
+                left: -2 * @o-menu-width-mobile;
+
+                &.slided {
+                    left: 0;
+                }
+            }
+        }
+
+        .o-secondary-menu {
+            z-index: @o-secondary-menu-zindex;
+            .o-menu-boilerplate;
+            left: 0;
+
+            &.slided {
+                left: @o-menu-width;
+            }
+
+            @media (max-width: @screen-xs-max) {
+                width: @o-menu-width-mobile;
+                left: -@o-menu-width-mobile;
+
+                &.slided {
+                    left: 0;
+                }
+            }
+        }
+
         .o-web-client {
             height: 100%;
             padding-top: @navbar-height;
+            margin-left: @o-menu-width;
             @media (max-width: @grid-float-breakpoint) {
                 height: auto;
+                margin-left: 0;
+            }
+
+            // Pseudo-element used for the overlay
+            &.overlay:after {
+                content: "";
+                display: block;
+                position: absolute;
+                top: @navbar-height;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                z-index: @o-overlay-zindex;
             }
 
             .o-web-client-row {
@@ -21,12 +90,6 @@ html {
                 @media (max-width: @grid-float-breakpoint) {
                     height: auto;
                 }
-
-                .o-secondary-menu {
-                    height: 100%;
-                    overflow: auto;
-                }
-
                 .o-action-manager {
                     height: 100%;
                     .o-flex-display();
@@ -52,56 +115,12 @@ html {
 
 
 // ------------------------------------------------------------------
-// Sidebar
-// ------------------------------------------------------------------
-// Patch the base layout in mobile mode to handle sidebar
-// Note: largely inspired of http://getbootstrap.com/examples/offcanvas/
-html {
-    body {
-        overflow-x: auto;
-        @media (max-width: @grid-float-breakpoint) {
-            overflow-x: hidden;  // hide horizontal scrollbar
-        }
-
-        .o-web-client-row {
-            position: static;
-            @media (max-width: @grid-float-breakpoint) {
-                position: relative;  // the main row becomes relative
-                left: 0;
-                .transition(all .5s ease-out);
-            }
-
-            .o-secondary-menu {
-                position: relative;
-                @media (max-width: @grid-float-breakpoint) {
-                    position: absolute;
-                    left: -50%;
-                    top: 0;
-                    width: 50%;
-                }
-            }
-        }
-
-        .o-web-client-row.js_o-secondary-menu-shown {
-            @media (max-width: @grid-float-breakpoint) {
-                left: 50%;
-            }
-        }
-    }
-}
-
-
-// ------------------------------------------------------------------
 // Cross-browser compatibility fixes
 // ------------------------------------------------------------------
 // As Internet Explorer 8 and 9 do not handle flexbox, we chose to drop the .o-action-manager
 // logic with the inner scrollbar and leave all the page scrollbale (still with a fixed navbar).
 .ie9 {
     .o-web-client-row {
-        height: auto !important;
-    }
-
-    .o-secondary-menu {
         height: auto !important;
     }
 }
