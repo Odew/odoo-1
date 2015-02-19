@@ -190,23 +190,20 @@
         </template>
 
         <template id="web.menu">
-            <ul class="nav navbar-nav navbar-left oe_application_menu_placeholder">
+            <ul class="nav nav-pills nav-stacked oe_application_menu_placeholder">
                 <li t-foreach="menu_data['children']" t-as="menu">
                     <t t-call="web.menu_link"/>
                 </li>
-                <li id="menu_more_container" class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">More <b class="caret"></b></a>
-                    <ul id="menu_more" class="dropdown-menu"></ul>
-                </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right oe_user_menu_placeholder"/>
-            <ul class="nav navbar-nav navbar-right oe_systray"/>
         </template>
         <template id="web.menu_secondary">
             <a class="oe_logo" t-att-href="'/web/?debug' if debug else '/web'">
                 <span class="oe_logo_edit">Edit Company data</span>
                 <img src='/web/binary/company_logo'/>
             </a>
+            <ul class="nav nav-pills nav-stacked visible-xs">
+                <li><a href="#" class="oe_applications_link">Applications</a></li>
+            </ul>
             <div class="oe_secondary_menus_container">
                 <t t-foreach="menu_data['children']" t-as="menu">
                     <div class="oe_secondary_menu" t-att-data-menu-parent="menu['id']">
@@ -396,28 +393,33 @@
             <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" groups="base.group_user,base.group_portal">
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
+                        <ul class="nav navbar-nav">
+                            <li class="o-menu-slide">
+                                <a class="navbar-brand" href="#">
+                                    <i class="fa fa-bars"/>
+                                    <span class="o-menu-brand"/>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                    <div class="navbar-collapse collapse">
-                        <t t-call="web.menu"/>
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav navbar-right oe_systray"/>
                     </div>
                 </div>
             </nav>
 
+            <nav class="o-primary-menu" role="navigation" groups="base.group_user,base.group_portal">
+                <div class="oe_user_menu_placeholder"/>
+                <t t-call="web.menu"/>
+            </nav>
+
+            <nav class="o-secondary-menu" role="navigation" groups="base.group_user,base.group_portal">
+                <t t-call="web.menu_secondary"/>
+            </nav>
+
             <div class="container-fluid o-web-client">
                 <div class="row o-web-client-row">
-                    <div class="col-xs-6 col-sm-2 o-secondary-menu" groups="base.group_user,base.group_portal">
-                        <t t-call="web.menu_secondary"/>
-                    </div>
-                    <div class="col-xs-12 col-sm-10 o-action-manager">
-                            <button type="button"
-                                class="btn btn-default visible-xs"
-                                data-toggle="offcanvas">Toggle nav</button>
-                    </div>
+                    <div class="col-sm-12 o-action-manager"></div>
                 </div>
             </div>
         </body>

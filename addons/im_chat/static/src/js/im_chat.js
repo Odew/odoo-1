@@ -1,5 +1,6 @@
 odoo.define('im_chat.im_chat', function (require) {
 "use strict";
+return;
 
 // to do: make this work in website
 
