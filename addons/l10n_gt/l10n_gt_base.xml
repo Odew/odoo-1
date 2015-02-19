@@ -8,9 +8,6 @@
         <!-- Plantilla de cuentas -->
 
         <record id="cuentas_plantilla" model="account.chart.template">
-            <field name="name">Plantilla de cuentas de Guatemala (sencilla)</field>
-            <field name="account_root_id" ref="plan_raiz"/>
-            <field name="bank_account_view_id" ref="cta1101"/>
             <field name="property_account_receivable" ref="cta110201"/>
             <field name="property_account_payable" ref="cta210101"/>
             <field name="property_account_income_categ" ref="cta410101"/>
@@ -23,10 +20,10 @@
         <record id="impuestos_plantilla_iva_por_cobrar" model="account.tax.template">
             <field name="chart_template_id" ref="cuentas_plantilla"/>
             <field name="name">IVA por Cobrar</field>
-            <field name="amount" eval="0.12"/>
-            <field name="type">percent</field>
-            <field name="account_collected_id" ref="cta110301"/>
-            <field name="account_paid_id" ref="cta110301"/>
+            <field name="amount" eval="12"/>
+            <field name="amount_type">percent</field>
+            <field name="refund_account_id" ref="cta110301"/>
+            <field name="account_id" ref="cta110301"/>
             <field name="type_tax_use">purchase</field>
             <field name="price_include" eval="True"/>
         </record>
@@ -36,10 +33,10 @@
         <record id="impuestos_plantilla_iva_por_pagar" model="account.tax.template">
             <field name="chart_template_id" ref="cuentas_plantilla"/>
             <field name="name">IVA por Pagar</field>
-            <field name="amount" eval="0.12"/>
-            <field name="type">percent</field>
-            <field name="account_collected_id" ref="cta210201"/>
-            <field name="account_paid_id" ref="cta210201"/>
+            <field name="amount" eval="12"/>
+            <field name="amount_type">percent</field>
+            <field name="refund_account_id" ref="cta210201"/>
+            <field name="account_id" ref="cta210201"/>
             <field name="type_tax_use">sale</field>
             <field name="price_include" eval="True"/>
         </record>
