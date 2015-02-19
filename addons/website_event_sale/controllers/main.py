@@ -63,16 +63,11 @@ class website_event(website_event):
 
         return request.redirect("/shop/checkout")
 
-    def _add_event(self, event_name="New Event", context={}, **kwargs):
-        try:
-            dummy, res_id = request.registry.get('ir.model.data').get_object_reference(request.cr, request.uid, 'event_sale', 'product_product_event')
-            context['default_event_ticket_ids'] = [[0, 0, {
-                'name': _('Subscription'),
-                'product_id': res_id,
-                'deadline': False,
-                'seats_max': 1000,
-                'price': 0,
-            }]]
-        except ValueError:
-            pass
-        return super(website_event, self)._add_event(event_name, context, **kwargs)
+    def _add_event(self, event_name="New Event"):
+        event = super(website_event, self)._add_event(event_name)
+
+        event.event_ticket_ids.write({
+            'deadline': False,
+            'seats_max': 1000,
+        })
+        return event

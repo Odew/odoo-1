@@ -2,7 +2,7 @@
 
 import re
 
-from openerp import models, fields, api, _
+from openerp import api, fields, models, _
 from openerp.addons.website.models.website import slug
 
 
@@ -25,7 +25,7 @@ class Event(models.Model):
     @api.multi
     @api.depends('name')
     def _website_url(self, name, arg):
-        res = super(event, self)._website_url(name, arg)
+        res = super(Event, self)._website_url(name, arg)
         res.update({(e.id, '/event/%s' % slug(e)) for e in self})
         return res
 
@@ -73,11 +73,13 @@ class Event(models.Model):
         self.show_menu = bool(self.menu_id)
 
     def google_map_img(self, zoom=8, width=298, height=298):
+        self.ensure_one()
         if self.address_id:
             return self.sudo().address_id.google_map_img()
         return None
 
     def google_map_link(self, zoom=8):
+        self.ensure_one()
         if self.address_id:
             return self.sudo().address_id.google_map_link()
         return None
@@ -89,4 +91,4 @@ class Event(models.Model):
             return 'website_event.mt_event_published'
         elif 'website_published' in init_values and not self.website_published:
             return 'website_event.mt_event_unpublished'
-        return super(event, self)._track_subtype(init_values)
+        return super(Event, self)._track_subtype(init_values)

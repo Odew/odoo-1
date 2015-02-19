@@ -5,9 +5,10 @@ import werkzeug
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
-from openerp import http, tools, _
+from openerp import http, _
 from openerp.addons.website.models.website import slug
 from openerp.http import request
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT as DF, DEFAULT_SERVER_DATETIME_FORMAT as DTF
 
 
 class website_event(http.Controller):
@@ -15,7 +16,6 @@ class website_event(http.Controller):
     def events(self, page=1, **searches):
         Event = request.env['event.event']
         EventType = request.env['event.type']
-        Country = request.env['res.country']
 
         searches.setdefault('date', 'all')
         searches.setdefault('type', 'all')
@@ -24,10 +24,10 @@ class website_event(http.Controller):
         domain_search = {}
 
         def sdn(date):
-            return date.replace(hour=23, minute=59, second=59).strftime(tools.DEFAULT_SERVER_DATETIME_FORMAT)
+            return date.replace(hour=23, minute=59, second=59).strftime(DTF)
 
         def sd(date):
-            return date.strftime(tools.DEFAULT_SERVER_DATETIME_FORMAT)
+            return date.strftime(DTF)
         today = datetime.today()
         dates = [
             ['all', _('Next Events'), [("date_end", ">", sd(today))], 0],
@@ -45,14 +45,14 @@ class website_event(http.Controller):
                 0],
             ['month', _('This month'), [
                 ("date_end", ">=", sd(today.replace(day=1))),
-                ("date_begin", "<", (today.replace(day=1) + relativedelta(months=1)).strftime('%Y-%m-%d 00:00:00'))],
+                ("date_begin", "<", (today.replace(day=1) + relativedelta(months=1)).strftime('%s 00:00:00' % DF))],
                 0],
             ['nextmonth', _('Next month'), [
                 ("date_end", ">=", sd(today.replace(day=1) + relativedelta(months=1))),
-                ("date_begin", "<", (today.replace(day=1) + relativedelta(months=2)).strftime('%Y-%m-%d 00:00:00'))],
+                ("date_begin", "<", (today.replace(day=1) + relativedelta(months=2)).strftime('%s 00:00:00' % DF))],
                 0],
             ['old', _('Old Events'), [
-                ("date_end", "<", today.strftime('%Y-%m-%d 00:00:00'))],
+                ("date_end", "<", today.strftime('%s 00:00:00' % DF))],
                 0],
         ]
 
@@ -71,7 +71,7 @@ class website_event(http.Controller):
             domain_search["type"] = [("type", "=", int(searches["type"]))]
 
         if searches["country"] != 'all' and searches["country"] != 'online':
-            current_country = Country.browse(int(searches['country']))
+            current_country = request.env['res.country'].browse(int(searches['country']))
             domain_search["country"] = ['|', ("country_id", "=", int(searches["country"])), ("country_id", "=", False)]
         elif searches["country"] == 'online':
             domain_search["country"] = [("country_id", "=", False)]
@@ -117,13 +117,13 @@ class website_event(http.Controller):
         order = 'website_published desc, date_begin'
         if searches.get('date', 'all') == 'old':
             order = 'website_published desc, date_begin desc'
-        events_ids = Event.search(dom_without("none"), limit=step, offset=pager['offset'], order=order)
+        events = Event.search(dom_without("none"), limit=step, offset=pager['offset'], order=order)
 
         values = {
             'current_date': current_date,
             'current_country': current_country,
             'current_type': current_type,
-            'event_ids': events_ids,
+            'event_ids': events,
             'dates': dates,
             'types': types,
             'countries': countries,
@@ -167,24 +167,25 @@ class website_event(http.Controller):
 
     @http.route('/event/add_event', type='http', auth="user", methods=['POST'], website=True)
     def add_event(self, event_name="New Event", **kwargs):
-        return self._add_event(event_name, request.context, **kwargs)
+        event = self._add_event(event_name)
+        return request.redirect("/event/%s/register?enable_editor=1" % slug(event))
 
-    def _add_event(self, event_name=None, context={}, **kwargs):
+    def _add_event(self, event_name=None):
         if not event_name:
             event_name = _("New Event")
         date_begin = datetime.today() + timedelta(days=(14))
         vals = {
             'name': event_name,
-            'date_begin': date_begin.strftime('%Y-%m-%d'),
-            'date_end': (date_begin + timedelta(days=(1))).strftime('%Y-%m-%d'),
+            'date_begin': date_begin.strftime(DF),
+            'date_end': (date_begin + timedelta(days=(1))).strftime(DF),
             'seats_available': 1000,
         }
-        event = request.env['event.event'].with_context(context).create(vals)
-        return request.redirect("/event/%s/register?enable_editor=1" % slug(event))
+        return request.env['event.event'].create(vals)
+
 
     def get_formated_date(self, event):
-        start_date = datetime.strptime(event.date_begin, tools.DEFAULT_SERVER_DATETIME_FORMAT).date()
-        end_date = datetime.strptime(event.date_end, tools.DEFAULT_SERVER_DATETIME_FORMAT).date()
+        start_date = datetime.strptime(event.date_begin, DTF).date()
+        end_date = datetime.strptime(event.date_end, DTF).date()
         return ('%s %s%s') % (start_date.strftime("%b"), start_date.strftime("%e"), (end_date != start_date and ("-"+end_date.strftime("%e")) or ""))
 
     @http.route('/event/get_country_event_list', type='http', auth='public', website=True)
@@ -193,14 +194,15 @@ class website_event(http.Controller):
         Event = request.env['event.event']
         country_code = request.session['geoip'].get('country_code')
         result = {'events': [], 'country': False}
+        event_ids = None
         if country_code:
-            country_ids = Country.search([('code', '=', country_code)])
-            event_ids = Event.search(['|', ('address_id', '=', None), ('country_id.code', '=', country_code), ('date_begin', '>=', time.strftime('%Y-%m-%d 00:00:00')), ('state', '=', 'confirm')], order="date_begin")
+            country_id = Country.search([('code', '=', country_code)])
+            event_ids = Event.search(['|', ('address_id', '=', None), ('country_id.code', '=', country_code), ('date_begin', '>=', time.strftime('%s 00:00:00' % DF)), ('state', '=', 'confirm')], order="date_begin")
         if not event_ids:
-            event_ids = Event.search([('date_begin', '>=', time.strftime('%Y-%m-%d 00:00:00')), ('state', '=', 'confirm')], order="date_begin")
+            event_ids = Event.search([('date_begin', '>=', time.strftime('%s 00:00:00' % DF)), ('state', '=', 'confirm')], order="date_begin")
         for event in event_ids:
             if country_code and event.country_id.code == country_code:
-                result['country'] = Country.browse(country_ids[0].id)
+                result['country'] = country_id
             result['events'].append({
                 "date": self.get_formated_date(event),
                 "event": event,
