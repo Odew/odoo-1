@@ -11,9 +11,9 @@
             <xpath expr="//body/nav" position="attributes">
                 <attribute name="groups">base.group_user,base.group_portal,share.group_shared</attribute>
             </xpath>
-            <xpath expr="//div[@class='col-xs-6 col-sm-2 o-secondary-menu']" position="attributes">
+<!--             <xpath expr="//div[@class='col-xs-6 col-sm-2 o-secondary-menu']" position="attributes">
                 <attribute name="groups">base.group_user,base.group_portal,share.group_shared</attribute>
-            </xpath>
+            </xpath> -->
         </template>
     </data>
 </openerp>

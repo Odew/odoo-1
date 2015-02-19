@@ -1661,15 +1661,7 @@ var MailWidget = Widget.extend({
     * contains the menu widget and the sub menu related of this wall
     */
     do_reload_menu_emails: function () {
-        var menu = web_client.menu;
-        if (!menu || !menu.current_menu) {
-            return $.when();
-        }
-        return menu.rpc("/web/menu/load_needaction", {'menu_ids': [menu.current_menu]}).done(function(r) {
-            menu.on_needaction_loaded(r);
-        }).then(function () {
-            menu.trigger("need_action_reloaded");
-        });
+        core.bus.trigger('do_reload_needaction');
     },
 
     /**

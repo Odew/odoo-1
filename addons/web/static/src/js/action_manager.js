@@ -372,7 +372,7 @@ var ActionManager = Widget.extend({
                     $.when(action_loaded || null).done(function() {
                         self.webclient.menu.is_bound.done(function() {
                             if (self.inner_action && self.inner_action.get_action_descr().id) {
-                                self.webclient.menu.open_action(self.inner_action.get_action_descr().id);
+                                self.webclient.menu.decorate_action(self.inner_action.get_action_descr().id);
                             }
                         });
                     });

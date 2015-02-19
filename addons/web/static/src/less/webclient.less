@@ -5,6 +5,10 @@
 @navbar-inverse-bg: #454343;
 @navbar-inverse-link-color: #fff;
 @navbar-inverse-link-hover-bg: #222;
+// GROSS
+.navbar-nav {
+    margin: 0;
+}
 @nav-link-padding: 2px 12px;
 @component-active-bg: #7c7bad;
 @brand-primary: #7c7bad;
@@ -16,13 +20,26 @@
     }
 }
 
+
 // ------------------------------------------------------------------
 // Layout
 // ------------------------------------------------------------------
-.o-secondary-menu {
-    background-color: #f5f5f5;
+.o-primary-menu, .o-secondary-menu {
+    background-color: #f5f5f5;  // FIXME: expose
     border-right: 1px solid #eee;
     border-bottom: 1px solid #eee;
+    .transition(left 0.15s);  // Slide animation
+}
+
+.o-menu-slide {
+    display: block;  // We use a `.navbar-toggle` for the menu toggler, keep it always visible. Hack.
+    float: left;
+}
+
+.o-web-client.overlay:after {
+    background-color: @navbar-inverse-bg;
+    opacity: 0.6;
+    .transition(background-color 0.15s ease);
 }
 
 .o-control-panel {
@@ -30,18 +47,18 @@
     border-bottom: 1px solid #eee;
 }
 
+
 // ------------------------------------------------------------------
 // Menus
 // ------------------------------------------------------------------
-.oe_application_menu_placeholder, #menu_more_container,
-    .oe_user_menu_placeholder, .oe_systray, .oe_secondary_menu {
+.oe_systray, .oe_secondary_menu {
     display: none;  // Needed by the webclient
 }
 
 .oe_logo {
     img {
         .center-block;
-        width: 100%;
+        width: @o-menu-width - 50px;
     }
 
     .oe_logo_edit {
@@ -63,6 +80,13 @@
         // Note: class created by the webclient
         .center-block;
     }
+
+}
+
+.oe_applications_link {
+    color: @component-active-bg;
+    font-weight: bold;
+    margin-bottom: 5px;
 }
 
 .oe_secondary_menu {
@@ -83,12 +107,15 @@
     }
 }
 
+
 // ------------------------------------------------------------------
 // Widgets
 // ------------------------------------------------------------------
 .oe_user_menu_placeholder {
+    display: none;
+    padding: 15px;
+
     .oe_topbar_avatar {
-        max-height: 18px;
-        width: 18px;
+        width: 35%;
     }
 }
