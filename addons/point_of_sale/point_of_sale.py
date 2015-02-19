@@ -21,6 +21,7 @@
 
 import logging
 import time
+import openerp
 
 from openerp import tools
 from openerp.osv import fields, osv
@@ -488,7 +489,10 @@ class pos_session(osv.osv):
 
     def wkf_action_close(self, cr, uid, ids, context=None):
         # Close CashBox
+        local_context = dict(context)
         for record in self.browse(cr, uid, ids, context=context):
+            company_id = record.config_id.company_id.id
+            local_context.update({'force_company': company_id, 'company_id': company_id})
             for st in record.statement_ids:
                 if abs(st.difference) > st.journal_id.amount_authorized_diff:
                     # The pos manager can close statements with maximums.
@@ -498,9 +502,9 @@ class pos_session(osv.osv):
                 if (st.journal_id.type not in ['bank', 'cash']):
                     raise osv.except_osv(_('Error!'), 
                         _("The type of the journal for your payment method should be bank or cash "))
-                getattr(st, 'button_confirm_%s' % st.journal_id.type)(context=context)
-        self._confirm_orders(cr, uid, ids, context=context)
-        self.write(cr, uid, ids, {'state' : 'closed'}, context=context)
+                getattr(st, 'button_confirm_%s' % st.journal_id.type)(context=local_context)
+        self._confirm_orders(cr, uid, ids, context=local_context)
+        self.write(cr, uid, ids, {'state': 'closed'}, context=local_context)
 
         obj = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'point_of_sale', 'menu_point_root')[1]
         return {
@@ -517,7 +521,7 @@ class pos_session(osv.osv):
             local_context = dict(context or {}, force_company=session.config_id.journal_id.company_id.id)
             order_ids = [order.id for order in session.order_ids if order.state == 'paid']
 
-            move_id = account_move_obj.create(cr, uid, {'ref' : session.name, 'journal_id' : session.config_id.journal_id.id, }, context=local_context)
+            move_id = account_move_obj.create(cr, openerp.SUPERUSER_ID, {'ref' : session.name, 'journal_id' : session.config_id.journal_id.id, }, context=local_context)
 
             pos_order_obj._create_account_move_line(cr, uid, order_ids, session, move_id, context=local_context)
 
@@ -625,7 +629,7 @@ class pos_order(osv.osv):
             if to_invoice:
                 self.action_invoice(cr, uid, [order_id], context)
                 order_obj = self.browse(cr, uid, order_id, context)
-                self.pool['account.invoice'].signal_workflow(cr, uid, [order_obj.invoice_id.id], 'invoice_open')
+                self.pool['account.invoice'].signal_workflow(cr, openerp.SUPERUSER_ID, [order_obj.invoice_id.id], 'invoice_open')
 
         return order_ids
 
@@ -947,6 +951,9 @@ class pos_order(osv.osv):
         inv_ids = []
 
         for order in self.pool.get('pos.order').browse(cr, uid, ids, context=context):
+            # Force company for all SUPERUSER_ID action
+            company_id = order.company_id.id
+            local_context = dict(context or {}, force_company=company_id, company_id=company_id)
             if order.invoice_id:
                 inv_ids.append(order.invoice_id.id)
                 continue
@@ -965,13 +972,15 @@ class pos_order(osv.osv):
                 'partner_id': order.partner_id.id,
                 'comment': order.note or '',
                 'currency_id': order.pricelist_id.currency_id.id, # considering partner's sale pricelist's currency
+                'company_id': company_id,
+                'period_id': self.pool['account.period'].find(cr, openerp.SUPERUSER_ID, context=local_context)[0],
             }
             inv.update(inv_ref.onchange_partner_id(cr, uid, [], 'out_invoice', order.partner_id.id)['value'])
             if not inv.get('account_id', None):
                 inv['account_id'] = acc
-            inv_id = inv_ref.create(cr, uid, inv, context=context)
+            inv_id = inv_ref.create(cr, openerp.SUPERUSER_ID, inv, context=local_context)
 
-            self.write(cr, uid, [order.id], {'invoice_id': inv_id, 'state': 'invoiced'}, context=context)
+            self.write(cr, uid, [order.id], {'invoice_id': inv_id, 'state': 'invoiced'}, context=local_context)
             inv_ids.append(inv_id)
             for line in order.lines:
                 inv_line = {
@@ -979,7 +988,7 @@ class pos_order(osv.osv):
                     'product_id': line.product_id.id,
                     'quantity': line.qty,
                 }
-                inv_name = product_obj.name_get(cr, uid, [line.product_id.id], context=context)[0][1]
+                inv_name = product_obj.name_get(cr, uid, [line.product_id.id], context=local_context)[0][1]
                 inv_line.update(inv_line_ref.product_id_change(cr, uid, [],
                                                                line.product_id.id,
                                                                line.product_id.uom_id.id,
@@ -989,10 +998,10 @@ class pos_order(osv.osv):
                 inv_line['discount'] = line.discount
                 inv_line['name'] = inv_name
                 inv_line['invoice_line_tax_id'] = [(6, 0, [x.id for x in line.product_id.taxes_id] )]
-                inv_line_ref.create(cr, uid, inv_line, context=context)
-            inv_ref.button_reset_taxes(cr, uid, [inv_id], context=context)
+                inv_line_ref.create(cr, openerp.SUPERUSER_ID, inv_line, context=local_context)
+            inv_ref.button_reset_taxes(cr, openerp.SUPERUSER_ID, [inv_id], context=local_context)
             self.signal_workflow(cr, uid, [order.id], 'invoice')
-            inv_ref.signal_workflow(cr, uid, [inv_id], 'validate')
+            inv_ref.signal_workflow(cr, openerp.SUPERUSER_ID, [inv_id], 'validate')
 
         if not inv_ids: return {}
 
@@ -1064,7 +1073,7 @@ class pos_order(osv.osv):
 
             if move_id is None:
                 # Create an entry for the sale
-                move_id = account_move_obj.create(cr, uid, {
+                move_id = account_move_obj.create(cr, openerp.SUPERUSER_ID, {
                     'ref' : order.name,
                     'journal_id': order.sale_journal.id,
                 }, context=context)
@@ -1226,7 +1235,7 @@ class pos_order(osv.osv):
             for value in group_data:
                 all_lines.append((0, 0, value),)
         if move_id: #In case no order was changed
-            self.pool.get("account.move").write(cr, uid, [move_id], {'line_id':all_lines}, context=context)
+            self.pool.get("account.move").write(cr, openerp.SUPERUSER_ID, [move_id], {'line_id':all_lines}, context=context)
 
         return True
 
