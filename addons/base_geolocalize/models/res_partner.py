@@ -1,33 +1,11 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2013_Today OpenERP SA (<http://www.openerp.com>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
-
+import urllib
 try:
     import simplejson as json
 except ImportError:
     import json     # noqa
-import urllib
 
-from openerp.osv import osv, fields
-from openerp import tools
-from openerp.tools.translate import _
+from openerp import _, api, fields, models, tools
 from openerp.exceptions import UserError
 
 
@@ -60,18 +38,17 @@ def geo_query_address(street=None, zip=None, city=None, state=None, country=None
                                               country])))
 
 
-class res_partner(osv.osv):
+class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    _columns = {
-        'partner_latitude': fields.float('Geo Latitude', digits=(16, 5)),
-        'partner_longitude': fields.float('Geo Longitude', digits=(16, 5)),
-        'date_localization': fields.date('Geo Localization Date'),
-    }
+    partner_latitude = fields.Float(string='Geo Latitude', digits=(16, 5))
+    partner_longitude = fields.Float(string='Geo Longitude', digits=(16, 5))
+    date_localization = fields.Date(string='Geo Localization Date')
 
-    def geo_localize(self, cr, uid, ids, context=None):
-        # Don't pass context to browse()! We need country names in english below
-        for partner in self.browse(cr, uid, ids):
+    @api.multi
+    def geo_localize(self):
+        # Pass context in self! We need country names in english below
+        for partner in self.with_context(lang='en_US'):
             if not partner:
                 continue
             result = geo_find(geo_query_address(street=partner.street,
@@ -80,9 +57,9 @@ class res_partner(osv.osv):
                                                 state=partner.state_id.name,
                                                 country=partner.country_id.name))
             if result:
-                self.write(cr, uid, [partner.id], {
+                partner.write({
                     'partner_latitude': result[0],
                     'partner_longitude': result[1],
-                    'date_localization': fields.date.context_today(self, cr, uid, context=context)
-                }, context=context)
+                    'date_localization': fields.Date.context_today(self)
+                })
         return True
