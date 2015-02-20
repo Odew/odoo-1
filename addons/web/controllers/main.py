@@ -1605,13 +1605,18 @@ class XMLExport(ExportFormat, http.Controller):
             The xml_id of the added or existing record.
         """
 
+
         if record.id in self.seen_ids[model]:
             return self.seen_ids[model][record.id]
 
         xml_id = record._BaseModel__export_xml_id()
         start_no_xml_id = '__export__.'
         if xml_id.startswith(start_no_xml_id):
-            xml_id = xml_id[len(start_no_xml_id):]+'_'+re.sub('[^a-zA-Z0-9-]', '_', record.name_get()[0][1])
+            name = record.name_get()
+            if name:
+                xml_id = xml_id[len(start_no_xml_id):]+'_'+re.sub('[^a-zA-Z0-9-]', '_', name[0][1])
+            else:
+                xml_id = xml_id[len(start_no_xml_id):]
         self.seen_ids[model][record.id] = xml_id
 
         record_element = etree.Element('record', model=model, id=xml_id)
@@ -1622,7 +1627,7 @@ class XMLExport(ExportFormat, http.Controller):
         for field_name in types.keys():
             field = etree.SubElement(record_element, 'field', name=field_name)
 
-            if types[field_name] in ("one2many", "many2many", "many2one"):
+            if types[field_name] in ("one2many", "many2many", "many2one") and len(getattr(record, field_name)):
                 if types[field_name] == 'many2one':
                     field.set('ref', self.export_record(getattr(record, field_name), comodels[field_name]))
                 else:
