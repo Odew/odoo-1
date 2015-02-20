@@ -1,6 +1,6 @@
-<?xml version="1.0"?>
-<openerp>
-    <data>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
         <record model="ir.ui.view" id="view_oauth_provider_form">
             <field name="name">auth.oauth.provider.form</field>
             <field name="model">auth.oauth.provider</field>
@@ -43,5 +43,5 @@
         <menuitem id="menu_oauth_providers" name="OAuth Providers"
             parent="base.menu_users" sequence="30"
             action="action_oauth_provider" groups="base.group_no_one"/>
-    </data>
-</openerp>
+
+</odoo>
