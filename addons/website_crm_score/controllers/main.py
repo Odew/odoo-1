@@ -32,7 +32,7 @@ class PageController(addons.website.controllers.main.Website):
         return response
 
 
-class ContactController(addons.website_crm.controllers.main.contactus):
+class ContactController(addons.website_crm.controllers.main.ContactUs):
 
     @http.route(['/crm/contactus'], type='http', auth="public", website=True)
     def contactus(self, **kwargs):
