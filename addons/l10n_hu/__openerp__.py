@@ -40,13 +40,13 @@ This module consists :
     'license': 'AGPL-3',
     'depends': ['account'],
     'data': [
-        'data/account.account.template.csv',
         'data/account.chart.template.csv',
+        'data/account.account.template.csv',
         'data/account.tax.template.csv',
         'data/account.fiscal.position.template.csv',
         'data/account.fiscal.position.tax.template.csv',
         'data/res.bank.csv',
+        'data/account_chart_template.xml',
     ],
-    'installable': False,
-    'auto_install': False,
+    'installable': True,
 }
