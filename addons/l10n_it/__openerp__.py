@@ -42,13 +42,13 @@ Italian accounting chart and localization.
     'category': 'Localization/Account Charts',
     'website': 'http://www.openerp-italia.org/',
     'data': [
-        'data/account.account.template.csv',
         'account_chart.xml',
+        'data/account.account.template.csv',
         'data/account.tax.template.csv',
         'data/account.fiscal.position.template.csv',
         'l10n_chart_it_generic.xml',
+        'data/account.chart.template.csv',
         ],
     'demo': [],
-    'installable': False,
-    'auto_install': False,
+    'installable': True,
 }
