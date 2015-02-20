@@ -40,7 +40,7 @@ $('.oe_website_sale').each(function () {
             'set_qty': value})
             .then(function (data) {
                 if (!data.quantity) {
-                    location.reload();
+                    location.href = window.location;
                     return;
                 }
                 var $q = $(".my_cart_quantity");
@@ -52,8 +52,8 @@ $('.oe_website_sale').each(function () {
                 $("#cart_total").replaceWith(data['website_sale.total']);
                 if (data.warning) {
                     var cart_alert = $('.oe_cart').parent().find('#data_warning');
-                    if (cart_alert.length === 0) {
-                        $('.oe_cart').prepend('<div class="alert alert-danger alert-dismissable" role="alert" id="data_warning">'+
+                    if (cart_alert.length == 0) {
+                        $('.oe_cart').prepend('<div class="alert alert-warning alert-dismissable" role="alert" id="data_warning">'+
                                 '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> ' + data.warning + '</div>');
                     }
                     else {
