@@ -34,7 +34,7 @@
     添加中文省份数据
 
     增加小企业会计科目表
-    
+
     """,
     'depends': ['base','account'],
     'demo': [],
@@ -47,5 +47,5 @@
     ],
     'license': 'GPL-3',
     'auto_install': False,
-    'installable': False,
+    'installable': True,
 }
