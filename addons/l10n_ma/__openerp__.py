@@ -44,6 +44,5 @@ Seddik au cours du troisième trimestre 2010.""",
         'l10n_ma_journal.xml',
     ],
     'demo' : [],
-    'auto_install': False,
-    'installable': False,
+    'installable': True,
 }
