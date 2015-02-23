@@ -42,17 +42,17 @@ This is the base module to manage the accounting chart for Luxembourg.
         'account_financial_report.xml',
         'account_financial_report_abr.xml',
         'account.account.type-2011.csv',
-        'account.account.template-2011.csv',
         'account_chart_template.xml',
+        'account.account.template-2011.csv',
         'account.tax.template-2011.csv',
         # Change BRE: adds fiscal position
         'account.fiscal.position.template-2011.csv',
         'account.fiscal.position.tax.template-2011.csv',
         # configuration wizard, views, reports...
         'l10n_lu_wizard.xml',
+        'account.chart.template.csv',
     ],
     'test': [],
     'demo': [],
-    'installable': False,
-    'auto_install': False,
+    'installable': True,
 }
