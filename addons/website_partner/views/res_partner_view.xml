@@ -1,10 +1,9 @@
-<?xml version="1.0"?>
-<openerp>
-    <data>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
 
         <!-- Add team_id (SalesTeam) and contextual button on partner form view -->
         <record id="view_partners_form_website" model="ir.ui.view">
-            <field name="name">view.res.partner.form.website</field>
+            <field name="name">res.partner.form.inherit</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="mail.view_emails_partner_info_form"/>
             <field eval="18" name="priority"/>
@@ -20,5 +19,4 @@
             </field>
         </record>
 
-    </data>
-</openerp>
+</odoo>
