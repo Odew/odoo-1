@@ -35,12 +35,12 @@
         'base_vat',
     ],
     'data': [
-        'data/account.account.type.csv',
-        'data/account.account.template.csv',
         'data/account_chart_template.xml',
+        'data/account.account.template.csv',
+        'data/set_account_on_chart_template.xml',
         'data/account.tax.template.csv',
         'wizard/account_wizard.xml',
     ],
     'demo': [],
-    'installable': False,
+    'installable': True,
 }
