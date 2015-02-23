@@ -53,6 +53,6 @@ With this module you will have:
         "data/account_tax.xml",
         "data/l10n_chart_mx_wizard.xml"
     ],
-    "installable": False,
+    "installable": True,
     "certificate": False,
 }
