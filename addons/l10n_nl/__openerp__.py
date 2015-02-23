@@ -128,5 +128,5 @@ De extra cijfers worden dan achter het rekeningnummer aangevult met 'nullen'.
               'l10n_nl_wizard.xml'
     ],
     'demo' : [],
-    'installable': False,
+    'installable': True,
 }
