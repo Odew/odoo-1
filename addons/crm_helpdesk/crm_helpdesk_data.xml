@@ -5,5 +5,71 @@
     Case Teams
     -->
 
+        <!--
+        Helpdesk Categories
+        -->
+
+        <record model="crm.helpdesk.category" id="categ_helpdesk1">
+            <field name="name">Question</field>
+            <field name="team_id" ref="sales_team.team_sales_department"/>
+        </record>
+
+        <record model="crm.helpdesk.category" id="categ_helpdesk2">
+            <field name="name">Incident</field>
+            <field name="team_id" ref="sales_team.team_sales_department"/>
+        </record>
+
+        <record model="crm.helpdesk.category" id="categ_helpdesk3">
+            <field name="name">Problem</field>
+            <field name="team_id" ref="sales_team.team_sales_department"/>
+        </record>
+
+        <record model="crm.helpdesk.category" id="categ_helpdesk4">
+            <field name="name">Task</field>
+            <field name="team_id" ref="sales_team.team_sales_department"/>
+        </record>
+
+        <!--default alias for helpdesk-->
+        <record id="mail_alias_helpdesk" model="mail.alias">
+            <field name="alias_name">helpdesk</field>
+            <field name="alias_model_id" ref="model_crm_helpdesk"/>
+            <field name="alias_user_id" ref="base.user_root"/>
+            <field name="alias_parent_model_id" ref="model_crm_helpdesk"/>
+        </record>
+         <!--
+        Case Stage
+        -->
+        <record model="crm.helpdesk.stage" id="stage_helpdesk1">
+            <field name="name">New</field>
+            <field name="sequence">1</field>
+            <field name="case_default" eval="True"/>
+        </record>
+
+        <record model="crm.helpdesk.stage" id="stage_helpdesk5">
+            <field name="name">In Progress</field>
+            <field name="sequence">27</field>
+            <field name="case_default" eval="True"/>
+        </record>
+
+        <record model="crm.helpdesk.stage" id="stage_helpdesk2">
+            <field name="name">Pending</field>
+            <field name="sequence">28</field>
+            <field name="case_default" eval="True"/>
+        </record>
+
+        <record model="crm.helpdesk.stage" id="stage_helpdesk4">
+            <field name="name">Closed</field>
+            <field name="sequence">29</field>
+            <field name="case_default" eval="True"/>
+            <field name="fold" eval="True"/>
+        </record>
+
+        <record model="crm.helpdesk.stage" id="stage_helpdesk3">
+            <field name="name">Cancelled</field>
+            <field name="sequence">30</field>
+            <field name="case_default" eval="True"/>
+            <field name="fold" eval="True"/>
+        </record>
+
 </data>
 </openerp>

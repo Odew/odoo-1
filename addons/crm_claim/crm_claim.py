@@ -25,6 +25,8 @@ from openerp.osv import fields, osv
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools import html2plaintext
+from openerp import SUPERUSER_ID
+from datetime import date
 
 
 class crm_claim_stage(osv.osv):
@@ -45,6 +47,9 @@ class crm_claim_stage(osv.osv):
                         help="Link between stages and sales teams. When set, this limitate the current stage to the selected sales teams."),
         'case_default': fields.boolean('Common to All Teams',
                         help="If you check this field, this stage will be proposed by default on each sales team. It will not assign this stage to existing teams."),
+        'fold': fields.boolean('Folded in Kanban View',
+                               help='This stage is folded in the kanban view when'
+                               'there are no records in that stage to display.')
     }
 
     _defaults = {
@@ -56,17 +61,59 @@ class crm_claim(osv.osv):
     """
     _name = "crm.claim"
     _description = "Claim"
-    _order = "priority,date desc"
-    _inherit = ['mail.thread']
+    _order = "priority, date desc"
+    _inherit = ['mail.thread', 'ir.needaction_mixin']
 
-    def _get_default_team_id(self, cr, uid, context=None):
-        """ Gives default team by checking if present in the context """
-        return self.pool.get('crm.lead')._resolve_team_id_from_context(cr, uid, context=context) or False
+    _mail_post_access = 'read'
 
     def _get_default_stage_id(self, cr, uid, context=None):
         """ Gives default stage_id """
-        team_id = self._get_default_team_id(cr, uid, context=context)
-        return self.stage_find(cr, uid, [], team_id, [('sequence', '=', '1')], context=context)
+        if context is None:
+            context = {}
+        team_id = context.get('default_team_id')
+        return self.stage_find(cr, uid, [], team_id, [('fold', '=', False)], context=context)
+
+    def _read_group_stage_ids(self, cr, uid, ids, domain, read_group_order=None, access_rights_uid=None, context=None):
+        access_rights_uid = access_rights_uid or uid
+        stage_obj = self.pool.get('crm.claim.stage')
+        order = stage_obj._order
+        # lame hack to allow reverting search, should just work in the trivial case
+        if read_group_order == 'stage_id desc':
+            order = "%s desc" % order
+        # retrieve team_id from the context and write the domain
+        # - ('id', 'in', 'ids'): add columns that should be present
+        # - OR ('case_default', '=', True), ('fold', '=', False): add default columns that are not folded
+        # - OR ('team_ids', 'in', team_id), ('fold', '=', False) if team_id: add team columns that are not folded
+        search_domain = []
+        team_id = context.get('default_team_id')
+        if team_id:
+            search_domain += ['|', ('team_ids', '=', team_id), ('id', 'in', ids)]
+        # perform search
+        stage_ids = stage_obj._search(cr, uid, search_domain, order=order, access_rights_uid=access_rights_uid, context=context)
+        result = stage_obj.name_get(cr, access_rights_uid, stage_ids, context=context)
+        # restore order of the search
+        result.sort(lambda x,y: cmp(stage_ids.index(x[0]), stage_ids.index(y[0])))
+
+        fold = {}
+        for stage in stage_obj.browse(cr, access_rights_uid, stage_ids, context=context):
+            fold[stage.id] = stage.fold or False
+        return result, fold
+
+    def _get_attachment_number(self, cr, uid, ids, fields, args, context=None):
+        res = dict.fromkeys(ids, 0)
+        for app_id in ids:
+            res[app_id] = self.pool['ir.attachment'].search_count(cr, uid, [('res_model', '=', 'crm.claim'), ('res_id', '=', app_id)], context=context)
+        return res
+
+    def schedule_followup(self, cr, uid, ids, context=None):
+        return self.pool['ir.actions.act_window'].for_xml_id(cr, uid, 'calendar', 'action_calendar_event', context=context)
+
+    def _phonecall_count(self, cr, uid, ids, field_name, arg, context=None):
+        Claim = self.pool['crm.phonecall']
+        return {
+            claim_id: Claim.search_count(cr,uid, [('partner_id', '=', claim_id)], context=context)
+            for claim_id in ids
+        }
 
     _columns = {
         'id': fields.integer('ID', readonly=True),
@@ -81,11 +128,11 @@ class crm_claim(osv.osv):
         'date_deadline': fields.date('Deadline'),
         'date_closed': fields.datetime('Closed', readonly=True),
         'date': fields.datetime('Claim Date', select=True),
-        'ref': fields.reference('Reference', selection=openerp.addons.base.res.res_request.referencable_models),
+        'ref': fields.reference('Subject', selection=openerp.addons.base.res.res_request.referencable_models),
         'categ_id': fields.many2one('crm.claim.category', 'Category'),
-        'priority': fields.selection([('0','Low'), ('1','Normal'), ('2','High')], 'Priority'),
+        'priority': fields.selection([('0','Low'), ('1','Normal')], 'Priority'),
         'type_action': fields.selection([('correction','Corrective Action'),('prevention','Preventive Action')], 'Action Type'),
-        'user_id': fields.many2one('res.users', 'Responsible', track_visibility='always'),
+        'user_id': fields.many2one('res.users', 'Assigned to', track_visibility='always'),
         'user_fault': fields.char('Trouble Responsible'),
         'team_id': fields.many2one('crm.team', 'Sales Team', oldname='section_id',\
                         select=True, help="Responsible sales team."\
@@ -95,21 +142,46 @@ class crm_claim(osv.osv):
         'partner_id': fields.many2one('res.partner', 'Partner'),
         'email_cc': fields.text('Watchers Emails', size=252, help="These email addresses will be added to the CC field of all inbound and outbound emails for this record before being sent. Separate multiple email addresses with a comma"),
         'email_from': fields.char('Email', size=128, help="Destination email for email gateway."),
+        'mobile': fields.char('Mobile'),
         'partner_phone': fields.char('Phone'),
         'stage_id': fields.many2one ('crm.claim.stage', 'Stage', track_visibility='onchange',
                 domain="['|', ('team_ids', '=', team_id), ('case_default', '=', True)]"),
         'cause': fields.text('Root Cause'),
+        'color': fields.integer('Color Index'),
+        'date_action_last': fields.datetime('Last Action', readonly=1),
+        'date_last_stage_update': fields.datetime('Last Stage Update', select=True),
+        'attachment_number': fields.function(_get_attachment_number, string='Number of Attachments', type="integer"),
+        'phonecall_count': fields.function(_phonecall_count, string="Phonecalls", type="integer"),
+        'followup_ids': fields.one2many('crm.claim.followup', 'claim_id', 'Follow-up'),
+        'kanban_state': fields.selection([('normal', 'Normal'),('blocked', 'Blocked'),('done', 'Ready for next stage')], 'Kanban State',
+                                         track_visibility='onchange',
+                                         help="A Cliam's kanban state indicates special situations affecting it:\n"
+                                              " * Normal is the default situation\n"
+                                              " * Blocked indicates something is preventing the progress of this issue\n"
+                                              " * Ready for next stage indicates the claim is ready to be pulled to the next stage",
+                                         required=False),
     }
 
     _defaults = {
         'user_id': lambda s, cr, uid, c: uid,
-        'team_id': lambda s, cr, uid, c: s._get_default_team_id(cr, uid, c),
+        'team_id': lambda s, cr, uid, c: c.get('default_team_id'),
         'date': fields.datetime.now,
         'company_id': lambda s, cr, uid, c: s.pool.get('res.company')._company_default_get(cr, uid, 'crm.case', context=c),
         'priority': '1',
         'active': lambda *a: 1,
+        'kanban_state': 'normal',
+        'date_last_stage_update': fields.datetime.now,
         'stage_id': lambda s, cr, uid, c: s._get_default_stage_id(cr, uid, c)
     }
+    _group_by_full = {
+        'stage_id': _read_group_stage_ids
+    }
+
+    def action_get_attachment_view(self, cr, uid, ids, context=None):
+        action = self.pool['ir.actions.act_window'].for_xml_id(cr, uid, 'base', 'action_attachment')
+        action['context'] = {'default_res_model': self._name, 'default_res_id': ids[0]}
+        action['domain'] = str(['&', ('res_model', '=', self._name), ('res_id', 'in', ids)])
+        return action
 
     def stage_find(self, cr, uid, cases, team_id, domain=[], order='sequence', context=None):
         """ Override of the base.stage method
@@ -156,13 +228,35 @@ class crm_claim(osv.osv):
             context['default_team_id'] = vals.get('team_id')
 
         # context: no_log, because subtype already handle this
-        return super(crm_claim, self).create(cr, uid, vals, context=context)
+        create_context = dict(context, mail_create_nolog=True)
+        claim_id = super(crm_claim, self).create(cr, uid, vals, context=create_context)
+        claim_obj = self.browse(cr, uid, [claim_id], context=context)
+        if claim_obj and claim_obj.stage_id and claim_obj.stage_id.name != "In Progress":
+            followup_vals = {
+                'user_id': claim_obj.user_id and claim_obj.user_id.id or False,
+                'action': claim_obj.stage_id.name or '',
+                'claim_id': claim_id,
+                'date': fields.datetime.now()
+            }
+            self.pool['crm.claim.followup'].create(cr, uid, followup_vals, context=context)
+        return claim_id
+
+    def write(self, cr, uid, ids, vals, context=None):
+        if vals.get('stage_id'):
+            vals['date_last_stage_update'] = fields.datetime.now()
+            if not vals.get('kanban_state'):
+                vals['kanban_state'] = 'normal'
+            stage_obj = self.pool['crm.claim.stage'].browse(cr, uid, [vals.get('stage_id')], context=context)
+            if stage_obj.name != "In Progress":
+                user = self.pool['crm.claim'].browse(cr, uid, ids[0], context=context)
+                self.pool['crm.claim.followup'].create(cr, uid, {'user_id': vals.get('user_id', user.user_id.id), 'action':stage_obj.name, 'claim_id': ids[0], 'date':fields.datetime.now()}, context=context)
+        return super(crm_claim, self).write(cr, uid, ids, vals, context=context)
 
     def copy(self, cr, uid, id, default=None, context=None):
         claim = self.browse(cr, uid, id, context=context)
         default = dict(default or {},
-            stage_id = self._get_default_stage_id(cr, uid, context=context),
-            name = _('%s (copy)') % claim.name)
+            stage_id=self._get_default_stage_id(cr, uid, context=context),
+            name=_('%s (copy)') % claim.name)
         return super(crm_claim, self).copy(cr, uid, id, default, context=context)
 
     # -------------------------------------------------------
@@ -201,6 +295,49 @@ class res_partner(osv.osv):
     _columns = {
         'claim_count': fields.function(_claim_count, string='# Claims', type='integer'),
     }
+
+class crm_claim_followup(osv.Model):
+    _name = "crm.claim.followup"
+    _description = "follow of claim"
+
+    _columns = {
+        'claim_id': fields.many2one('crm.claim', 'Claim', required=True, ondelete='cascade', select="1"),
+        'date': fields.datetime('Date', select=True, required=True),
+        'action': fields.char('Action', required=True),
+        'user_id': fields.many2one('res.users', 'Responsible'),
+        'meeting_id': fields.many2one('calendar.event', 'Meetings'),
+    }
+    _defaults = {
+        'user_id': lambda s, cr, uid, c: uid,
+    }
+
+    def create(self, cr, uid, vals, context=None):
+        context = dict(context or {})
+        meeting_vals = {
+            'name': vals.get('action'),
+            'user_id': vals.get('user_id'),
+            'start': vals.get('date'),
+            'stop': vals.get('date'),
+        }
+        ctx_no_email = dict(context or {}, no_email=True)
+        meeting_id = self.pool['calendar.event'].create(cr, uid, meeting_vals, context=ctx_no_email)
+        vals.update({'meeting_id': meeting_id})
+        return super(crm_claim_followup, self).create(cr, uid, vals, context=context)
+
+    def write(self, cr, uid, ids, vals, context=None):
+        context = dict(context or {})
+        meeting_ids = []
+        for follow_up in self.browse(cr, uid, ids, context=context):
+            meeting_ids.append(follow_up.meeting_id.id)
+        meeting_obj = self.pool['calendar.event']
+        meeting_vals={
+            'name': vals.get('action', False),
+            'user_id': vals.get('user_id'),
+            'start': vals.get('date'),
+            'stop': vals.get('date'),
+        }
+        meeting_obj.write(cr, uid, meeting_ids, meeting_vals, context=context)
+        return super(crm_claim_followup, self).write(cr, uid, ids, vals, context=context)
 
 class crm_claim_category(osv.Model):
     _name = "crm.claim.category"

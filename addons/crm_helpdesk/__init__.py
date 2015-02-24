@@ -21,3 +21,4 @@
 
 import crm_helpdesk
 import report
+import res_config
