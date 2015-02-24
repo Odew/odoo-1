@@ -26,7 +26,7 @@
             <field name="model">hr.timesheet.invoice.create.final</field>
             <field name="arch" type="xml">
             <form string="Invoice contract">
-                    <p>Do you want to show details of each activity to your customer?</p>
+                    <p>Show details in invoice lines</p>
                     <group>
                         <group>
                             <field name="date"/>

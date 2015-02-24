@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
             <form string="Create Invoice">
                 <group cols="2">
-                    <group string="Do you want to show details of work in invoice?" colspan="1" cols="2">
+                    <group string="Show details in invoice lines" colspan="1" cols="2">
                        <field name="date"/>
                        <field name="time"/>
                        <field name="name"/>
