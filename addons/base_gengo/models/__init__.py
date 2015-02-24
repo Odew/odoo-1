@@ -2,4 +2,3 @@
 
 import res_company
 import ir_translation
-

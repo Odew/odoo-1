@@ -1,26 +1,6 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Business Applications
-#    Copyright (C) 2004-2012 OpenERP S.A. (<http://openerp.com>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
 
-from openerp.osv import fields, osv
-from openerp.tools.translate import _
+from openerp import api, fields, models
 from openerp.exceptions import UserError
 
 LANG_CODE_MAPPING = {
@@ -58,21 +38,23 @@ LANG_CODE_MAPPING = {
 }
 
 
-class ir_translation(osv.Model):
+class IrTranslation(models.Model):
     _name = "ir.translation"
     _inherit = "ir.translation"
 
-    _columns = {
-        'gengo_comment': fields.text("Comments & Activity Linked to Gengo"),
-        'order_id': fields.char('Gengo Order ID', size=32),
-        "gengo_translation": fields.selection([('machine', 'Translation By Machine'),
-                                             ('standard', 'Standard'),
-                                             ('pro', 'Pro'),
-                                             ('ultra', 'Ultra')], "Gengo Translation Service Level", help='You can select here the service level you want for an automatic translation using Gengo.'),
-    }
+    gengo_comment = fields.Text(string="Comments & Activity Linked to Gengo")
+    order_id = fields.Char(string='Gengo Order ID')
+    gengo_translation = fields.Selection([
+        ('machine', 'Translation By Machine'),
+        ('standard', 'Standard'),
+        ('pro', 'Pro'),
+        ('ultra', 'Ultra')],
+        string="Gengo Translation Service Level",
+        help='You can select here the service level you want for an automatic translation using Gengo.')
 
-    def _get_all_supported_languages(self, cr, uid, context=None):
-        flag, gengo = self.pool.get('base.gengo.translations').gengo_authentication(cr, uid, context=context)
+    @api.multi
+    def _get_all_supported_languages(self):
+        flag, gengo = self.env['base.gengo.translations'].gengo_authentication()
         if not flag:
             raise UserError(gengo)
         supported_langs = {}
@@ -84,11 +66,12 @@ class ir_translation(osv.Model):
                 supported_langs[g_lang['lc_tgt']] += [g_lang['tier']]
         return supported_langs
 
-    def _get_gengo_corresponding_language(cr, lang):
+    def _get_gengo_corresponding_language(self, lang):
         return lang in LANG_CODE_MAPPING and LANG_CODE_MAPPING[lang][0] or lang
 
-    def _get_source_query(self, cr, uid, name, types, lang, source, res_id):
-        query, params = super(ir_translation, self)._get_source_query(cr, uid, name, types, lang, source, res_id)
+    @api.model
+    def _get_source_query(self, name, types, lang, source, res_id):
+        query, params = super(IrTranslation, self)._get_source_query(name, types, lang, source, res_id)
 
         query += """
                     ORDER BY
