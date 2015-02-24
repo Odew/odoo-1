@@ -40,6 +40,6 @@ Con la Colaboración de
         "l10n_pa_wizard.xml",
     ],
     "demo_xml": [],
-    "installable": False,
+    "installable": True,
     "certificate": "",
 }
