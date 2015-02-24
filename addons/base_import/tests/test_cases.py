@@ -1,8 +1,6 @@
-# -*- encoding: utf-8 -*-
-import unittest2
+# -*- coding: utf-8 -*-
 from openerp.tests.common import TransactionCase
-
-from .. import models
+from openerp.exceptions import UserError
 
 ID_FIELD = {
     'id': 'id',
@@ -12,25 +10,28 @@ ID_FIELD = {
     'fields': [],
 }
 
-def make_field(name='value', string='unknown', required=False, fields=[]):
+
+def make_field(name='value', string='Value', required=False, fields=[]):
     return [
         ID_FIELD,
         {'id': name, 'name': name, 'string': string, 'required': required, 'fields': fields},
     ]
+
 
 def sorted_fields(fields):
     """ recursively sort field lists to ease comparison """
     recursed = [dict(field, fields=sorted_fields(field['fields'])) for field in fields]
     return sorted(recursed, key=lambda field: field['id'])
 
+
 class BaseImportCase(TransactionCase):
     def assertEqualFields(self, fields1, fields2):
         self.assertEqual(sorted_fields(fields1), sorted_fields(fields2))
 
-class test_basic_fields(BaseImportCase):
+
+class TestBasicFields(BaseImportCase):
     def get_fields(self, field):
-        return self.registry('base_import.import')\
-            .get_fields(self.cr, self.uid, 'base_import.tests.models.' + field)
+        return self.env['base_import.import'].get_fields('base_import.tests.models.' + field)
 
     def test_base(self):
         """ A basic field is not required """
@@ -76,37 +77,36 @@ class test_basic_fields(BaseImportCase):
             {'id': 'value', 'name': '.id', 'string': 'Database ID', 'required': True, 'fields': []},
         ]))
 
-class test_o2m(BaseImportCase):
+
+class TestO2M(BaseImportCase):
     def get_fields(self, field):
-        return self.registry('base_import.import')\
-            .get_fields(self.cr, self.uid, 'base_import.tests.models.' + field)
+        return self.env['base_import.import'].get_fields('base_import.tests.models.' + field)
 
     def test_shallow(self):
         self.assertEqualFields(self.get_fields('o2m'), make_field(fields=[
             ID_FIELD,
             # FIXME: should reverse field be ignored?
-            {'id': 'parent_id', 'name': 'parent_id', 'string': 'unknown', 'required': False, 'fields': [
+            {'id': 'parent_id', 'name': 'parent_id', 'string': 'Parent id', 'required': False, 'fields': [
                 {'id': 'parent_id', 'name': 'id', 'string': 'External ID', 'required': False, 'fields': []},
                 {'id': 'parent_id', 'name': '.id', 'string': 'Database ID', 'required': False, 'fields': []},
             ]},
-            {'id': 'value', 'name': 'value', 'string': 'unknown', 'required': False, 'fields': []},
+            {'id': 'value', 'name': 'value', 'string': 'Value', 'required': False, 'fields': []},
         ]))
 
-class test_match_headers_single(TransactionCase):
-    def test_match_by_name(self):
-        match = self.registry('base_import.import')._match_header(
-            'f0', [{'name': 'f0'}], {})
 
+class TestMatchHeadersSingle(TransactionCase):
+    def test_match_by_name(self):
+        match = self.env['base_import.import']._match_header('f0', [{'name': 'f0'}], {})
         self.assertEqual(match, [{'name': 'f0'}])
 
     def test_match_by_string(self):
-        match = self.registry('base_import.import')._match_header(
+        match = self.env['base_import.import']._match_header(
             'some field', [{'name': 'bob', 'string': "Some Field"}], {})
 
         self.assertEqual(match, [{'name': 'bob', 'string': "Some Field"}])
 
     def test_nomatch(self):
-        match = self.registry('base_import.import')._match_header(
+        match = self.env['base_import.import']._match_header(
             'should not be', [{'name': 'bob', 'string': "wheee"}], {})
 
         self.assertEqual(match, [])
@@ -120,7 +120,7 @@ class test_match_headers_single(TransactionCase):
                 {'name': 'f1', 'string': "Sub field 2", 'fields': []},
             ]
         }
-        match = self.registry('base_import.import')._match_header(
+        match = self.env['base_import.import']._match_header(
             'f0/f1', [f], {})
 
         self.assertEqual(match, [f, f['fields'][1]])
@@ -136,21 +136,23 @@ class test_match_headers_single(TransactionCase):
                 {'name': 'f1', 'string': "Sub field 2", 'fields': []},
             ]
         }
-        match = self.registry('base_import.import')._match_header(
+        match = self.env['base_import.import']._match_header(
             'f0/f2', [f], {})
 
         self.assertEqual(match, [])
 
-class test_match_headers_multiple(TransactionCase):
+
+class TestMatchHeadersMultiple(TransactionCase):
     def test_noheaders(self):
         self.assertEqual(
-            self.registry('base_import.import')._match_headers(
+            self.env['base_import.import']._match_headers(
                 [], [], {}),
             (None, None)
         )
+
     def test_nomatch(self):
         self.assertEqual(
-            self.registry('base_import.import')._match_headers(
+            self.env['base_import.import']._match_headers(
                 iter([
                     ['foo', 'bar', 'baz', 'qux'],
                     ['v1', 'v2', 'v3', 'v4'],
@@ -165,14 +167,14 @@ class test_match_headers_multiple(TransactionCase):
 
     def test_mixed(self):
         self.assertEqual(
-            self.registry('base_import.import')._match_headers(
+            self.env['base_import.import']._match_headers(
                 iter(['foo bar baz qux/corge'.split()]),
                 [
                     {'name': 'bar', 'string': 'Bar'},
                     {'name': 'bob', 'string': 'Baz'},
                     {'name': 'qux', 'string': 'Qux', 'fields': [
                         {'name': 'corge', 'fields': []},
-                     ]}
+                    ]}
                 ],
                 {'headers': True}),
             (['foo', 'bar', 'baz', 'qux/corge'], {
@@ -183,51 +185,52 @@ class test_match_headers_multiple(TransactionCase):
             })
         )
 
-class test_preview(TransactionCase):
+
+class TestPreview(TransactionCase):
     def make_import(self):
-        Import = self.registry('base_import.import')
-        id = Import.create(self.cr, self.uid, {
+        Import = self.env['base_import.import']
+        id = Import.create({
             'res_model': 'res.users',
             'file': u"로그인,언어\nbob,1\n".encode('euc_kr'),
-        })
+        }).id
         return Import, id
 
     def test_encoding(self):
         Import, id = self.make_import()
-        result = Import.parse_preview(self.cr, self.uid, id, {
-                'quoting': '"',
-                'separator': ',',
+        result = Import.parse_preview(id, {
+            'quoting': '"',
+            'separator': ',',
         })
         self.assertTrue('error' in result)
 
     def test_csv_errors(self):
         Import, id = self.make_import()
 
-        result = Import.parse_preview(self.cr, self.uid, id, {
-                'quoting': 'foo',
-                'separator': ',',
-                'encoding': 'euc_kr',
+        result = Import.parse_preview(id, {
+            'quoting': 'foo',
+            'separator': ',',
+            'encoding': 'euc_kr',
         })
         self.assertTrue('error' in result)
 
-        result = Import.parse_preview(self.cr, self.uid, id, {
-                'quoting': '"',
-                'separator': 'bob',
-                'encoding': 'euc_kr',
+        result = Import.parse_preview(id, {
+            'quoting': '"',
+            'separator': 'bob',
+            'encoding': 'euc_kr',
         })
         self.assertTrue('error' in result)
 
     def test_success(self):
-        Import = self.registry('base_import.import')
-        id = Import.create(self.cr, self.uid, {
+        Import = self.env['base_import.import']
+        id = Import.create({
             'res_model': 'base_import.tests.models.preview',
             'file': 'name,Some Value,Counter\n'
                     'foo,1,2\n'
                     'bar,3,4\n'
                     'qux,5,6\n'
-        })
+        }).id
 
-        result = Import.parse_preview(self.cr, self.uid, id, {
+        result = Import.parse_preview(id, {
             'quoting': '"',
             'separator': ',',
             'headers': True,
@@ -238,9 +241,9 @@ class test_preview(TransactionCase):
         # Order depends on iteration order of fields_get
         self.assertItemsEqual(result['fields'], [
             ID_FIELD,
-            {'id': 'name', 'name': 'name', 'string': 'Name', 'required':False, 'fields': []},
-            {'id': 'somevalue', 'name': 'somevalue', 'string': 'Some Value', 'required':True, 'fields': []},
-            {'id': 'othervalue', 'name': 'othervalue', 'string': 'Other Variable', 'required':False, 'fields': []},
+            {'id': 'name', 'name': 'name', 'string': 'Name', 'required': False, 'fields': []},
+            {'id': 'somevalue', 'name': 'somevalue', 'string': 'Some Value', 'required': True, 'fields': []},
+            {'id': 'othervalue', 'name': 'othervalue', 'string': 'Other Variable', 'required': False, 'fields': []},
         ])
         self.assertEqual(result['preview'], [
             ['foo', '1', '2'],
@@ -250,23 +253,23 @@ class test_preview(TransactionCase):
         # Ensure we only have the response fields we expect
         self.assertItemsEqual(result.keys(), ['matches', 'headers', 'fields', 'preview'])
 
-class test_convert_import_data(TransactionCase):
+
+class TestConvertImportData(TransactionCase):
     """ Tests conversion of base_import.import input into data which
     can be fed to Model.import_data
     """
     def test_all(self):
-        Import = self.registry('base_import.import')
-        id = Import.create(self.cr, self.uid, {
+        Import = self.env['base_import.import']
+        record = Import.create({
             'res_model': 'base_import.tests.models.preview',
             'file': 'name,Some Value,Counter\n'
                     'foo,1,2\n'
                     'bar,3,4\n'
                     'qux,5,6\n'
         })
-        record = Import.browse(self.cr, self.uid, id)
         data, fields = Import._convert_import_data(
             record, ['name', 'somevalue', 'othervalue'],
-            {'quoting': '"', 'separator': ',', 'headers': True,})
+            {'quoting': '"', 'separator': ',', 'headers': True, })
 
         self.assertItemsEqual(fields, ['name', 'somevalue', 'othervalue'])
         self.assertItemsEqual(data, [
@@ -279,18 +282,17 @@ class test_convert_import_data(TransactionCase):
         """ If ``False`` is provided as field mapping for a column,
         that column should be removed from importable data
         """
-        Import = self.registry('base_import.import')
-        id = Import.create(self.cr, self.uid, {
+        Import = self.env['base_import.import']
+        record = Import.create({
             'res_model': 'base_import.tests.models.preview',
             'file': 'name,Some Value,Counter\n'
                     'foo,1,2\n'
                     'bar,3,4\n'
                     'qux,5,6\n'
         })
-        record = Import.browse(self.cr, self.uid, id)
         data, fields = Import._convert_import_data(
             record, ['name', False, 'othervalue'],
-            {'quoting': '"', 'separator': ',', 'headers': True,})
+            {'quoting': '"', 'separator': ',', 'headers': True, })
 
         self.assertItemsEqual(fields, ['name', 'othervalue'])
         self.assertItemsEqual(data, [
@@ -303,18 +305,17 @@ class test_convert_import_data(TransactionCase):
         """ If a row is composed only of empty values (due to having
         filtered out non-empty values from it), it should be removed
         """
-        Import = self.registry('base_import.import')
-        id = Import.create(self.cr, self.uid, {
+        Import = self.env['base_import.import']
+        record = Import.create({
             'res_model': 'base_import.tests.models.preview',
             'file': 'name,Some Value,Counter\n'
                     'foo,1,2\n'
                     ',3,\n'
                     ',5,6\n'
         })
-        record = Import.browse(self.cr, self.uid, id)
         data, fields = Import._convert_import_data(
             record, ['name', False, 'othervalue'],
-            {'quoting': '"', 'separator': ',', 'headers': True,})
+            {'quoting': '"', 'separator': ',', 'headers': True, })
 
         self.assertItemsEqual(fields, ['name', 'othervalue'])
         self.assertItemsEqual(data, [
@@ -323,38 +324,36 @@ class test_convert_import_data(TransactionCase):
         ])
 
     def test_nofield(self):
-        Import = self.registry('base_import.import')
-
-        id = Import.create(self.cr, self.uid, {
+        Import = self.env['base_import.import']
+        record = Import.create({
             'res_model': 'base_import.tests.models.preview',
             'file': 'name,Some Value,Counter\n'
                     'foo,1,2\n'
         })
 
-        record = Import.browse(self.cr, self.uid, id)
         self.assertRaises(
-            ValueError,
+            UserError,
             Import._convert_import_data,
             record, [],
-            {'quoting': '"', 'separator': ',', 'headers': True,})
+            {'quoting': '"', 'separator': ',', 'headers': True, })
 
     def test_falsefields(self):
-        Import = self.registry('base_import.import')
+        Import = self.env['base_import.import']
 
-        id = Import.create(self.cr, self.uid, {
+        record = Import.create({
             'res_model': 'base_import.tests.models.preview',
             'file': 'name,Some Value,Counter\n'
                     'foo,1,2\n'
         })
 
-        record = Import.browse(self.cr, self.uid, id)
         self.assertRaises(
-            ValueError,
+            UserError,
             Import._convert_import_data,
             record, [False, False, False],
-            {'quoting': '"', 'separator': ',', 'headers': True,})
+            {'quoting': '"', 'separator': ',', 'headers': True, })
 
-class test_failures(TransactionCase):
+
+class TestFailures(TransactionCase):
     def test_big_attachments(self):
         """
         Ensure big fields (e.g. b64-encoded image data) can be imported and
@@ -373,12 +372,13 @@ class test_failures(TransactionCase):
         ])
 
         Import = self.env['base_import.import']
-        imp = Import.create({
+        id = Import.create({
             'res_model': 'ir.attachment',
             'file': fout.getvalue()
-        })
-        [results] = imp.do(
-            ['name', 'db_datas'],
-            {'headers': True, 'separator': ',', 'quoting': '"'})
+        }).id
+        results = Import.do(
+            id, ['name', 'db_datas'],
+            {'headers': True, 'separator': ',', 'quoting': '"'}
+        )
         self.assertFalse(
             results, "results should be empty on successful import")

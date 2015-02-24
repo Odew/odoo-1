@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 {
     'name': 'Base import',
     'description': """
@@ -23,7 +24,7 @@ Re-implement openerp's file import system:
 """,
     'category': 'Uncategorized',
     'website': 'https://www.odoo.com',
-    'author': 'OpenERP SA',
+    'author': 'Odoo S.A.',
     'depends': ['web'],
     'installable': True,
     'data': [
