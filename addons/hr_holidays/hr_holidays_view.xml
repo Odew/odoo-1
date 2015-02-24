@@ -67,6 +67,18 @@
             </field>
         </record>
 
+	<!-- Holidays: Leave Request Gantt -->
+	<record model="ir.ui.view" id="view_holiday_new_gantt">
+	    <field name="name">Leave Request Gantt</field>
+	    <field name="model">hr.holidays</field>
+	    <field name="arch" type="xml">
+	      <gantt date_start="date_from" date_stop="date_to"
+		     consolidation="consolidation_gantt"
+		     consolidation_max='{"employee_id":1}'
+		     fold_last_level="True"/>
+	    </field>
+	</record>
+
         <!-- Holidays: Allocation Request -->
         <record model="ir.ui.view" id="edit_holiday_new">
             <field name="name">Leave Request</field>
@@ -247,7 +259,8 @@
                 'needaction_menu_ref': 
                 [
                     'hr_holidays.menu_open_company_allocation', 
-                ]
+                ],
+		'group_by': ['employee_id', 'holiday_status_id'],
             }</field>
             <field name="domain">[('type','=','remove'), ('employee_id.user_id','=', uid)]</field>
             <field name="search_view_id" ref="view_hr_holidays_filter"/>
@@ -264,23 +277,30 @@
         </record>
 
         <record model="ir.actions.act_window.view" id="action_open_ask_holidays_tree">
-            <field name="sequence" eval="2"/>
+            <field name="sequence" eval="3"/>
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_holiday"/>
             <field name="act_window_id" ref="open_ask_holidays"/>
         </record>
 
         <record model="ir.actions.act_window.view" id="action_open_ask_holidays_form">
-            <field name="sequence" eval="3"/>
+            <field name="sequence" eval="4"/>
             <field name="view_mode">form</field>
             <field name="view_id" ref="edit_holiday_new"/>
             <field name="act_window_id" ref="open_ask_holidays"/>
         </record>
 
         <record model="ir.actions.act_window.view" id="action_open_ask_holidays_calendar">
-            <field name="sequence" eval="1"/>
+            <field name="sequence" eval="2"/>
             <field name="view_mode">calendar</field>
             <field name="view_id" ref="view_holiday_new_calendar"/>
+            <field name="act_window_id" ref="open_ask_holidays"/>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="action_open_ask_holidays_gantt">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">gantt</field>
+            <field name="view_id" ref="view_holiday_new_gantt"/>
             <field name="act_window_id" ref="open_ask_holidays"/>
         </record>
 

@@ -63,6 +63,13 @@ class hr_holidays_status(osv.osv):
                     status_dict['remaining_leaves'] -= holiday.number_of_days_temp
         return result
 
+    def _get_color(self, cr, uid, ids, name, args, context=None):
+        col = {'red': 1, 'blue': 2, 'lightgreen': 3, 'lightblue': 4, 'lightyellow': 5, 'magenta': 6, 'lightcyan': 7, 'black': 8, 'lightpink': 9, 'brown': 10, 'violet': 11, 'lightcoral': 12, 'lightsalmon': 13, 'lavender': 14, 'wheat': 15, 'ivory': 16}
+        res = {}
+        for status in self.browse(cr, uid, ids, context=context):
+            res[status.id] = col[status.color_name]
+        return res
+
     def _user_left_days(self, cr, uid, ids, name, args, context=None):
         employee_id = False
         if context and 'employee_id' in context:
@@ -89,6 +96,7 @@ class hr_holidays_status(osv.osv):
         'remaining_leaves': fields.function(_user_left_days, string='Remaining Leaves', help='Maximum Leaves Allowed - Leaves Already Taken', multi='user_left_days'),
         'virtual_remaining_leaves': fields.function(_user_left_days, string='Virtual Remaining Leaves', help='Maximum Leaves Allowed - Leaves Already Taken - Leaves Waiting Approval', multi='user_left_days'),
         'double_validation': fields.boolean('Apply Double Validation', help="When selected, the Allocation/Leave Requests for this type require a second validation to be approved."),
+        'color': fields.function(_get_color, string="color", type='integer')
     }
     _defaults = {
         'color_name': 'red',
@@ -178,6 +186,20 @@ class hr_holidays(osv.osv):
                 result[holiday.id] = True
         return result
 
+    def _get_color(self, cr, uid, ids, name, arg, context=None):
+        """ Translate the leave type in a color number for the gantt view. """
+        res = {}
+        for holiday in self.browse(cr, uid, ids, context=context):
+            res[holiday.id] = holiday.holiday_status_id.color
+        return res
+
+    def _get_consolidation_gantt(self, cr, uid, ids, name, arg, context=None):
+        " Always return 1, used in the gantt view"
+        res = {}
+        for holiday in self.browse(cr, uid, ids, context=context):
+            res[holiday.id] = 1
+        return res
+
     def _check_date(self, cr, uid, ids, context=None):
         for holiday in self.browse(cr, uid, ids, context=context):
             domain = [
@@ -228,6 +250,8 @@ class hr_holidays(osv.osv):
         'can_reset': fields.function(
             _get_can_reset, string="Can reset",
             type='boolean'),
+        'color': fields.function(_get_color, string="color", type='integer'),
+        'consolidation_gantt': fields.function(_get_consolidation_gantt, string="leaves", type='integer'),
     }
     _defaults = {
         'employee_id': _employee_get,
@@ -275,9 +299,13 @@ class hr_holidays(osv.osv):
         result = {}
         if holiday_type == 'employee' and not employee_id:
             ids_employee = self.pool.get('hr.employee').search(cr, uid, [('user_id','=', uid)])
+            if context and 'default_employee_id' in context:
+                id_employee = context['default_employee_id']
+            else:
+                id_employee = ids_employee[0] 
             if ids_employee:
                 result['value'] = {
-                    'employee_id': ids_employee[0]
+                    'employee_id': id_employee
                 }
         elif holiday_type != 'employee':
             result['value'] = {
