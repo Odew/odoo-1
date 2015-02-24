@@ -74,8 +74,8 @@ class MassMailController(http.Controller):
     @http.route('/r/<string:code>/m/<int:stat_id>', type='http', auth="none")
     def full_url_redirect(self, code, stat_id, **post):
         cr, uid, context = request.cr, request.uid, request.context
-        request.registry['website.links.click'].add_click(cr, uid, code, request.httprequest.remote_addr, request.session['geoip'].get('country_code'), stat_id=stat_id, context=context)
-        return werkzeug.utils.redirect(request.registry['website.links'].get_url_from_code(cr, uid, code, context=context), 301)
+        request.registry['links.click'].add_click(cr, uid, code, request.httprequest.remote_addr, request.session['geoip'].get('country_code'), stat_id=stat_id, context=context)
+        return werkzeug.utils.redirect(request.registry['links'].get_url_from_code(cr, uid, code, context=context), 301)
 
     @http.route(['/website_mass_mailing/get_content'], type='json', auth="public", website=True)
     def get_mass_mailing_content(self, newsletter_id, **post):

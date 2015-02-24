@@ -36,7 +36,7 @@ professional emails and reuse templates in a few clicks.
         'marketing',
         'web_kanban_gauge',
         'website_mail',
-        'website_links',
+        'links',
         'utm',
     ],
     'data': [

@@ -134,7 +134,7 @@ openerp.website.if_dom_contains('div.o_website_links_chart', function() {
         var code = $('#code').val();
         var link_id = $('#link_id').val();
 
-        var clicks = website.session.model('website.links.click');
+        var clicks = website.session.model('links.click');
         var links_domain = ['link_id', '=', parseInt(link_id)];
 
         var total_clicks = function() {

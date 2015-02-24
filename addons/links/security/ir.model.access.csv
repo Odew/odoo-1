@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_links_user,links,model_links,base.group_user,1,0,0,0
+access_links_manager,links,model_links,base.group_erp_manager,1,1,1,1
+access_links_public,links,model_links,base.group_public,1,0,0,0
+access_links_code_user,links.code,model_links_code,base.group_user,1,0,0,0
+access_links_code_manager,links.code,model_links_code,base.group_erp_manager,1,1,1,1
+access_links_code_public,links.code,model_links_code,base.group_public,1,0,0,0
+access_links_click_user,links.click,model_links_click,base.group_user,1,0,0,0
+access_links_click_manager,links.click,model_links_click,base.group_erp_manager,1,1,1,1
+access_links_click_public,links.click,model_links_click,base.group_public,1,0,0,0
