@@ -31,7 +31,7 @@ Thai accounting chart and localization.
     """,
     'author': 'Almacom',
     'website': 'http://almacom.co.th/',
-    'depends': [],
+    'depends': ['account'],
     'data': [ 'account_data.xml' ],
-    'installable': False,
+    'installable': True,
 }
