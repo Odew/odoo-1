@@ -38,5 +38,5 @@
         "data/account.fiscal.position.tax.template.csv",
         "l10n_si_wizard.xml"
     ],
-    "installable": False,
+    "installable": True,
 }

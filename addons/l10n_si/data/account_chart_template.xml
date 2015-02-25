@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="False">
+
+    <!-- Chart Template -->
+
+    <record id="gd_chart" model="account.chart.template">
+        <field name="name">Kontni načrt za gospodarske družbe</field>
+        <field name="bank_account_code_char">550</field>
+        <field name="code_digits">6</field>
+    </record>
+
+</data>
+</openerp>
