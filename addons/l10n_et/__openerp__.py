@@ -38,20 +38,15 @@ This is the latest Ethiopian OpenERP localization and consists of:
     'depends': [
         'base_vat',
     ],
-    'init_xml': [
+    'data': [
         'data/account.account.type.csv',
-        'data/account.account.template.csv',
         'data/account.chart.template.csv',
+        'data/account.account.template.csv',
+        'data/set_account_on_chart_template.xml',
         'data/account.tax.template.csv',
         'data/res.country.state.csv',
-    ],
-    'data': [
         'l10n_et_wizard.xml',
     ],
-    'test': [
-    ],
-    'demo': [
-    ],
-    'installable': False,
+    'installable': True,
     'active': False,
 }
