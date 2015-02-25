@@ -45,5 +45,5 @@ Bu modül kurulduktan sonra, Muhasebe yapılandırma sihirbazı çalışır
         'l10n_tr_wizard.xml',
     ],
     'demo': [],
-    'installable': False,
+    'installable': True,
 }
