@@ -21,7 +21,7 @@
 
 {
     'name': 'Survey',
-    'version': '2.0',
+    'version': '3.0',
     'category': 'Marketing',
     'description': """
 Create beautiful web surveys and visualize answers
@@ -34,7 +34,7 @@ answers of question and according to that survey is done. Partners are also
 sent mails with personal token for the invitation of the survey.
     """,
     'summary': 'Create surveys, collect answers and print statistics',
-    'author': 'OpenERP SA',
+    'author': 'Odoo S.A.',
     'website': 'https://www.odoo.com/page/survey',
     'depends': ['mail', 'website', 'marketing'],
     'data': [
