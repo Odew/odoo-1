@@ -50,9 +50,9 @@ This is the base module to manage the accounting chart for Dominican Republic.
         # basic accounting data
         'data/ir_sequence.xml',
         'data/account_journal.xml',
-        'data/account.account.type.csv',
-        'data/account.account.template.csv',
         'data/account_chart_template.xml',
+        'data/account.account.template.csv',
+        'data/set_account_on_chart_template.xml',
         'data/account.tax.template.csv',
         'data/l10n_do_base_data.xml',
         # Adds fiscal position
@@ -63,6 +63,6 @@ This is the base module to manage the accounting chart for Dominican Republic.
     ],
     'test': [],
     'demo': [],
-    'installable': False,
+    'installable': True,
     'auto_install': False,
 }
