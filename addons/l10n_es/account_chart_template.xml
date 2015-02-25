@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data noupdate="0">
+<odoo>
 
         <!-- Plantillas de los planes contables -->
         <record id="account_chart_template_common" model="account.chart.template">
@@ -51,5 +50,4 @@
             <field name="value" ref="base.EUR"/>
         </record>
 
-    </data>
-</openerp>
+</odoo>

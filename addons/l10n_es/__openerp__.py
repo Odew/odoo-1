@@ -58,6 +58,6 @@ Spanish charts of accounts (PGCE 2008).
     ],
     "demo" : [],
     'auto_install': False,
-    "installable": False,
+    "installable": True,
     'images': ['images/config_chart_l10n_es.png', 'images/l10n_es_chart.png'],
 }
