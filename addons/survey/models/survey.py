@@ -1,45 +1,41 @@
 # -*- coding: utf-8 -*-
 
-from openerp.osv import fields, osv
-from openerp.tools.translate import _
-from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT as DF
-from openerp.addons.website.models.website import slug
-from urlparse import urljoin
-from itertools import product
-from collections import Counter
-from collections import OrderedDict
-from openerp.exceptions import UserError
-
 import datetime
 import logging
 import re
 import uuid
 
+from itertools import product
+from urlparse import urljoin
+from collections import Counter
+from collections import OrderedDict
+
+from openerp import api, fields, models, _
+from openerp.exceptions import UserError
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT as DF
+from openerp.addons.website.models.website import slug
+
 _logger = logging.getLogger(__name__)
 
-class survey_stage(osv.Model):
+
+class SurveyStage(models.Model):
     """Stages for Kanban view of surveys"""
 
     _name = 'survey.stage'
     _description = 'Survey Stage'
     _order = 'sequence,id'
 
-    _columns = {
-        'name': fields.char(string="Name", required=True, translate=True),
-        'sequence': fields.integer(string="Sequence"),
-        'closed': fields.boolean(string="Closed", help="If closed, people won't be able to answer to surveys in this column."),
-        'fold': fields.boolean(string="Folded in kanban view")
-    }
-    _defaults = {
-        'sequence': 1,
-        'closed': False
-    }
+    name = fields.Char(string="Name", required=True, translate=True)
+    sequence = fields.Integer(string="Sequence", default=1)
+    closed = fields.Boolean(string="Closed", help="If closed, people won't be able to answer surveys in this column.")
+    fold = fields.Boolean(string="Folded in kanban view")
+
     _sql_constraints = [
         ('positive_sequence', 'CHECK(sequence >= 0)', 'Sequence number MUST be a natural')
     ]
 
 
-class survey_survey(osv.Model):
+class Survey(models.Model):
     '''Settings for a multi-page/multi-question survey.
     Each survey can have one or more attached pages, and each page can display
     one or more questions.
@@ -50,151 +46,72 @@ class survey_survey(osv.Model):
     _rec_name = 'title'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
 
-    # Protected methods #
+    title = fields.Char(string="Title", required=True, translate=True)
+    res_model = fields.Char(string="Category")
+    page_ids = fields.One2many('survey.page', 'survey_id', string="Pages", copy=True)
 
-    def _has_questions(self, cr, uid, ids, context=None):
-        """ Ensure that this survey has at least one page with at least one
-        question. """
-        for survey in self.browse(cr, uid, ids, context=context):
-            if not survey.page_ids or not [page.question_ids
-                            for page in survey.page_ids if page.question_ids]:
-                return False
-        return True
+    def _default_stage(self):
+        ids = self.env['survey.stage'].search([], order='sequence, id', limit=1)
+        return ids[0] if ids else False
 
-    ## Function fields ##
+    stage_id = fields.Many2one('survey.stage', string="Stage", ondelete="set null", copy=False, default=lambda self, *a, **kw: self._default_stage(*a, **kw))
+    auth_required = fields.Boolean(string="Login required", help="Users with a public link will be requested to login before taking part to the survey")
+    users_can_go_back = fields.Boolean(string="Users can go back", help="If checked, users can go back to previous pages.")
 
-    def _is_designed(self, cr, uid, ids, name, arg, context=None):
-        res = dict()
-        for survey in self.browse(cr, uid, ids, context=context):
-            if not survey.page_ids or not [page.question_ids
-                            for page in survey.page_ids if page.question_ids]:
-                res[survey.id] = False
+    @api.depends('user_input_ids')
+    def _compute_stats_survey(self):
+        UserInput = self.env['survey.user_input']
+        for survey in self:
+            survey.tot_sent_survey = UserInput.search([('survey_id', '=', survey.id), ('type', '=', 'link')], count=True)
+            survey.tot_start_survey = UserInput.search(['&', ('survey_id', '=', id), '|', ('state', '=', 'skip'), ('state', '=', 'done')], count=True)
+            survey.tot_comp_survey = UserInput.search([('survey_id', '=', id), ('state', '=', 'done')], count=True)
+
+    tot_sent_survey = fields.Integer(compute='_compute_stats_survey', string="Number of sent surveys", store=True)
+    tot_start_survey = fields.Integer(compute='_compute_stats_survey', string="Number of started surveys", store=True)
+    tot_comp_survey = fields.Integer(compute='_compute_stats_survey', string="Number of completed surveys", store=True)
+
+    description = fields.Html(string='Description', translate=True, help="A long description of the purpose of the survey")
+    color = fields.Integer('Color Index', default=0)
+    user_input_ids = fields.One2many('survey.user_input', 'survey_id', string='User responses', readonly=True)
+
+    @api.depends('page_ids', 'page_ids.question_ids')
+    def _compute_designed(self):
+        for survey in self:
+            if not survey.page_ids or not [page.question_ids for page in survey.page_ids if page.question_ids]:
+                survey.designed = False
             else:
-                res[survey.id] = True
-        return res
+                survey.designed = True
 
-    def _get_tot_sent_survey(self, cr, uid, ids, name, arg, context=None):
-        """ Returns the number of invitations sent for this survey, be they
-        (partially) completed or not """
-        res = dict((id, 0) for id in ids)
-        sur_res_obj = self.pool.get('survey.user_input')
-        for id in ids:
-            res[id] = sur_res_obj.search(cr, uid,  # SUPERUSER_ID,
-                [('survey_id', '=', id), ('type', '=', 'link')],
-                context=context, count=True)
-        return res
+    designed = fields.Boolean(compute='_compute_designed', string="Is designed?")
 
-    def _get_tot_start_survey(self, cr, uid, ids, name, arg, context=None):
-        """ Returns the number of started instances of this survey, be they
-        completed or not """
-        res = dict((id, 0) for id in ids)
-        sur_res_obj = self.pool.get('survey.user_input')
-        for id in ids:
-            res[id] = sur_res_obj.search(cr, uid,  # SUPERUSER_ID,
-                ['&', ('survey_id', '=', id), '|', ('state', '=', 'skip'), ('state', '=', 'done')],
-                context=context, count=True)
-        return res
+    def _compute_urls(self):
+        """ Compute various public and print URL for the survey and its results """
 
-    def _get_tot_comp_survey(self, cr, uid, ids, name, arg, context=None):
-        """ Returns the number of completed instances of this survey """
-        res = dict((id, 0) for id in ids)
-        sur_res_obj = self.pool.get('survey.user_input')
-        for id in ids:
-            res[id] = sur_res_obj.search(cr, uid,  # SUPERUSER_ID,
-                [('survey_id', '=', id), ('state', '=', 'done')],
-                context=context, count=True)
-        return res
-
-    def _get_public_url(self, cr, uid, ids, name, arg, context=None):
-        """ Computes a public URL for the survey """
-        if context and context.get('relative_url'):
+        if self.env.context and self.env.context.get('relative_url'):
             base_url = '/'
         else:
-            base_url = self.pool['ir.config_parameter'].get_param(cr, uid, 'web.base.url')
-        res = {}
-        for survey in self.browse(cr, uid, ids, context=context):
-            res[survey.id] = urljoin(base_url, "survey/start/%s" % slug(survey))
-        return res
+            base_url = self.env['ir.config_parameter'].get_param('web.base.url')
 
-    def _get_public_url_html(self, cr, uid, ids, name, arg, context=None):
-        """ Computes a public URL for the survey (html-embeddable version)"""
-        urls = self._get_public_url(cr, uid, ids, name, arg, context=context)
-        for id, url in urls.iteritems():
-            urls[id] = '<a href="%s">%s</a>' % (url, _("Click here to start survey"))
-        return urls
+        for survey in self:
+            pub_url = urljoin(base_url, "survey/start/%s" % slug(survey))
+            survey.public_url = pub_url
+            survey.public_url_html = '<a href="%s">%s</a>' % (pub_url, _("Click here to start survey"))
+            survey.print_url = urljoin(base_url, "survey/print/%s" % slug(survey))
+            survey.result_url = urljoin(base_url, "survey/results/%s" % slug(survey))
 
-    def _get_print_url(self, cr, uid, ids, name, arg, context=None):
-        """ Computes a printing URL for the survey """
-        if context and context.get('relative_url'):
-            base_url = '/'
-        else:
-            base_url = self.pool['ir.config_parameter'].get_param(cr, uid, 'web.base.url')
-        res = {}
-        for survey in self.browse(cr, uid, ids, context=context):
-            res[survey.id] = urljoin(base_url, "survey/print/%s" % slug(survey))
-        return res
+    public_url = fields.Char(compute='_compute_urls', string="Public link")
+    public_url_html = fields.Char(compute='_compute_urls', string="Public link (HTML version)")
+    print_url = fields.Char(compute='_compute_urls', string="Print link")
+    result_url = fields.Char(compute='_compute_urls', string="Results link")
 
-    def _get_result_url(self, cr, uid, ids, name, arg, context=None):
-        """ Computes an URL for the survey results """
-        if context and context.get('relative_url'):
-            base_url = '/'
-        else:
-            base_url = self.pool['ir.config_parameter'].get_param(cr, uid, 'web.base.url')
-        res = {}
-        for survey in self.browse(cr, uid, ids, context=context):
-            res[survey.id] = urljoin(base_url, "survey/results/%s" % slug(survey))
-        return res
+    email_template_id = fields.Many2one('mail.template', string='Email Template', ondelete='set null')
+    thank_you_message = fields.Html('Thank you message', translate=True, help="This message will be displayed when survey is completed"),
+    quizz_mode = fields.Boolean(string='Quiz mode')
 
-    # Model fields #
 
-    _columns = {
-        'title': fields.char('Title', required=1, translate=True),
-        'res_model': fields.char('Category'),
-        'page_ids': fields.one2many('survey.page', 'survey_id', 'Pages', copy=True),
-        'stage_id': fields.many2one('survey.stage', string="Stage", ondelete="set null", copy=False),
-        'auth_required': fields.boolean('Login required',
-            help="Users with a public link will be requested to login before taking part to the survey",
-            oldname="authenticate"),
-        'users_can_go_back': fields.boolean('Users can go back',
-            help="If checked, users can go back to previous pages."),
-        'tot_sent_survey': fields.function(_get_tot_sent_survey,
-            string="Number of sent surveys", type="integer"),
-        'tot_start_survey': fields.function(_get_tot_start_survey,
-            string="Number of started surveys", type="integer"),
-        'tot_comp_survey': fields.function(_get_tot_comp_survey,
-            string="Number of completed surveys", type="integer"),
-        'description': fields.html('Description', translate=True,
-            oldname="description", help="A long description of the purpose of the survey"),
-        'color': fields.integer('Color Index'),
-        'user_input_ids': fields.one2many('survey.user_input', 'survey_id',
-            'User responses', readonly=1),
-        'designed': fields.function(_is_designed, string="Is designed?",
-            type="boolean"),
-        'public_url': fields.function(_get_public_url,
-            string="Public link", type="char"),
-        'public_url_html': fields.function(_get_public_url_html,
-            string="Public link (html version)", type="char"),
-        'print_url': fields.function(_get_print_url,
-            string="Print link", type="char"),
-        'result_url': fields.function(_get_result_url,
-            string="Results link", type="char"),
-        'email_template_id': fields.many2one('mail.template',
-            'Email Template', ondelete='set null'),
-        'thank_you_message': fields.html('Thank you message', translate=True,
-            help="This message will be displayed when survey is completed"),
-        'quizz_mode': fields.boolean(string='Quiz mode')
-    }
 
-    def _default_stage(self, cr, uid, context=None):
-        ids = self.pool['survey.stage'].search(cr, uid, [], limit=1, context=context)
-        if ids:
-            return ids[0]
-        return False
 
-    _defaults = {
-        'color': 0,
-        'stage_id': lambda self, *a, **kw: self._default_stage(*a, **kw)
-    }
+
 
     def _read_group_stage_ids(self, cr, uid, ids, domain, read_group_order=None, access_rights_uid=None, context=None):
         """ Read group customization in order to display all the stages in the
@@ -221,14 +138,17 @@ class survey_survey(osv.Model):
         'stage_id': _read_group_stage_ids
     }
 
-    # Public methods #
 
-    def copy_data(self, cr, uid, id, default=None, context=None):
-        current_rec = self.read(cr, uid, id, fields=['title'], context=context)
-        title = _("%s (copy)") % (current_rec.get('title'))
+
+
+
+
+    @api.one
+    def copy_data(self, default=None):
+        title = _("%s (copy)") % self.title
         default = dict(default or {}, title=title)
-        return super(survey_survey, self).copy_data(cr, uid, id, default,
-            context=context)
+        return super(Survey, self).copy_data(default)
+
 
     def next_page(self, cr, uid, user_input, page_id, go_back=False, context=None):
         '''The next page to display to the user, knowing that page_id is the id
@@ -414,6 +334,15 @@ class survey_survey(osv.Model):
             'url': self.read(cr, uid, ids, ['public_url'], context=context)[0]['public_url'] + trail
         }
 
+    def _has_questions(self, cr, uid, ids, context=None):
+        """ Ensure that this survey has at least one page with at least one
+        question. """
+        for survey in self.browse(cr, uid, ids, context=context):
+            if not survey.page_ids or not [page.question_ids
+                            for page in survey.page_ids if page.question_ids]:
+                return False
+        return True
+
     def action_send_survey(self, cr, uid, ids, context=None):
         ''' Open a window to compose an email, pre-filled with the survey
         message '''
@@ -481,8 +410,6 @@ class survey_survey(osv.Model):
             'target': 'self',
             'url': self.read(cr, uid, ids, ['public_url'], context=context)[0]['public_url'] + "/phantom"
         }
-
-
 
 
 class survey_page(osv.Model):
