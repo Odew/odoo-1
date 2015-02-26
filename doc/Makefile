@@ -3,8 +3,8 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    = -q -t solutions
-SPHINXBUILD   = sphinx-build
-PAPER         =
+SPHINXBUILD   = sphinx-build2
+PAPER         = a4
 BUILDDIR      = _build
 
 # Internal variables.
