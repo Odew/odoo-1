@@ -1,24 +1,4 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2012 OpenERP SA (<http://openerp.com>)
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
-
 import logging
 import string
 import datetime
@@ -29,12 +9,11 @@ try:
     import vatnumber
 except ImportError:
     _logger.warning("VAT validation partially unavailable because the `vatnumber` Python library cannot be found. "
-                                          "Install it to support more countries, for example with `easy_install vatnumber`.")
+                    "Install it to support more countries, for example with `easy_install vatnumber`.")
     vatnumber = None
 
-from openerp.osv import fields, osv
+from openerp import _, api, models
 from openerp.tools.misc import ustr
-from openerp.tools.translate import _
 from openerp.exceptions import UserError
 
 _ref_vat = {
@@ -73,14 +52,16 @@ _ref_vat = {
     'sk': 'SK0012345675',
 }
 
-class res_partner(osv.osv):
+
+class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     def _split_vat(self, vat):
         vat_country, vat_number = vat[:2].lower(), vat[2:].replace(' ', '')
         return vat_country, vat_number
 
-    def simple_vat_check(self, cr, uid, country_code, vat_number, context=None):
+    @api.model
+    def simple_vat_check(self, country_code, vat_number):
         '''
         Check the VAT number depending of the country.
         http://sima-pc.com/nif.php
@@ -89,18 +70,18 @@ class res_partner(osv.osv):
             return False
         check_func_name = 'check_vat_' + country_code
         check_func = getattr(self, check_func_name, None) or \
-                        getattr(vatnumber, check_func_name, None)
+            getattr(vatnumber, check_func_name, None)
         if not check_func:
             # No VAT validation available, default to check that the country code exists
             if country_code.upper() == 'EU':
                 # Foreign companies that trade with non-enterprises in the EU
                 # may have a VATIN starting with "EU" instead of a country code.
                 return True
-            res_country = self.pool.get('res.country')
-            return bool(res_country.search(cr, uid, [('code', '=ilike', country_code)], context=context))
+            return bool(self.env['res.country'].search_count([('code', '=ilike', country_code)]))
         return check_func(vat_number)
 
-    def vies_vat_check(self, cr, uid, country_code, vat_number, context=None):
+    @api.model
+    def vies_vat_check(self, country_code, vat_number):
         try:
             # Validate against  VAT Information Exchange System (VIES)
             # see also http://ec.europa.eu/taxation_customs/vies/
@@ -111,55 +92,60 @@ class res_partner(osv.osv):
             # TIMEOUT or SERVER_BUSY. There is no way we can validate the input
             # with VIES if any of these arise, including the first one (it means invalid
             # country code or empty VAT number), so we fall back to the simple check.
-            return self.simple_vat_check(cr, uid, country_code, vat_number, context=context)
+            return self.simple_vat_check(country_code, vat_number)
 
-    def button_check_vat(self, cr, uid, ids, context=None):
-        if not self.check_vat(cr, uid, ids, context=context):
-            msg = self._construct_constraint_msg(cr, uid, ids, context=context)
+    @api.multi
+    def button_check_vat(self):
+        if not self.check_vat():
+            msg = self._construct_constraint_msg()
             raise UserError(msg)
         return True
 
-    def check_vat(self, cr, uid, ids, context=None):
-        user_company = self.pool.get('res.users').browse(cr, uid, uid).company_id
+    def check_vat(self):
+        user_company = self.env.user.company_id
         if user_company.vat_check_vies:
             # force full VIES online check
             check_func = self.vies_vat_check
         else:
             # quick and partial off-line checksum validation
             check_func = self.simple_vat_check
-        for partner in self.browse(cr, uid, ids, context=context):
+        for partner in self:
             if not partner.vat:
                 continue
             vat_country, vat_number = self._split_vat(partner.vat)
-            if not check_func(cr, uid, vat_country, vat_number, context=context):
+            if not check_func(vat_country, vat_number):
                 _logger.info(_("Importing VAT Number [%s] is not valid !" % vat_number))
                 return False
         return True
 
-    def vat_change(self, cr, uid, ids, value, context=None):
-        return {'value': {'vat_subjected': bool(value)}}
+    @api.onchange('vat')
+    def vat_change(self):
+        self.vat_subjected = bool(self.vat)
 
-    def _commercial_fields(self, cr, uid, context=None):
-        return super(res_partner, self)._commercial_fields(cr, uid, context=context) + ['vat_subjected']
+    @api.model
+    def _commercial_fields(self):
+        return super(ResPartner, self)._commercial_fields() + ['vat_subjected']
 
-    def _construct_constraint_msg(self, cr, uid, ids, context=None):
+    def _construct_constraint_msg(self):
         def default_vat_check(cn, vn):
             # by default, a VAT number is valid if:
             #  it starts with 2 letters
             #  has more than 3 characters
             return cn[0] in string.ascii_lowercase and cn[1] in string.ascii_lowercase
-        vat_country, vat_number = self._split_vat(self.browse(cr, uid, ids)[0].vat)
+        vat_country, vat_number = self._split_vat(self.vat)
         vat_no = "'CC##' (CC=Country Code, ##=VAT Number)"
-        error_partner = self.browse(cr, uid, ids, context=context)
+        error_partner = self
         if default_vat_check(vat_country, vat_number):
             vat_no = _ref_vat[vat_country] if vat_country in _ref_vat else vat_no
-            if self.pool['res.users'].browse(cr, uid, uid).company_id.vat_check_vies:
+            if self.env.user.company_id.vat_check_vies:
                 return '\n' + _('The VAT number [%s] for partner [%s] either failed the VIES VAT validation check or did not respect the expected format %s.') % (error_partner[0].vat, error_partner[0].name, vat_no)
         return '\n' + _('The VAT number [%s] for partner [%s] does not seem to be valid. \nNote: the expected format is %s') % (error_partner[0].vat, error_partner[0].name, vat_no)
 
-    _constraints = [(check_vat, _construct_constraint_msg, ["vat"])]
-
-
+    @api.one
+    @api.constrains('vat')
+    def _check_vat(self):
+        if not self.check_vat():
+            raise UserError(self._construct_constraint_msg())
     __check_vat_ch_re1 = re.compile(r'(MWST|TVA|IVA)[0-9]{6}$')
     __check_vat_ch_re2 = re.compile(r'E([0-9]{9}|-[0-9]{3}\.[0-9]{3}\.[0-9]{3})(MWST|TVA|IVA)$')
 
@@ -190,7 +176,7 @@ class res_partner(osv.osv):
         if match:
             # For new TVA numbers, do a mod11 check
             num = filter(lambda s: s.isdigit(), match.group(1))        # get the digits only
-            factor = (5,4,3,2,7,6,5,4)
+            factor = (5, 4, 3, 2, 7, 6, 5, 4)
             csum = sum([int(num[i]) * factor[i] for i in range(8)])
             check = (11 - (csum % 11)) % 11
             return check == int(num[8])
@@ -232,6 +218,7 @@ class res_partner(osv.osv):
                                     r"(?P<ano>[0-9]{2})(?P<mes>[01][0-9])(?P<dia>[0-3][0-9])" \
                                     r"[ \-_]?" \
                                     r"(?P<code>[A-Za-z0-9&\xd1\xf1]{3})$")
+
     def check_vat_mx(self, vat):
         ''' Mexican VAT verification
 
@@ -256,7 +243,6 @@ class res_partner(osv.osv):
         #Valid format and valid date
         return True
 
-
     # Norway VAT validation, contributed by Rolv Råen (adEgo) <rora@adego.no>
     def check_vat_no(self, vat):
         '''
@@ -274,7 +260,7 @@ class res_partner(osv.osv):
             (5 * int(vat[4])) + (4 * int(vat[5])) + \
             (3 * int(vat[6])) + (2 * int(vat[7]))
 
-        check = 11 -(sum % 11)
+        check = 11-(sum % 11)
         if check == 11:
             check = 0
         if check == 10:
@@ -285,7 +271,7 @@ class res_partner(osv.osv):
     # Peruvian VAT validation, contributed by Vauxoo
     def check_vat_pe(self, vat):
 
-        vat_type,vat = vat and len(vat)>=2 and (vat[0], vat[1:]) or (False, False)
+        vat_type, vat = vat and len(vat) >= 2 and (vat[0], vat[1:]) or (False, False)
 
         if vat_type and vat_type.upper() == 'D':
             #DNI
@@ -302,7 +288,7 @@ class res_partner(osv.osv):
             except ValueError:
                 return False 
                          
-            for f in range(0,10):
+            for f in range(0, 10):
                 sum += int(factor[f]) * int(vat[f])
                 
             subtraction = 11 - (sum % 11)
@@ -312,7 +298,7 @@ class res_partner(osv.osv):
                 dig_check = 1
             else:
                 dig_check = subtraction
-            
+
             return int(vat[10]) == dig_check
         else:
             return False
