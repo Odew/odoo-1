@@ -13,10 +13,6 @@
       <field name="name">Payable</field>
     </record>
 
-    <record model="account.account.type" id="account_type_view">
-      <field name="name">View</field>
-    </record>
-
     <record model="account.account.type" id="account_type_income" >
       <field name="name">Income</field>
     </record>
