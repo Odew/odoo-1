@@ -5,7 +5,7 @@ Tutorials
 .. toctree::
     :titlesonly:
 
-    howtos/website
+    .. howtos/website
     howtos/backend
-    howtos/themes
-    howtos/web
+    .. howtos/themes
+    .. howtos/web

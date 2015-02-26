@@ -8,12 +8,12 @@ Odoo Technical Documentation
 .. titlesonly breaks level 3 (~in-document) toc of left navbar, so use
    maxdepth instead
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     tutorials
     setup
-    reference
-    api_integration
+    .. reference
+    .. api_integration
 
 .. ifconfig:: todo_include_todos
 
