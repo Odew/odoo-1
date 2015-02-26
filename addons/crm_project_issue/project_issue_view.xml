@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<openerp>
-<data>
+<odoo>
 
     <!-- action of converting, via wizard -->
     <record model="ir.actions.act_window" id="convert_lead2projectissue_wizard_action" >
@@ -44,5 +43,4 @@
         </field>
     </record>
 
-</data>
-</openerp>
+</odoo>
