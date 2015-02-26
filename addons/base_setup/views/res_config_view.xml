@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data>
+<odoo>
 
         <record id="view_general_configuration" model="ir.ui.view">
-            <field name="name">General Settings</field>
+            <field name="name">general.configuration.view</field>
             <field name="model">base.config.settings</field>
             <field name="arch" type="xml">
                 <form string="General Settings" class="oe_form_configuration">
@@ -136,7 +135,7 @@
 
         <!-- Sale config wizard -->
         <record id="view_sale_config_settings" model="ir.ui.view">
-            <field name="name">sale settings</field>
+            <field name="name">sale.settings.view</field>
             <field name="model">sale.config.settings</field>
             <field name="arch" type="xml">
                 <form string="Configure Sales" class="oe_form_configuration">
@@ -193,5 +192,4 @@
             <field name="view_mode">form</field>
             <field name="target">inline</field>
         </record>
-    </data>
-</openerp>
+</odoo>
