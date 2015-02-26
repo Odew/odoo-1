@@ -34,6 +34,7 @@ This is the latest UK OpenERP localisation necessary to run OpenERP accounting f
     'website': 'http://www.smartmode.co.uk',
     'depends': ['base_iban', 'base_vat'],
     'data': [
+        'data/account_chart_template.xml',
         'data/account.account.type.csv',
         'data/account.account.template.csv',
         'data/account.chart.template.csv',
@@ -42,5 +43,5 @@ This is the latest UK OpenERP localisation necessary to run OpenERP accounting f
         'l10n_uk_wizard.xml',
     ],
     'demo' : ['demo/demo.xml'],
-    'installable': False,
+    'installable': True,
 }

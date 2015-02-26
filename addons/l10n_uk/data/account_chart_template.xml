@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+  <data noupdate="0">
+
+        <!-- Chart template -->
+        <record id="l10n_uk" model="account.chart.template">
+            <field name="name">UK Tax and Account Chart Template (by SmartMode)</field>
+            <field name="bank_account_code_char">550</field>
+            <field name="code_digits">6</field>
+        </record>
+
+
+  </data>
+</openerp>
