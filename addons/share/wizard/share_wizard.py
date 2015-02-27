@@ -522,23 +522,24 @@ class share_wizard(osv.TransientModel):
                         continue
                     rules_done.add(rule.id)
                     if rule.model_id.id == model.id:
-                        if 'user.' in rule.domain_force:
-                            # Above pattern means there is likely a condition
-                            # specific to current user, so we must copy the rule using
-                            # the evaluated version of the domain.
-                            # And it's better to copy one time too much than too few
-                            rule_obj.copy(cr, UID_ROOT, rule.id, default={
-                                'name': '%s %s' %(rule.name, _('(Copy for sharing)')),
-                                'groups': [(6,0,[group_id])],
-                                'domain_force': rule.domain, # evaluated version!
-                            })
-                            _logger.debug("Copying rule %s (%s) on model %s with domain: %s", rule.name, rule.id, model.model, rule.domain_force)
-                        else:
-                            # otherwise we can simply link the rule to keep it dynamic
-                            rule_obj.write(cr, SUPERUSER_ID, [rule.id], {
-                                    'groups': [(4,group_id)]
+                        if rule.domain_force == True:
+                            if 'user.' in rule.domain_force:
+                                # Above pattern means there is likely a condition
+                                # specific to current user, so we must copy the rule using
+                                # the evaluated version of the domain.
+                                # And it's better to copy one time too much than too few
+                                rule_obj.copy(cr, UID_ROOT, rule.id, default={
+                                    'name': '%s %s' %(rule.name, _('(Copy for sharing)')),
+                                    'groups': [(6,0,[group_id])],
+                                    'domain_force': rule.domain, # evaluated version!
                                 })
-                            _logger.debug("Linking rule %s (%s) on model %s with domain: %s", rule.name, rule.id, model.model, rule.domain_force)
+                                _logger.debug("Copying rule %s (%s) on model %s with domain: %s", rule.name, rule.id, model.model, rule.domain_force)
+                            else:
+                                # otherwise we can simply link the rule to keep it dynamic
+                                rule_obj.write(cr, SUPERUSER_ID, [rule.id], {
+                                        'groups': [(4,group_id)]
+                                    })
+                                _logger.debug("Linking rule %s (%s) on model %s with domain: %s", rule.name, rule.id, model.model, rule.domain_force)
 
     def _check_personal_rule_or_duplicate(self, cr, group_id, rule, context=None):
         """Verifies that the given rule only belongs to the given group_id, otherwise
