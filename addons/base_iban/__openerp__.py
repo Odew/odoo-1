@@ -32,7 +32,10 @@ with a single statement.
     'author': 'OpenERP SA',
     'website': 'https://www.odoo.com',
     'depends': ['base'],
-    'data': ['base_iban_data.xml' , 'base_iban_view.xml'],
+    'data': [
+        'data/base_iban_data.xml',
+        'views/base_iban_view.xml'
+    ],
     'installable': True,
     'auto_install': False,
 }
