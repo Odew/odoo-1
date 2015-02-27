@@ -1,9 +1,9 @@
-<?xml version="1.0"?>
-<openerp>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
     <data noupdate="1">
 
         <record id="base.user_demo" model="res.users">
-            <field name="groups_id" eval="[(4,ref('lunch.group_lunch_user'))]"/> 
+            <field name="groups_id" eval="[(4, ref('lunch.group_lunch_user'))]"/>
         </record>
 
         <record model="lunch.product.category" id="categ_sandwich">
@@ -131,6 +131,7 @@
         <record model="lunch.order.line" id="order_line_1">
             <field name="user_id" ref="base.user_demo"/>
             <field name="product_id" ref="product_Bolognese"/>
+            <field name="price">7.70</field>
             <field name="date" eval="time.strftime('2012-10-23')"/>
             <field name="state">new</field>
             <field name="supplier" ref="partner_pizza_inn"/>
@@ -141,6 +142,7 @@
         <record model="lunch.order.line" id="order_line_2">
             <field name="user_id" ref="base.user_demo"/>
             <field name="product_id" ref="product_italiana"/>
+            <field name="price">7.40</field>
             <field name="date" eval="time.strftime('2012-10-22')"/>
             <field name="state">confirmed</field>
             <field name="supplier" ref="partner_pizza_inn"/>
@@ -151,6 +153,7 @@
         <record model="lunch.order.line" id="order_line_3">
             <field name="user_id" ref="base.user_demo"/>
             <field name="product_id" ref="product_gouda"/>
+            <field name="price">2.50</field>
             <field name="date" eval="time.strftime('2012-10-24')"/>
             <field name="state">cancelled</field>
             <field name="supplier" ref="partner_coin_gourmand"/>
@@ -161,13 +164,14 @@
         <record model="lunch.order.line" id="order_line_4">
             <field name="user_id" ref="base.user_demo"/>
             <field name="product_id" ref="product_chicken_curry"/>
+            <field name="price">2.60</field>
             <field name="date" eval="time.strftime('2012-10-24')"/>
             <field name="state">confirmed</field>
             <field name="supplier" ref="partner_coin_gourmand"/>
             <field name="note">+Salad +Tomatoes +Eggs</field>
             <field name="order_id" ref="order_3"/>
         </record>
-    
+
         <record model="lunch.cashmove" id="cashmove_1">
             <field name="user_id" ref="base.user_demo"/>
             <field name="date" eval="time.strftime('2012-10-23')"/>
@@ -195,8 +199,17 @@
         </record>
 
         <record model="lunch.alert" id="alert_1">
-            <field name="message">Lunch must be ordered before 10h30 am</field>
+            <field name="alert_type">week</field>
+            <field name="monday">t</field>
+            <field name="tuesday">t</field>
+            <field name="wednesday">t</field>
+            <field name="thursday">t</field>
+            <field name="friday">t</field>
+            <field name="saturday">t</field>
+            <field name="sunday">t</field>
+            <field name="start_hour">7</field>
+            <field name="end_hour">23</field>
+            <field name="message">Lunch must be ordered before 10:30 AM</field>
         </record>
-
     </data>
-</openerp>
+</odoo>
