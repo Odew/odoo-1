@@ -40,7 +40,9 @@ with the effect of creating, editing and deleting either ways.
         'security/project_timesheet_security.xml',
         'report/project_report_view.xml',
         'wizard/hr_timesheet_sign_in_out_view.xml',
-        'project_timesheet_view.xml'
+        'project_timesheet_view.xml',
+        'views/templates.xml',
+        'views/project_timesheet.xml'
     ],
     'demo': ['project_timesheet_demo.xml'],
     'test': [

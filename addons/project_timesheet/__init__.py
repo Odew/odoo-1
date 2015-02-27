@@ -22,3 +22,4 @@
 import project_timesheet
 import report
 import wizard
+import controllers

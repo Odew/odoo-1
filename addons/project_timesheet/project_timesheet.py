@@ -249,13 +249,7 @@ class account_analytic_line(osv.osv):
         res = self.search_read(cr, uid, domain=domain, fields=fields, context=context)
         return res
 
-    def test_fct(self, cr, uid, context=None):
-        # context = {'default_is_timesheet' : True}
-        # x = self.load(cr , uid , ['id' ,'__last_update','task_id.id/id','unit_amount', 'name' ,'date' , 'account_id.id/id', 'user_id.id/id'], [["my_ext_id", '2015-02-19 12:45:29', '1' , '1' , "sdkjf" , '2015-02-09', '2' ,'1']], context)   
-        # #x = self.load(cr, uid, ['id', 'name', 'task_id:id', 'account_id' , '1'], data)
-        # print x
-
-
+    def export_data_for_ui(self, cr, uid, context=None):
         #AALS
         aal_ids = self.search(cr, uid, [("user_id", "=", uid)
                     ,("is_timesheet","=",True)
@@ -273,7 +267,6 @@ class account_analytic_line(osv.osv):
         tasks_fields = ["id", "project_id/id", "project_id.id" , "name", "user_id"]
         tasks = self.pool.get("project.task").export_data(cr, uid, task_ids, tasks_fields)
 
-
         project_ids_list = list(set([int(tasks['datas'][x][2]) for x in range(len(tasks['datas'])) if len(tasks['datas'][x][2]) > 0]))
 
         #Projects
@@ -283,13 +276,43 @@ class account_analytic_line(osv.osv):
                                     , ("members", '=', uid)
                                     , ("analytic_account_id" , "in" , account_ids_list) ])
 
-        projects_fields = ["id", "name","tasks","members", "analytic_account_id"]
-        projects = self.pool.get("project.task").export_data(cr, uid, task_ids, tasks_fields)
+        projects_fields = ["id", "name", "analytic_account_id.id"]
+        projects = self.pool.get("project.project").export_data(cr, uid, projects_ids, projects_fields)
 
-        # Add a preprocessing step to give appropriate project to aal?
-        
+        # Set the appropriate project to aal, using the account_id
+        for aal in aals['datas']:
+            for project in projects['datas']:
+                if aal[4] == project[2]:
+                    aal.append(project[0])
         return {
             'aals' : aals,
             'tasks' : tasks,
             'projects' : projects
         }
+    def import_ui_data(self, cr, uid, ls_aals, ls_tasks, ls_projects, context=None):
+
+        #Load projects, then tasks and finally aals
+        
+        ls_projects_to_import = [[str(ls_projects[x]['id']),ls_projects[x]['name']] for x in range(len(ls_projects))]
+        projects_fields = ['id','name']
+        self.pool.get("project.project").load(cr, uid, projects_fields, ls_projects_to_import)
+
+        ls_tasks_to_import = [[str(ls_tasks[x]['id']),ls_tasks[x]['name'],str(ls_tasks[x]['project_id']) , 'Administrator'] for x in range(len(ls_tasks))]
+        tasks_fields = ['id','name','project_id/id','user_id']
+        self.pool.get("project.task").load(cr, uid, tasks_fields, ls_tasks_to_import)
+
+        # Find the acc id
+        # check the write_date
+        new_ls_aals = []
+        for ls_aal in ls_aals:
+            sv_aal = self.pool.get("ir.model.data").xmlid_to_object(cr, uid, str(ls_aal['id']))
+            if(sv_aal):
+                if(datetime.datetime.strptime(ls_aal['write_date'] , tools.DEFAULT_SERVER_DATETIME_FORMAT) > datetime.datetime.strptime(sv_aal['__last_update'] , tools.DEFAULT_SERVER_DATETIME_FORMAT)):
+                    new_ls_aals.append(ls_aal)
+            else:
+                new_ls_aals.append(ls_aal)
+
+        print new_ls_aals
+
+        ls_aals_to_import = [[str(new_ls_aals[x]['id']),new_ls_aals[x]['desc'],str(new_ls_aals[x]['project_id']), new_ls_aals[x]['date'] , new_ls_aals[x]['unit_amount'] , 'Administrator'] for x in range(len(new_ls_aals))]
+        aals_fields = ['id','name','account_id','date','unit_amount', 'user_id']
