@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 {
     'name': 'Base import module',
     'description': """
@@ -9,7 +10,7 @@ for customization purpose.
 """,
     'category': 'Uncategorized',
     'website': 'https://www.odoo.com',
-    'author': 'OpenERP SA',
+    'author': 'Odoo SA',
     'depends': ['web'],
     'installable': True,
     'auto_install': False,

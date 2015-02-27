@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 import os
 import sys
@@ -5,21 +6,21 @@ import zipfile
 from os.path import join as opj
 
 import openerp
-from openerp.osv import osv
+from openerp import _, models
 from openerp.tools import convert_file
-from openerp.tools.translate import _
 from openerp.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
 MAX_FILE_SIZE = 100 * 1024 * 1024 # in megabytes
 
-class view(osv.osv):
+
+class View(models.Model):
     _inherit = "ir.module.module"
 
-    def import_module(self, cr, uid, module, path, force=False, context=None):
-        known_mods = self.browse(cr, uid, self.search(cr, uid, []))
-        known_mods_names = dict([(m.name, m) for m in known_mods])
+    def import_module(self, module, path, force=False):
+        known_mods = self.search([])
+        known_mods_names = {m.name: m for m in known_mods}
         installed_mods = [m.name for m in known_mods if m.state == 'installed']
 
         terp = openerp.modules.load_information_from_description_file(module, mod_path=path)
@@ -32,11 +33,11 @@ class view(osv.osv):
 
         mod = known_mods_names.get(module)
         if mod:
-            self.write(cr, uid, mod.id, dict(state='installed', **values))
+            mod.write(dict(state='installed', **values))
             mode = 'update' if not force else 'init'
         else:
             assert terp.get('installable', True), "Module not installable"
-            self.create(cr, uid, dict(name=module, state='installed', **values))
+            self.create(dict(name=module, state='installed', **values))
             mode = 'init'
 
         for kind in ['data', 'init_xml', 'update_xml']:
@@ -47,10 +48,10 @@ class view(osv.osv):
                     noupdate = True
                 pathname = opj(path, filename)
                 idref = {}
-                convert_file(cr, module, filename, idref, mode=mode, noupdate=noupdate, kind=kind, pathname=pathname)
+                convert_file(self.env.cr, module, filename, idref, mode=mode, noupdate=noupdate, kind=kind, pathname=pathname)
 
         path_static = opj(path, 'static')
-        ir_attach = self.pool['ir.attachment']
+        IrAttachment = self.env['ir.attachment']
         if os.path.isdir(path_static):
             for root, dirs, files in os.walk(path_static):
                 for static_file in files:
@@ -68,15 +69,15 @@ class view(osv.osv):
                         type='binary',
                         datas=data,
                     )
-                    att_id = ir_attach.search(cr, uid, [('url', '=', url_path), ('type', '=', 'binary'), ('res_model', '=', 'ir.ui.view')], context=context)
-                    if att_id:
-                        ir_attach.write(cr, uid, att_id, values, context=context)
+                    att = IrAttachment.search([('url', '=', url_path), ('type', '=', 'binary'), ('res_model', '=', 'ir.ui.view')])
+                    if att:
+                        att.write(values)
                     else:
-                        ir_attach.create(cr, uid, values, context=context)
+                        IrAttachment.create(values)
 
         return True
 
-    def import_zipfile(self, cr, uid, module_file, force=False, context=None):
+    def import_zipfile(self, module_file, force=False):
         if not module_file:
             raise Exception("No file sent.")
         if not zipfile.is_zipfile(module_file):
@@ -99,7 +100,7 @@ class view(osv.osv):
                     try:
                         # assert mod_name.startswith('theme_')
                         path = opj(module_dir, mod_name)
-                        self.import_module(cr, uid, mod_name, path, force=force, context=context)
+                        self.import_module(mod_name, path, force=force)
                         success.append(mod_name)
                     except Exception, e:
                         errors[mod_name] = str(e)
