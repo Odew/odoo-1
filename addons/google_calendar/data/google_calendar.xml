@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<openerp>
+<odoo>
 
-    <data>
         <record forcecreate="True" id="ir_cron_sync_all_cals" model="ir.cron">
             <field name="name">Calendar synchronization</field>
             <field eval="True" name="active" />
@@ -15,5 +14,4 @@
             <field eval="'synchronize_events_cron'" name="function" />
         </record>
 
-    </data>
-</openerp>
+</odoo>
