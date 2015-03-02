@@ -1,6 +1,5 @@
-<?xml version="1.0" ?>
-<openerp>
-    <data>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
         <record model="crm.stage" id="stage_portal_lead_assigned">
             <field name="name">Assigned</field>
             <field eval="1" name="case_default"/>
@@ -55,5 +54,4 @@ PS: It looks like you do not have an account manager assigned to you, please con
 % endif
             ]]></field>
         </record>
-    </data>
-</openerp>
+</odoo>

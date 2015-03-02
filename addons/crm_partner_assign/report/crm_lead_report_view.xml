@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data>
+<odoo>
 
         <!--     Opportunity tree view  -->
         <record id="view_report_crm_lead_assign_filter" model="ir.ui.view">
-            <field name="name">crm.lead.report.assign.select</field>
+            <field name="name">crm.lead.report.assign.select.search</field>
             <field name="model">crm.lead.report.assign</field>
             <field name="arch" type="xml">
                 <search string="Leads Analysis">
@@ -36,8 +35,7 @@
             </field>
         </record>
 
-<!-- Crm Lead Assign report pivot View -->
-
+        <!-- Crm Lead Assign report pivot View -->
         <record id="view_report_crm_lead_assign_pivot" model="ir.ui.view">
             <field name="name">crm.lead.assign.pivot</field>
             <field name="model">crm.lead.report.assign</field>
@@ -51,8 +49,7 @@
             </field>
         </record>
 
-<!-- Crm Lead Assign report Graph View -->
-
+        <!-- Crm Lead Assign report Graph View -->
         <record id="view_report_crm_lead_assign_graph" model="ir.ui.view">
             <field name="name">crm.lead.assign.graph</field>
             <field name="model">crm.lead.report.assign</field>
@@ -66,7 +63,6 @@
         </record>
 
        <!-- Leads by user and Team Action -->
-
        <record id="action_report_crm_opportunity_assign" model="ir.actions.act_window">
             <field name="name">Opp. Assignment Analysis</field>
             <field name="res_model">crm.lead.report.assign</field>
@@ -79,5 +75,4 @@
        <menuitem id="menu_report_crm_opportunities_assign_tree"
            parent="base.next_id_64" action="action_report_crm_opportunity_assign" sequence="20"/>
 
-    </data>
-</openerp>
+</odoo>

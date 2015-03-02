@@ -1,71 +1,67 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
 
-from openerp.osv import fields,osv
-from openerp import tools
+from openerp import fields, models, tools
+
 from openerp.addons.crm import crm
 
 
-class crm_lead_report_assign(osv.osv):
+class CrmLeadReportAssign(models.Model):
     """ CRM Lead Report """
     _name = "crm.lead.report.assign"
     _auto = False
     _description = "CRM Lead Report"
-    _columns = {
-        'partner_assigned_id':fields.many2one('res.partner', 'Partner', readonly=True),
-        'grade_id':fields.many2one('res.partner.grade', 'Grade', readonly=True),
-        'user_id':fields.many2one('res.users', 'User', readonly=True),
-        'country_id':fields.many2one('res.country', 'Country', readonly=True),
-        'team_id':fields.many2one('crm.team', 'Sales Team', oldname='section_id', readonly=True),
-        'company_id': fields.many2one('res.company', 'Company', readonly=True),
-        'date_assign': fields.date('Assign Date', readonly=True),
-        'create_date': fields.datetime('Create Date', readonly=True),
-        'delay_open': fields.float('Delay to Assign',digits=(16,2),readonly=True, group_operator="avg",help="Number of Days to open the case"),
-        'delay_close': fields.float('Delay to Close',digits=(16,2),readonly=True, group_operator="avg",help="Number of Days to close the case"),
-        'delay_expected': fields.float('Overpassed Deadline',digits=(16,2),readonly=True, group_operator="avg"),
-        'probability': fields.float('Avg Probability',digits=(16,2),readonly=True, group_operator="avg"),
-        'probability_max': fields.float('Max Probability',digits=(16,2),readonly=True, group_operator="max"),
-        'planned_revenue': fields.float('Planned Revenue',digits=(16,2),readonly=True),
-        'probable_revenue': fields.float('Probable Revenue', digits=(16,2),readonly=True),
-        'stage_id': fields.many2one ('crm.stage', 'Stage', domain="[('team_ids', '=', team_id)]"),
-        'partner_id': fields.many2one('res.partner', 'Customer' , readonly=True),
-        'opening_date': fields.datetime('Opening Date', readonly=True),
-        'date_closed': fields.datetime('Close Date', readonly=True),
-        'nbr': fields.integer('# of Cases', readonly=True),  # TDE FIXME master: rename into nbr_cases
-        'company_id': fields.many2one('res.company', 'Company', readonly=True),
-        'priority': fields.selection(crm.AVAILABLE_PRIORITIES, 'Priority'),
-        'type':fields.selection([
-            ('lead','Lead'),
-            ('opportunity','Opportunity')
-        ],'Type', help="Type is used to separate Leads and Opportunities"),
-    }
-    def init(self, cr):
 
+    partner_assigned_id = fields.Many2one('res.partner', string='Partner', readonly=True)
+    grade_id = fields.Many2one('res.partner.grade', string='Grade', readonly=True)
+    user_id = fields.Many2one('res.users', string='User', readonly=True)
+    country_id = fields.Many2one('res.country', string='Country', readonly=True)
+    team_id = fields.Many2one('crm.team', string='Sales Team', oldname='section_id', readonly=True)
+    company_id = fields.Many2one('res.company', string='Company', readonly=True)
+    date_assign = fields.Date(string='Assign Date', readonly=True)
+    create_date = fields.Datetime('Create Date', readonly=True)
+    delay_open = fields.Float(string='Delay to Assign',
+                              digits=(16, 2),
+                              readonly=True,
+                              group_operator="avg",
+                              help="Number of Days to open the case")
+    delay_close = fields.Float(string='Delay to Close',
+                               digits=(16, 2),
+                               readonly=True,
+                               group_operator="avg",
+                               help="Number of Days to close the case")
+    delay_expected = fields.Float(string='Overpassed Deadline',
+                                  digits=(16, 2),
+                                  readonly=True,
+                                  group_operator="avg")
+    probability = fields.Float(string='Avg Probability',
+                               digits=(16, 2),
+                               readonly=True,
+                               group_operator="avg")
+    probability_max = fields.Float(string='Max Probability',
+                                   digits=(16, 2),
+                                   readonly=True,
+                                   group_operator="max")
+    planned_revenue = fields.Float('Planned Revenue', digits=(16, 2), readonly=True)
+    probable_revenue = fields.Float('Probable Revenue', digits=(16, 2), readonly=True)
+    stage_id = fields.Many2one('crm.stage', string='Stage', domain="[('team_ids', '=', team_id)]")
+    partner_id = fields.Many2one('res.partner', string='Customer', readonly=True)
+    opening_date = fields.Datetime('Opening Date', readonly=True)
+    date_closed = fields.Datetime(string='Close Date', readonly=True)
+    nbr = fields.Integer(string='# of Cases', readonly=True)  # TDE FIXME master: rename into nbr_cases
+    company_id = fields.Many2one('res.company', string='Company', readonly=True)
+    priority = fields.Selection(crm.AVAILABLE_PRIORITIES, 'Priority')
+    type = fields.Selection([
+        ('lead', 'Lead'),
+        ('opportunity', 'Opportunity')],
+        'Type', help="Type is used to separate Leads and Opportunities")
+
+    def init(self, cr):
         """
             CRM Lead Report
             @param cr: the current row, from the database cursor
         """
-        tools.drop_view_if_exists(cr, 'crm_lead_report_assign')
-        cr.execute("""
-            CREATE OR REPLACE VIEW crm_lead_report_assign AS (
+        tools.drop_view_if_exists(cr, 'CrmLeadReportAssign')
+        cr.execute(""" CREATE OR REPLACE VIEW CrmLeadReportAssign AS (
                 SELECT
                     c.id,
                     c.date_open as opening_date,
@@ -94,4 +90,5 @@ class crm_lead_report_assign(osv.osv):
                 FROM
                     crm_lead c
                     left join res_partner p on (c.partner_assigned_id=p.id)
-            )""")
+        )
+        """)
