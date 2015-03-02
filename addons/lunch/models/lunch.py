@@ -2,10 +2,13 @@
 
 import datetime
 from openerp import models, fields, api, _
+import openerp.addons.decimal_precision as dp
+from openerp.exceptions import UserError, Warning
 
 class lunch_order(models.Model):
     """
-    lunch order (contains one or more lunch order line(s))
+    A lunch order contains one or more lunch order line(s). It is associated to a user for a given
+    date. When creating a lunch order, applicable lunch alerts are displayed.
     """
     _name = 'lunch.order'
     _description = 'Lunch Order'
@@ -13,200 +16,185 @@ class lunch_order(models.Model):
 
     @api.multi
     def name_get(self):
-        return [(order.id, "%s %s" % (_('Lunch Order'), order.id)) for order in self]
+        return [(order.id, '%s %s' % (_('Lunch Order'), '#%d' % order.id)) for order in self]
 
-    @api.multi
-    def _default_alerts_get(self):
-        """
-        get the alerts to display on the order form
-        """
-        alert_msg = [alert.get_alert_message()
-                     for alert in self.env['lunch.alert'].search([])
-                     if alert.get_alert_message()]
-        return '\n'.join(alert_msg)
-
-    @api.multi
+    @api.depends('state')
     def _compute_alerts_get(self):
         """
         get the alerts to display on the order form
         """
-        for order in self:
-            if order.state == 'new':
-                order.alerts = self._default_alerts_get()
+        alert_msg = [alert.message
+                     for alert in self.env['lunch.alert'].search([])
+                     if alert.display]
 
-    @api.multi
+        if self.state == 'new':
+            self.alerts = '\n'.join(alert_msg)
+
     def _default_get_previous_order_ids(self):
-        prev_order = self.env['lunch.order.line']
-        prev_order_res = prev_order.search([('user_id', '=', self.env.uid)], limit=20 ,order='id desc')
+        prev_order = self.env['lunch.order.line'].search([('user_id', '=', self.env.uid)], limit=20 ,order='id desc')
 
-#        return prev_order_res.ids
-
-        # If we return return prev_order_res.ids, we will have duplicates.
+        # If we return return prev_order.ids, we will have duplicates (identical orders).
         # Therefore, this following part removes duplicates based on product_id and note.
-        prev_order_clean = []
 
-        for order in prev_order_res:
-            dup = False
-            for order_dup in prev_order_clean:
-                if (order.product_id == order_dup.product_id) and (order.note == order_dup.note):
-                    dup = True
-                    break
-            if dup == False:
-                prev_order_clean.append(order)
+        return {
+            (order.product_id, order.note): order.id
+            for order in prev_order
+        }.values()
 
-        return [ order.id for order in prev_order_clean ]
-
-
-    @api.multi
+    @api.depends('state')
     def _compute_get_previous_order_ids(self):
-        for order in self:
-            order.previous_order_ids = order._default_get_previous_order_ids()
+        self.previous_order_ids = self._default_get_previous_order_ids()
 
-    @api.multi
+    @api.one
     @api.depends('order_line_ids')
     def _compute_total(self):
         """
         get and sum the order lines' price
         """
-        for order in self:
-            order.total = sum(
-                orderline.price for orderline in order.order_line_ids)
+        self.total = sum(
+            orderline.price for orderline in self.order_line_ids)
 
-    @api.multi
-    def update_order_state(self):
+    @api.onchange('total')
+    def _onchange_total(self):
         """
-        Update the state of lunch.order based on its orderlines
+        Calculates the forecasted balance of the user, taking into account the current order
         """
-        for order in self:
-            isconfirmed = True
-            for orderline in order.order_line_ids:
-                if orderline.state == 'new':
-                    isconfirmed = False
+        prev_cashmove = self.env['lunch.cashmove'].search([('user_id', '=', self.user_id.id)])
+        balance = sum(
+            cashmove.amount for cashmove in prev_cashmove)
+
+        if self.total > balance:
+            raise Warning('%s (%s %s)' %\
+                (_('The total amount of the order is larger than the available balance'),\
+                balance, self.currency_id.name))
+
+    @api.one
+    @api.constrains('date')
+    def _check_date(self):
+        """
+        Prevents the user to create an order in the past
+        """
+        date_order = datetime.datetime.strptime(self.date, '%Y-%m-%d')
+        date_today = datetime.datetime.strptime(fields.Date.context_today(self), '%Y-%m-%d')
+        if (date_order < date_today):
+            raise UserError(_('The date of your order is in the past.'))
+
+    @api.one
+    @api.depends('order_line_ids.state')
+    def _compute_order_state(self):
+        """
+        Update the state of lunch.order based on its orderlines. Here is the logic:
+        - if at least one order line is cancelled, the order is set as cancelled
+        - if no line is cancelled but at least one line is not confirmed, the order is set as new
+        - if all lines are confirmed, the order is set as confirmed
+        """
+
+        if not self.order_line_ids:
+            self.state = 'new'
+        else:
+            isConfirmed = True
+            for orderline in self.order_line_ids:
                 if orderline.state == 'cancelled':
-                    isconfirmed = False
-                    order.state = 'partially'
-            if isconfirmed:
-                order.state = 'confirmed'
+                    self.state = 'cancelled'
+                    return
+                elif orderline.state == 'confirmed':
+                    continue
+                else:
+                    isConfirmed = False
+
+            if isConfirmed:
+                self.state = 'confirmed'
+            else:
+                self.state = 'new'
+        return
 
 
-    user_id = fields.Many2one('res.users', 'User Name', required=True, readonly=True,
+    user_id = fields.Many2one('res.users', 'User', required=True, readonly=True,
                               states={'new': [('readonly', False)]},
                               default=lambda self: self.env.uid)
-
     date = fields.Date('Date', required=True, readonly=True,
                        states={'new': [('readonly', False)]},
                        default = fields.Date.context_today)
-
     order_line_ids = fields.One2many('lunch.order.line', 'order_id', 'Products',
                                      ondelete="cascade", readonly=True, copy=True,
-                                     states={'new':[('readonly', False)]})
-
+                                     states={'new':[('readonly', False)], False:[('readonly', False)]})
     total = fields.Float(compute='_compute_total', string="Total", store=True)
-
     state = fields.Selection([('new', 'New'),
                               ('confirmed', 'Confirmed'),
-                              ('cancelled', 'Cancelled'),
-                              ('partially', 'Partially Confirmed')],
-                             'Status', readonly=True, select=True, copy=False, default='new')
-
-    alerts = fields.Text(compute='_compute_alerts_get', string="Alerts",
-                         default=_default_alerts_get)
-
+                              ('cancelled', 'Cancelled')],
+                             'Status', readonly=True, index=True, copy=False, default='new',
+                             compute='_compute_order_state')
+    alerts = fields.Text(compute='_compute_alerts_get', string="Alerts")
     previous_order_ids = fields.One2many(comodel_name='lunch.order.line',
                                          compute='_compute_get_previous_order_ids',
                                          default=_default_get_previous_order_ids)
-
-    company_id = fields.Many2one('res.company', related='user_id.company_id')
-    currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True)
+    company_id = fields.Many2one('res.company', related='user_id.company_id', store=True)
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True, store=True)
 
 
 class lunch_order_line(models.Model):
-    """
-    lunch order line: one lunch order can have many order lines
-    """
+
     _name = 'lunch.order.line'
     _description = 'lunch order line'
 
-    @api.onchange('product_id')
-    def onchange_price(self):
-        self.price = self.product_id.price
-
-    @api.multi
+    @api.one
     def order(self):
         """
         The order_line is ordered to the supplier but isn't received yet
         """
-        self.write({'state': 'ordered'})
-        orders = self.env['lunch.order'].search(
-            [('order_line_ids', 'in', self.ids)])
-        return orders.update_order_state()
+        self.state = 'ordered'
 
-    @api.multi
+    @api.one
     def confirm(self):
         """
         confirm one or more order line, update order status and create new cashmove
         """
-        for orderline in self:
-            if orderline.state != 'confirmed':
-                values = {
-                    'user_id': orderline.user_id.id,
-                    'amount': -orderline.price,
-                    'description': orderline.product_id.name,
-                    'order_id': orderline.id,
-                    'state': 'order',
-                    'date': orderline.date,
-                }
-                self.env['lunch.cashmove'].create(values)
-                orderline.state = 'confirmed'
-        orders = self.env['lunch.order'].search(
-            [('order_line_ids', 'in', self.ids)])
-        return orders.update_order_state()
+        if self.state != 'confirmed':
+            values = {
+                'user_id': self.user_id.id,
+                'amount': -self.price,
+                'description': self.product_id.name,
+                'order_id': self.id,
+                'state': 'order',
+                'date': self.date,
+            }
+            self.env['lunch.cashmove'].create(values)
+            self.state = 'confirmed'
 
-    @api.multi
+    @api.one
     def cancel(self):
         """
         cancel one or more order.line, update order status and unlink existing cashmoves
         """
-        self.write({'state': 'cancelled'})
-        for orderline in self:
-            orderline.cashmove.unlink()
-        orders = self.env['lunch.order'].search(
-            [('order_line_ids', 'in', self.ids)])
-        return orders.update_order_state()
+        self.state = 'cancelled'
+        self.cashmove.unlink()
 
 
-    name = fields.Char(string='name', related='product_id.name', readonly=True)
-
-    order_id = fields.Many2one('lunch.order', 'Order', ondelete='cascade')
-
+    name = fields.Char(related='product_id.name', readonly=True)
+    order_id = fields.Many2one('lunch.order', 'Order', ondelete='cascade', required=True)
     product_id = fields.Many2one('lunch.product', 'Product', required=True)
-
     category_id = fields.Many2one('lunch.product.category', string='Product Category',
                                   related='product_id.category_id', readonly=True, store=True)
-
     date = fields.Date(string='Date', related='order_id.date', readonly=True, store=True)
-
     supplier = fields.Many2one('res.partner', string='Supplier', related='product_id.supplier',
                                readonly=True, store=True)
-
     user_id = fields.Many2one('res.users', string='User', related='order_id.user_id',
                               readonly=True, store=True)
-
     note = fields.Text('Note')
-    price = fields.Float('Price')
+    price = fields.Float(related='product_id.price', readonly=True, store=True,
+                         digits_compute=dp.get_precision('Account'))
     state = fields.Selection([('new', 'New'),
                               ('confirmed', 'Received'),
                               ('ordered', 'Ordered'),
                               ('cancelled', 'Cancelled')],
                              'Status', readonly=True, select=True, default='new')
-
     cashmove = fields.One2many('lunch.cashmove', 'order_id', 'Cash Move')
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
 
 
 class lunch_product(models.Model):
     """
-    lunch product
+    Products available to order. A product is linked to a specific supplier.
     """
     _name = 'lunch.product'
     _description = 'lunch product'
@@ -214,60 +202,55 @@ class lunch_product(models.Model):
     name = fields.Char('Product', required=True)
     category_id = fields.Many2one('lunch.product.category', 'Category', required=True)
     description = fields.Text('Description')
-    price = fields.Float('Price', digits=(16, 2))
+    price = fields.Float('Price', digits_compute=dp.get_precision('Account'))
     supplier = fields.Many2one('res.partner', 'Supplier')
 
 
 class lunch_product_category(models.Model):
     """
-    lunch product category
+    Category of the product such as pizza, sandwich, pasta, chinese, burger...
     """
     _name = 'lunch.product.category'
     _description = 'lunch product category'
 
-    # such as PIZZA, SANDWICH, PASTA, CHINESE, BURGER, ...
     name = fields.Char('Category', required=True)
 
 
 class lunch_cashmove(models.Model):
     """
-    lunch cashmove => order or payment
+    Two types of cashmoves: payment (credit) or order (debit)
     """
     _name = 'lunch.cashmove'
     _description = 'lunch cashmove'
 
     @api.multi
     def name_get(self):
-        return [(cashmove.id, "%s %s" % (_('Lunch Cashmove'), cashmove.id)) for cashmove in self]
+        return [(cashmove.id, '%s %s' % (_('Lunch Cashmove'), '#%d' % cashmove.id)) for cashmove in self]
 
-    user_id = fields.Many2one('res.users', 'User Name', required=True,
+    user_id = fields.Many2one('res.users', 'User', required=True,
                               default=lambda self: self.env.uid)
-
     date = fields.Date('Date', required=True, default=fields.Date.context_today)
-
-    amount = fields.Float('Amount', required=True) # Can be positive or negative
-
-    description = fields.Text('Description') # Can be an order or a payment
-
+    amount = fields.Float('Amount', required=True, help='Can be positive (payment) or negative (order or payment if user wants to get his money back)')
+    description = fields.Text('Description', help='Can be an order or a payment')
     order_id = fields.Many2one('lunch.order.line', 'Order', ondelete='cascade')
-
     state = fields.Selection([('order', 'Order'), ('payment', 'Payment')],
-                             'Is an order or a Payment', default='payment')
+                             'Is an order or a payment', default='payment')
 
 
 class lunch_alert(models.Model):
     """
-    lunch alert
+    Alerts to display during a lunch order. An alert can be specific to a given day, weekly or
+    daily. The alert is displayed from start to end hour.
     """
     _name = 'lunch.alert'
     _description = 'Lunch Alert'
 
     @api.multi
     def name_get(self):
-        return [(alert.id, "%s %s" % (_('Alert'), alert.id)) for alert in self]
+        return [(alert.id, '%s %s' % (_('Alert'), '#%d' % alert.id)) for alert in self]
 
-    @api.model
-    def get_alert_message(self):
+    @api.one
+    def _compute_display_get(self):
         """
         This method check if the alert can be displayed today
         if alert type is specific : compare specific_day(date) with today's date
@@ -290,19 +273,19 @@ class lunch_alert(models.Model):
             hour_from = int(self.start_hour)
             min_from = int((self.start_hour - hour_from) * 60)
             from_alert = datetime.time(hour_from, min_from)
+
             if from_alert <= mynow.time() <= to_alert:
-                return self.message
-        return False
+                self.display = True
+            else:
+                self.display = False
 
+    display = fields.Boolean(compute='_compute_display_get')
     message = fields.Text('Message', required=True)
-
     alert_type = fields.Selection([('specific', 'Specific Day'),
                                    ('week', 'Every Week'),
                                    ('days', 'Every Day')],
                                   string='Recurrency', required=True, select=True, default='specific')
-
     specific_day = fields.Date('Day', default=fields.Date.context_today)
-
     monday = fields.Boolean('Monday')
     tuesday = fields.Boolean('Tuesday')
     wednesday = fields.Boolean('Wednesday')
@@ -310,6 +293,5 @@ class lunch_alert(models.Model):
     friday = fields.Boolean('Friday')
     saturday = fields.Boolean('Saturday')
     sunday = fields.Boolean('Sunday')
-
     start_hour = fields.Float('Between', oldname='active_from', required=True, default=7)
     end_hour = fields.Float('And', oldname='active_to', required=True, default=23)

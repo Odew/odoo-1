@@ -1585,6 +1585,7 @@ core.form_tag_registry.add('button', WidgetButton);
 
 return {
     FieldChar: FieldChar,
+    FieldMonetary: FieldMonetary
 };
 
 });

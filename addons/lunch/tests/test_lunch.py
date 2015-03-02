@@ -9,27 +9,19 @@ class Test_Lunch(common.TransactionCase):
         """*****setUp*****"""
         super(Test_Lunch, self).setUp()
 
-        self.res_users = self.env['res.users']
-        self.lunch_order = self.env['lunch.order']
-        self.lunch_order_line = self.env['lunch.order.line']
-        self.lunch_cashmove = self.env['lunch.cashmove']
-        self.lunch_product = self.env['lunch.product']
-        self.lunch_alert = self.env['lunch.alert']
-        self.lunch_product_category = self.env['lunch.product.category']
-
-        self.demo_user = self.res_users.search([('name', '=', 'Demo User')])
+        self.demo_user = self.env['res.users'].search([('name', '=', 'Demo User')])
         self.product_bolognese_ref = self.env['ir.model.data'].get_object_reference('lunch', 'product_Bolognese')
         self.product_Bolognese_id = self.product_bolognese_ref and self.product_bolognese_ref[1] or False
-        self.new_id_order = self.lunch_order.create({
+        self.new_id_order = self.env['lunch.order'].create({
             'user_id': self.demo_user.id,
             'order_line_ids': '[]',
             })
-        self.new_id_order_line = self.lunch_order_line.create({
+        self.new_id_order_line = self.env['lunch.order.line'].create({
             'order_id': self.new_id_order.id,
             'product_id': self.product_Bolognese_id,
             'note': '+Emmental',
             'cashmove': [],
-            'price': self.lunch_product.browse(self.product_Bolognese_id).price,
+            'price': self.env['lunch.product'].browse(self.product_Bolognese_id).price,
             })
 
     def test_00_lunch_order(self):
