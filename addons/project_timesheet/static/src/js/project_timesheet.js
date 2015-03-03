@@ -18,16 +18,17 @@ openerp.project_timesheet = function(openerp) {
 	                    	"next_aal_id":9,
 	                    	"next_project_id":3,
 	                    	"next_task_id":4,
+                            "module_key" : "Project_timesheet_UI_",
 	                        "settings":{
 	                            "default_project_id":undefined,
 	                            "minimal_duration":15,
 	                            "time_unit":15
 	                        },
 	                        "projects":[
-	                            // {
-	                            //     "id":1,
-	                            //     "name":"Implementation"
-	                            // },
+	                            {
+	                                "id":'Project_timesheet_UI.1',
+	                                "name":"Implementation_P23"
+	                            },
 	                            // {
 	                            //     "id":2,
 	                            //     "name":"Testing"
@@ -313,13 +314,20 @@ openerp.project_timesheet = function(openerp) {
             this.getParent().edit_activity_screen.show();
         },
         start_activity: function(){
+            self = this;
             this.$(".pt_btn_start_activity").html('<span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop </a>');
             this.$(".pt_btn_start_activity").toggleClass("pt_btn_start_activity pt_btn_stop_activity");
+            
+            function timer_fct(start_time){
+                self.$(".pt_timer_clock").text(moment.utc(new Date() - start_time).format("HH:mm:ss"));
+            }
+            var start_timer_time = new Date();
+            this.timer_start = setInterval(function(){timer_fct(start_timer_time)},500);
         },
         stop_activity: function(){
             this.$(".pt_btn_stop_activity").html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start</a>');
             this.$(".pt_btn_stop_activity").toggleClass("pt_btn_start_activity pt_btn_stop_activity");
-
+            clearInterval(this.timer_start);
         },
         test_fct: function(){
             this.sync();
@@ -464,7 +472,7 @@ openerp.project_timesheet = function(openerp) {
                         return undefined;
                     }
                     res = {
-                        id : self.data.next_project_id,
+                        id : self.data.module_key + "_project." + self.data.next_project_id,
                         name : user_input.trim(),
                         isNew: true,
                     };
@@ -559,7 +567,7 @@ openerp.project_timesheet = function(openerp) {
                         return undefined;
                     }
                     res = {
-                        id : self.data.next_project_id,
+                        id : self.data.module_key + "_project." + self.data.next_project_id,
                         name : user_input.trim(),
                         isNew: true,
                     };
@@ -598,7 +606,7 @@ openerp.project_timesheet = function(openerp) {
                         return undefined;
                     }
 					res = {
-						id : self.data.next_task_id,
+						id : self.data.module_key + "_task." + self.data.next_task_id,
 						name : user_input.trim(),
 						isNew: true,
                         project_id: self.activity.project_id
@@ -682,7 +690,7 @@ openerp.project_timesheet = function(openerp) {
             var old_activity = _.findWhere(this.data.account_analytic_lines,  {id:this.activity.id})
             // If this condition is true, it means that the activity is a newly created one :
             if(_.isUndefined(old_activity)){
-                this.data.account_analytic_lines.unshift({id : self.data.next_aal_id});
+                this.data.account_analytic_lines.unshift({id : self.data.module_key + "_aal." + self.data.next_aal_id});
                 old_activity = this.data.account_analytic_lines[0];
                 self.data.next_aal_id++;
             }

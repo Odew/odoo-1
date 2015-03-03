@@ -12,7 +12,7 @@
     	<div class="pt_activities_screen">
     		<div class="row pt_timer">
     			<!--"main" section-->
-	    		<div class="col-xs-6">
+	    		<div class="col-xs-6 pt_timer_clock">
 		    		<!--Put time here-->
 		    		
 		    	</div>

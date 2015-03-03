@@ -244,10 +244,12 @@ class account_analytic_line(osv.osv):
         'task_id' : fields.many2one('project.task', 'Task'),
     }
 
-    # tac : WIP
-    def load_data_for_ui(self, cr, uid, domain, fields=None, context=None):
-        res = self.search_read(cr, uid, domain=domain, fields=fields, context=context)
-        return res
+    # Override to be able to import aals from the UI
+    def default_get(self,cr,uid,fields,context=None):
+
+        values = super(account_analytic_line, self).default_get(cr, uid, fields, context=context)
+        return values
+
 
     def export_data_for_ui(self, cr, uid, context=None):
         #AALS
@@ -295,11 +297,11 @@ class account_analytic_line(osv.osv):
         
         ls_projects_to_import = [[str(ls_projects[x]['id']),ls_projects[x]['name']] for x in range(len(ls_projects))]
         projects_fields = ['id','name']
-        self.pool.get("project.project").load(cr, uid, projects_fields, ls_projects_to_import)
+        self.pool["project.project"].load(cr, uid, projects_fields, ls_projects_to_import)
 
-        ls_tasks_to_import = [[str(ls_tasks[x]['id']),ls_tasks[x]['name'],str(ls_tasks[x]['project_id']) , 'Administrator'] for x in range(len(ls_tasks))]
-        tasks_fields = ['id','name','project_id/id','user_id']
-        self.pool.get("project.task").load(cr, uid, tasks_fields, ls_tasks_to_import)
+        ls_tasks_to_import = [[str(ls_tasks[x]['id']),ls_tasks[x]['name'],str(ls_tasks[x]['project_id']) , uid] for x in range(len(ls_tasks))]
+        tasks_fields = ['id','name','project_id/id','user_id/.id']
+        self.pool["project.task"].load(cr, uid, tasks_fields, ls_tasks_to_import)
 
         # Find the acc id
         # check the write_date
@@ -312,7 +314,10 @@ class account_analytic_line(osv.osv):
             else:
                 new_ls_aals.append(ls_aal)
 
-        print new_ls_aals
+        for new_ls_aal in new_ls_aals:
+            sv_project = self.pool.get("ir.model.data").xmlid_to_object(cr, uid, str(new_ls_aal['project_id']))
+            new_ls_aal['account_id'] = str(sv_project['analytic_account_id']['id'])
 
-        ls_aals_to_import = [[str(new_ls_aals[x]['id']),new_ls_aals[x]['desc'],str(new_ls_aals[x]['project_id']), new_ls_aals[x]['date'] , new_ls_aals[x]['unit_amount'] , 'Administrator'] for x in range(len(new_ls_aals))]
-        aals_fields = ['id','name','account_id','date','unit_amount', 'user_id']
+        ls_aals_to_import = [[str(new_ls_aals[x]['id']),new_ls_aals[x]['desc'],new_ls_aals[x]['account_id'], new_ls_aals[x]['date'] , new_ls_aals[x]['unit_amount']  , str(new_ls_aals[x].get('task_id')) , uid, 'True'] for x in range(len(new_ls_aals))]
+        aals_fields = ['id','name','account_id/.id','date','unit_amount', 'task_id/id', 'user_id/.id', 'is_timesheet']
+        print self.load(cr, uid, aals_fields, ls_aals_to_import, context)
