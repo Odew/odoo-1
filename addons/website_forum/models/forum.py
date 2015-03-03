@@ -11,6 +11,7 @@ from openerp import _
 from openerp import api, fields, models
 from openerp import modules
 from openerp import tools
+from openerp.http import request
 from openerp import SUPERUSER_ID
 from openerp.addons.website.models.website import slug
 from openerp.exceptions import UserError
@@ -428,7 +429,7 @@ class Post(models.Model):
                     post.create_uid.sudo().add_karma(post.forum_id.karma_gen_answer_accepted * mult)
                     self.env.user.sudo().add_karma(post.forum_id.karma_gen_answer_accept * mult)
         if 'tag_ids' in vals:
-            if any(self.env.user.karma < post.forum_id.karma_retag for post in self):
+            if any(self.env.user.karma < post.forum_id.karma_edit_retag for post in self):
                 raise KarmaError('Not enough karma to retag.')
         if any(key not in ['state', 'active', 'is_correct', 'closed_uid', 'closed_date', 'closed_reason_id', 'tag_ids'] for key in vals.keys()) and any(not post.can_edit for post in self):
             raise KarmaError('Not enough karma to edit a post.')
@@ -714,6 +715,7 @@ class Tags(models.Model):
     forum_id = fields.Many2one('forum.forum', string='Forum', required=True)
     post_ids = fields.Many2many('forum.post', 'forum_tag_rel', 'forum_tag_id', 'forum_id', string='Posts')
     posts_count = fields.Integer('Number of Posts', compute='_get_posts_count', store=True)
+    follower = fields.Boolean(compute='compute_follower')
 
     @api.multi
     @api.depends("post_ids.tag_ids")
@@ -721,9 +723,19 @@ class Tags(models.Model):
         for tag in self:
             tag.posts_count = len(tag.post_ids)
 
+    @api.one
+    def compute_follower(self):
+        partner_id = self.env.user.partner_id.id
+        if partner_id == self.env.ref('base.public_user').partner_id.id:
+            partner_id = request.session and request.session.partner_id
+        if self.env['mail.followers'].search([('res_model', '=', self._name), ('res_id', '=', self.id), ('partner_id', '=', partner_id)]):
+            self.follower = True
+        else:
+            self.follower = False
+
     @api.model
     def create(self, vals):
-        tag = super(Tags, self).create(vals)
-        if self.env.user.karma < tag.forum_id.karma_tag_create:
+        forum = self.env['forum.forum'].browse(vals.get('forum_id'))
+        if self.env.user.karma < forum.karma_tag_create:
             raise KarmaError(_('Not enough karma to create a new Tag'))
-        return tag
+        return super(Tags, self).create(vals)

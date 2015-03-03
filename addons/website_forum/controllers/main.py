@@ -192,6 +192,7 @@ class WebsiteForum(http.Controller):
             'tags': tags,
             'pager_tag_chars': first_char_list,
             'active_char_tag': active_char_tag,
+            'is_session': request.session.partner_id,
         })
         return request.website.render("website_forum.tag", values)
 
@@ -630,3 +631,29 @@ class WebsiteForum(http.Controller):
         if not request.session.uid:
             return {'error': 'anonymous_user'}
         return post.unlink_comment(comment.id)[0]
+
+    @http.route(['/website_follow/is_follower'], type='json', auth="public", website=True)
+    def follow_tags(self, ids, **post):
+        Partner = request.env['res.partner']
+        User = request.env['res.users']
+        Tag = request.env['forum.tag']
+
+        partner_id = None
+        public_id = request.website.user_id.id
+        if request.uid != public_id:
+            partner_id = User.sudo().browse(request.uid).partner_id
+        elif request.session.get('partner_id'):
+            partner_id = Partner.sudo().browse(request.session.get('partner_id'))
+        email = partner_id and partner_id.email or ""
+
+        values = {
+            'is_user': request.uid != public_id,
+            'email': email,
+            'is_follower': {},
+        }
+
+        follow_tag = {}
+        for tag_id in ids:
+            follow_tag[tag_id] = Tag.browse(tag_id).follower if partner_id else False
+        values['is_follower'] = follow_tag
+        return values
