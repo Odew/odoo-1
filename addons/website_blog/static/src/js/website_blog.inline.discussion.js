@@ -4,6 +4,7 @@
     'use strict';
 
     var website = openerp.website,
+        web_editor = openerp.web_editor,
         qweb = openerp.qweb;
 
     website.blog_discussion = openerp.Class.extend({
@@ -19,7 +20,7 @@
             self.settings = $.extend({}, defaults, options);
 
             // TODO: bundlify qweb templates
-            website.add_template_file('/website_blog/static/src/xml/website_blog.inline.discussion.xml').then(function () {
+            web_editor.add_template_file('/website_blog/static/src/xml/website_blog.inline.discussion.xml').then(function () {
                 self.do_render(self);
             });
         },

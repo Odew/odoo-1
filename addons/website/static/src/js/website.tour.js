@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-window.openerp.website.EditorBar.include({
+window.openerp.website.TopBar.include({
     tours: [],
     start: function () {
         var self = this;

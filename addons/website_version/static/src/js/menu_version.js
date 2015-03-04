@@ -2,9 +2,9 @@
     'use strict';
     var _t = openerp._t;
     
-    var website=openerp.website;
+    var website = openerp.website;
     var QWeb = openerp.qweb;
-    website.add_template_file('/website_version/static/src/xml/version_templates.xml');
+    openerp.web_editor.add_template_file('/website_version/static/src/xml/version_templates.xml');
     
     website.EditorVersion = openerp.Widget.extend({
         start: function() {

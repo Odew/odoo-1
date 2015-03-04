@@ -1,9 +1,9 @@
 (function () {
     'use strict';
-    var website = openerp.website,
-        qweb = openerp.qweb;
+    var qweb = openerp.qweb;
+    var web_editor = openerp.web_editor;
 
-    website.snippet.options["twitter"] = website.snippet.options.marginAndResize.extend({
+    web_editor.snippet.options["twitter"] = web_editor.snippet.options.marginAndResize.extend({
         start: function(){
             this._super();
             this.make_hover_config();

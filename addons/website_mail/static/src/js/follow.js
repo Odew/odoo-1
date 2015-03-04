@@ -1,9 +1,9 @@
 (function () {
     'use strict';
 
-    var website = openerp.website;
+    var web_editor = openerp.web_editor;
 
-    website.snippet.animationRegistry.follow = website.snippet.Animation.extend({
+    web_editor.snippet.animationRegistry.follow = web_editor.snippet.Animation.extend({
         selector: ".js_follow",
         start: function (editable_mode) {
             var self = this;

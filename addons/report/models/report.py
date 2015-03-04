@@ -138,6 +138,7 @@ class Report(osv.Model):
             if request.website is not None:
                 website = request.website
                 context = dict(context, translatable=context.get('lang') != request.website.default_lang_code)
+
         values.update(
             time=time,
             translate_doc=translate_doc,

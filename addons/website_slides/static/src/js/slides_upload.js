@@ -6,7 +6,7 @@ $(document).ready(function () {
     var website = openerp.website;
     var _t = openerp._t;
 
-    website.slide.template = website.add_template_file('/website_slides/static/src/xml/website_slides.xml');
+    openerp.web_editor.add_template_file('/website_slides/static/src/xml/website_slides.xml');
 
     website.slide.Dialog = openerp.Widget.extend({
         template: 'website.slide.upload',

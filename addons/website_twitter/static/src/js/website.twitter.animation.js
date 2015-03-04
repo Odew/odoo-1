@@ -1,11 +1,11 @@
 (function () {
     'use strict';
-    var website = openerp.website,
+    var web_editor = openerp.web_editor,
         qweb = openerp.qweb;
  
     qweb.add_template('/website_twitter/static/src/xml/website.twitter.xml');
-    if (!website.snippet) website.snippet = {};
-    website.snippet.animationRegistry.twitter = website.snippet.Animation.extend({
+    if (!web_editor.snippet) web_editor.snippet = {};
+    web_editor.snippet.animationRegistry.twitter = web_editor.snippet.Animation.extend({
         selector: ".twitter",
         start: function () {
             var self = this;

@@ -68,7 +68,7 @@
                 content:   _t("Choose an image from the library."),
                 popover:   { fixed: true },
                 onload: function () {
-                    $('form[action="/website/attach"] .well > *').hide();
+                    $('form[action="/web_editor/attachment/add"] .well > *').hide();
                 }
             },
             {
@@ -94,7 +94,7 @@
                 popover:   { fixed: true },
             },
             {
-                waitFor:   '#website-top-navbar:hidden',
+                waitNot:   '#web_editor-top-edit',
                 element:   '.js_publish_management button.js_publish_btn.btn-danger',
                 placement: 'top',
                 title:     _t("Publish your product"),

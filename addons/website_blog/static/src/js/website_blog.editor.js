@@ -2,9 +2,10 @@
     "use strict";
 
     var website = openerp.website;
+    var web_editor = openerp.web_editor;
     var _t = openerp._t;
 
-    website.EditorBarContent.include({
+    website.TopBarContent.include({
         new_blog_post: function() {
             website.prompt({
                 id: "editor_new_blog",
@@ -20,9 +21,9 @@
         },
     });
 
-    openerp.website.if_dom_contains('.website_blog', function() {
+    website.if_dom_contains('.website_blog', function() {
 
-        website.EditorBar.include({
+        web_editor.EditorBar.include({
             edit: function () {
                 var self = this;
                 $('.popover').remove();
@@ -30,17 +31,16 @@
                 var vHeight = $(window).height();
             },
             save : function() {
-                var res = this._super();
-                if ($('.cover').length) {
+                if ($('.cover.o_dirty').length) {
                     openerp.jsonRpc("/blog/post_change_background", 'call', {
-                        'post_id' : $('#blog_post_name').attr('data-oe-id'),
+                        'post_id' : +$('#blog_content').attr('data-oe-id'),
                         'image' : $('.cover').css('background-image').replace(/url\(|\)|"|'/g,''),
                     });
                 }
-                return res;
+                return this._super();
             },
         });
-        website.snippet.options.many2one.include({
+        web_editor.snippet.options.many2one.include({
             select_record: function (li) {
                 var self = this;
                 this._super(li);
@@ -50,14 +50,14 @@
                         var $img = $(this).find("img");
                         var css = window.getComputedStyle($img[0]);
                         $img.css({ width: css.width, height: css.height });
-                        $img.attr("src", "/website/image/res.partner/"+self.ID+"/image");
+                        $img.attr("src", "/web_editor/image/res.partner/"+self.ID+"/image");
                     });
                     setTimeout(function () { $nodes.removeClass('o_dirty'); },0);
                 }
             }
         });
 
-        website.snippet.options.website_blog = website.snippet.Option.extend({
+        web_editor.snippet.options.website_blog = web_editor.snippet.Option.extend({
             start : function(type, value, $li) {
                 this._super();
                 this.src = this.$target.css("background-image").replace(/url\(|\)|"|'/g,'').replace(/.*none$/,'');
@@ -72,11 +72,13 @@
             change : function(type, value, $li) {
                 if (type !== 'click') return;
                 var self = this;
-                var editor  = new website.editor.MediaDialog(this.$image, this.$image[0], {only_images: true});
+                var editor  = new web_editor.widgets.MediaDialog(this.$image, this.$image[0], {only_images: true});
                 editor.appendTo('body');
                 editor.on('saved', self, function (event, img) {
                     var url = self.$image.attr('src');
                     self.$target.css({"background-image": url ? 'url(' + url + ')' : "", 'min-height': $(window).height()});
+                    self.$target.addClass('o_dirty');
+                    self.BuildingBlock.parent.rte_changed();
                 });
             },
         });

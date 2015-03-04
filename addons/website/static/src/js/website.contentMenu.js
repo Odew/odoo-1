@@ -1,12 +1,13 @@
 (function () {
     'use strict';
 
+    var web_editor = openerp.web_editor;
     var website = openerp.website;
     website.contentMenu = {};
-    website.add_template_file('/website/static/src/xml/website.contentMenu.xml');
+    web_editor.add_template_file('/website/static/src/xml/website.contentMenu.xml');
     var _t = openerp._t;
 
-    website.EditorBarContent = openerp.Widget.extend({
+    website.TopBarContent = openerp.Widget.extend({
         start: function() {
             var self = this;
             self.$el.on('click', 'a[data-action]', function(ev) {
@@ -116,8 +117,16 @@
             }
         }
     });
+    website.TopBar.include({
+        start: function () {
+            this.content_menu = new website.TopBarContent();
+            this.content_menu.setElement($('.oe_content_menu'));
+            this.content_menu.start();
+            return this._super();
+        }
+    });
 
-    website.contentMenu.SelectEditMenuDialog = website.editor.Dialog.extend({
+    website.contentMenu.SelectEditMenuDialog = web_editor.widgets.Dialog.extend({
         template: 'website.contentMenu.dialog.select',
         init: function () {
             var self = this;
@@ -133,9 +142,9 @@
         }
     });
     
-    website.contentMenu.EditMenuDialog = website.editor.Dialog.extend({
+    website.contentMenu.EditMenuDialog = web_editor.widgets.Dialog.extend({
         template: 'website.contentMenu.dialog.edit',
-        events: _.extend({}, website.editor.Dialog.prototype.events, {
+        events: _.extend({}, web_editor.widgets.Dialog.prototype.events, {
             'click a.js_add_menu': 'add_menu',
             'click button.js_edit_menu': 'edit_menu',
             'click button.js_delete_menu': 'delete_menu',
@@ -254,7 +263,7 @@
         },
     });
 
-    website.contentMenu.MenuEntryDialog = website.editor.LinkDialog.extend({
+    website.contentMenu.MenuEntryDialog = web_editor.widgets.LinkDialog.extend({
         template: 'website.contentMenu.dialog.add',
         init: function (editor, data) {
             data.text = data.name || '';
@@ -290,12 +299,6 @@
         destroy: function () {
             this._super.apply(this, arguments);
         },
-    });
-
-    $(document).ready(function() {
-        var content = new website.EditorBarContent();
-        content.setElement($('.oe_content_menu'));
-        content.start();
     });
 
 })();

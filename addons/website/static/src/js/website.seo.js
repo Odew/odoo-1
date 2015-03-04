@@ -2,7 +2,7 @@
     'use strict';
 
     var website = openerp.website;
-    website.add_template_file('/website/static/src/xml/website.seo.xml');
+    openerp.web_editor.add_template_file('/website/static/src/xml/website.seo.xml');
 
     website.seo = {};
 
@@ -516,10 +516,13 @@
         },
     });
 
-    website.ready().done(function() {
-        $(document.body).on('click', 'a[data-action=promote-current-page]', function() {
-            new website.seo.Configurator(this).appendTo($(document.body));
-        });
+    website.TopBar.include({
+        start: function () {
+            this.$el.on('click', 'a[data-action=promote-current-page]', function() {
+                new website.seo.Configurator(this).appendTo($(document.body));
+            });
+            return this._super();
+        }
     });
 
 })();

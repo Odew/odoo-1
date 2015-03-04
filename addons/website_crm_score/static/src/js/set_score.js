@@ -4,7 +4,7 @@
     var website = openerp.website;
     var _t = openerp._t;
 
-    website.add_template_file('/website_crm_score/static/src/xml/track_page.xml');
+    openerp.web_editor.add_template_file('/website_crm_score/static/src/xml/track_page.xml');
 
     website.seo.Configurator.include({
         track: null,

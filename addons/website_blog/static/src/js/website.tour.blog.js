@@ -47,7 +47,37 @@
                 content:   _t("Click on this area and set a catchy title for your blog post."),
             },
             {
-                waitNot:   '#wrap h1[data-oe-model="blog.post"]:contains("Blog Post Title")',
+                waitNot:   '#wrap h1[data-oe-model="blog.post"]:first:contains("Blog Post Title")',
+                element:   '#oe_manipulators .oe_options:visible a:first',
+                placement: 'right',
+                title:     _t("Customize the Blog's Cover"),
+                content:   _t("Customize any block through this menu. Try to change the cover of the blog."),
+            },
+            {
+                element:   '#oe_manipulators .oe_options li[data-change="true"]:visible a:first',
+                placement: 'right',
+                title:     _t("Customize the Blog Cover"),
+                content:   _t("Customize any block through this menu. Try to change the cover of the blog."),
+            },
+            {
+                element:   '.modal .existing-attachment-cell:nth(2) img',
+                placement: 'top',
+                title:     _t("Choose an image"),
+                content:   _t("Choose an image from the library."),
+                popover:   { fixed: true },
+            },
+            {
+                element:   '.modal .btn.save',
+                placement: 'right',
+                waitFor:   '.existing-attachment-cell.media_selected',
+                title:       _t("Save"),
+                content:     _t("Click on <em>Save</em> to apply the image to the blog cover."),
+                onload: function () {
+                    openerp.Tour.scrollIntoView($("#blog_content"));
+                }
+            },
+            {
+                waitFor:   '.cover.o_dirty',
                 snippet:   '#snippet_structure .oe_snippet:eq(2)',
                 placement: 'bottom',
                 title:     _t("Drag & Drop a Block"),
@@ -55,6 +85,7 @@
                 popover:   { fixed: true },
             },
             {
+                waitFor:   '#blog_content *',
                 snippet:   '#snippet_structure .oe_snippet:eq(4)',
                 placement: 'bottom',
                 title:     _t("Drag & Drop a block"),
@@ -76,7 +107,7 @@
                 popover:   { fixed: true },
             },
             {
-                waitFor:   '#website-top-edit:hidden',
+                waitNot:   '#web_editor-top-edit',
                 element:   'button.btn-danger.js_publish_btn',
                 placement: 'bottom',
                 title:     _t("Publish Your Post"),

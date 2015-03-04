@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates id="template" xml:space="preserve">
+
+<t t-name="website.translator">
+    <div id="web_editor-top-edit" class=" o_translate navbar navbar-inverse navbar-fixed-top hidden-xs">
+        <form class="navbar-form text-muted">
+            <button type="button" data-action="save" class="btn btn-primary btn-xs">Save</button>
+            <span>or</span>
+            <a href="#" data-action="cancel" class="btn btn-link btn-xs">Discard</a>
+        </form>
+    </div>
+</t>
+
+
 <t t-name="website.TranslatorAdditionalButtons">
     <li><a class="btn btn-link" data-action="edit_master" href="#"> or Edit Master</a></li>
 </t>
+
 <t t-name="website.TranslatorDialog">
     <div class="modal fade oe_website_translator" tabindex="-1" role="dialog">
         <div class="modal-dialog">
@@ -19,10 +32,10 @@
                         <p>
                             Here are the visuals used to help you translate efficiently:
                             <ul class="oe_translate_examples">
-                                <li class="oe_translatable_todo">
+                                <li class="o_translatable_todo">
                                     Content to translate
                                 </li>
-                                <li class="oe_translatable_text">
+                                <li class="o_translatable_text">
                                     Translated content
                                 </li>
                             </ul>

@@ -2,9 +2,10 @@
     'use strict';
 
     var website = openerp.website;
+    var web_editor = openerp.web_editor;
     var _t = openerp._t;
 
-    website.snippet.options.subscribe = website.snippet.Option.extend({
+    web_editor.snippet.options.subscribe = web_editor.snippet.Option.extend({
         choose_mailing_list: function (type, value) {
             var self = this;
             if (type !== "click") return;

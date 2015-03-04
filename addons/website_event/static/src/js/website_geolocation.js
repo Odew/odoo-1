@@ -1,8 +1,8 @@
 (function() {
     "use strict";
-    var website = openerp.website;
+    var web_editor = openerp.web_editor;
 
-    website.snippet.animationRegistry.visitor = website.snippet.Animation.extend({
+    web_editor.snippet.animationRegistry.visitor = web_editor.snippet.Animation.extend({
         selector: ".oe_country_events",
         start: function () {
             var self = this;

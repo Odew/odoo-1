@@ -5,7 +5,7 @@
     var hash = "#advanced-view-editor";
 
     var website = openerp.website;
-    website.add_template_file('/website/static/src/xml/website.ace.xml');
+    openerp.web_editor.add_template_file('/website/static/src/xml/website.ace.xml');
 
     website.Ace = openerp.Widget.extend({
         launchAce: function (e) {

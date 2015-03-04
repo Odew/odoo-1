@@ -15,7 +15,7 @@
         </t>
     </t>
 
-    <t t-extend="website.editorbar">
+    <t t-extend="web_editor.editorbar">
         <t t-jquery=".navbar-header form button" t-operation="replace">
             <div class="btn-group">
                 <button type="button" data-action="save" class="btn btn-primary btn-xs">Save</button>

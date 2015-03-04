@@ -4,7 +4,7 @@
     var website = openerp.website;
     var _t = openerp._t;
 
-    website.EditorBarContent.include({
+    website.TopBarContent.include({
         new_forum: function() {
             website.prompt({
                 id: "editor_new_forum",

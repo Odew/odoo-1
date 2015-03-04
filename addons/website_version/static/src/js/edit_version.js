@@ -7,7 +7,7 @@
 
     website.action= {};
     
-    website.EditorBar.include({
+    website.TopBar.include({
         start: function() {
             var self = this;
             this.$el.on('click', '#save_as_new_version', function() {

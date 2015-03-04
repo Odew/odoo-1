@@ -1,9 +1,9 @@
 (function () {
     'use strict';
 
-    var website = openerp.website;
+    var web_editor = openerp.web_editor;
 
-    website.snippet.animationRegistry.subscribe = website.snippet.Animation.extend({
+    web_editor.snippet.animationRegistry.subscribe = web_editor.snippet.Animation.extend({
         selector: ".js_subscribe",
         start: function (editable_mode) {
             var self = this;
@@ -56,7 +56,7 @@
         },
     });
 
-    website.snippet.animationRegistry.newsletter_popup = website.snippet.Animation.extend({
+    web_editor.snippet.animationRegistry.newsletter_popup = web_editor.snippet.Animation.extend({
         selector: ".o_newsletter_popup",
         start: function (editable_mode) {
             var self = this;

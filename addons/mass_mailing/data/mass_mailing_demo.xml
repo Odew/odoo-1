@@ -48,10 +48,6 @@
         </tr><tr><td style="font-size:20px; text-align:center; padding: 0 5px"><span style="color:#000000;"></span></td>
         </tr></tbody></table></div>
 
-<div style="padding:0px; margin:auto;width:600px;background-color:#fff;color:#777777">
-<table cellpadding="0" cellspacing="0" style="margin:auto;border-collapse:collapse;background:inherit;color:inherit" width="600"><tbody><tr><td align="left" class="col_mv color_picker" style="text-align:center"><img alt="image" src="/website/static/src/img/big_picture.png" style="height: auto; max-width: 600px; width: 535px;"></td>
-        </tr></tbody></table></div>
-
 <div class="snippet_row" style="padding:0px;width:600px;margin:auto;background-color:#fff;color:#777777">
 <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:inherit;color:inherit" width="100%"><tbody><tr><td style="text-align:center;padding-bottom:10px"><span style="font-size:36px"></span>
 
@@ -64,11 +60,11 @@
 <table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;background:inherit;color:inherit">
     <tbody>
         <tr>
-            <td class="col_mv color_picker" style="padding:30px 15px;width:33%;text-align:center;background-color:#fff;color:#777777"><img alt="column2 image" src="/website/static/src/img/desert_thumb.jpg" style="height: auto; max-width: 600px; padding: 20px 0px 30px; width: 270px;"><span style="color: rgb(51, 51, 51); font-family: arial; font-size: 24px; line-height: 1.1;">Feature One</span>
+            <td class="col_mv color_picker" style="padding:30px 15px;width:33%;text-align:center;background-color:#fff;color:#777777"><span style="color: rgb(51, 51, 51); font-family: arial; font-size: 24px; line-height: 1.1;">Feature One</span>
 
             <p style="text-align: left;"><span style="font-size:24px;font-weight:bold"></span><span style="color: rgb(51, 51, 51); font-family: arial; font-size: 12px; line-height: 17.142858505249px;">Choose a vibrant image and write an inspiring paragraph about it. It does not have to be long, but it should reinforce your image.</span></p>
             </td>
-            <td class="col_mv color_picker" style="vertical-align:top; padding: 30px 15px; width:33%;text-align:center;background-color:#fff;color:#777777"><img alt="column3 image" src="/website/static/src/img/deers_thumb.jpg" style="height: auto; max-width: 600px; padding: 20px 0px 30px; width: 270px;"><span style="color: rgb(51, 51, 51); font-family: arial; font-size: 24px; line-height: 1.1;">Feature Two</span>
+            <td class="col_mv color_picker" style="vertical-align:top; padding: 30px 15px; width:33%;text-align:center;background-color:#fff;color:#777777"><span style="color: rgb(51, 51, 51); font-family: arial; font-size: 24px; line-height: 1.1;">Feature Two</span>
             <p style="text-align: left;"><span style="font-size:24px;font-weight:bold"></span><span style="color: rgb(51, 51, 51); font-family: arial; font-size: 12px; line-height: 17.142858505249px;">Choose a vibrant image and write an inspiring paragraph about it. It does not have to be long, but it should reinforce your image.</span></p>
             </td>
         </tr></tbody></table></div>
@@ -107,10 +103,6 @@
         </tr><tr><td style="font-size:20px; text-align:center; padding: 0 5px"><span style="color:#000000;"></span></td>
         </tr></tbody></table></div>
 
-<div style="padding:0px; margin:auto;width:600px;background-color:#fff;color:#777777">
-<table cellpadding="0" cellspacing="0" style="margin:auto;border-collapse:collapse;background:inherit;color:inherit" width="600"><tbody><tr><td align="left" class="col_mv color_picker" style="text-align:center"><img alt="image" src="/website/static/src/img/big_picture.png" style="height: auto; max-width: 600px; width: 535px;"></td>
-        </tr></tbody></table></div>
-
 <div class="snippet_row" style="padding:0px;width:600px;margin:auto;background-color:#fff;color:#777777">
 <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:inherit;color:inherit" width="100%"><tbody><tr><td style="text-align:center;padding-bottom:10px"><span style="font-size:36px"></span>
 
@@ -125,11 +117,11 @@
 <table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;background:inherit;color:inherit">
     <tbody>
         <tr>
-            <td class="col_mv color_picker" style="padding:30px 15px;width:33%;text-align:center;background-color:#fff;color:#777777"><img alt="column2 image" src="/website/static/src/img/desert_thumb.jpg" style="height: auto; max-width: 600px; padding: 20px 0px 30px; width: 270px;"><span style="color: rgb(51, 51, 51); font-family: arial; font-size: 24px; line-height: 1.1;">Feature One</span>
+            <td class="col_mv color_picker" style="padding:30px 15px;width:33%;text-align:center;background-color:#fff;color:#777777"><span style="color: rgb(51, 51, 51); font-family: arial; font-size: 24px; line-height: 1.1;">Feature One</span>
 
             <p style="text-align: left;"><span style="font-size:24px;font-weight:bold"></span><span style="color: rgb(51, 51, 51); font-family: arial; font-size: 12px; line-height: 17.142858505249px;">Choose a vibrant image and write an inspiring paragraph about it. It does not have to be long, but it should reinforce your image.</span></p>
             </td>
-            <td class="col_mv color_picker" style="vertical-align:top; padding: 30px 15px; width:33%;text-align:center;background-color:#fff;color:#777777"><img alt="column3 image" src="/website/static/src/img/deers_thumb.jpg" style="height: auto; max-width: 600px; padding: 20px 0px 30px; width: 270px;"><span style="color: rgb(51, 51, 51); font-family: arial; font-size: 24px; line-height: 1.1;">Feature Two</span>
+            <td class="col_mv color_picker" style="vertical-align:top; padding: 30px 15px; width:33%;text-align:center;background-color:#fff;color:#777777"><span style="color: rgb(51, 51, 51); font-family: arial; font-size: 24px; line-height: 1.1;">Feature Two</span>
             <p style="text-align: left;"><span style="font-size:24px;font-weight:bold"></span><span style="color: rgb(51, 51, 51); font-family: arial; font-size: 12px; line-height: 17.142858505249px;">Choose a vibrant image and write an inspiring paragraph about it. It does not have to be long, but it should reinforce your image.</span></p>
             </td>
         </tr>
