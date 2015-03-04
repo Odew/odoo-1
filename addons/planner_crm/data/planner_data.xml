@@ -388,7 +388,7 @@
                                 <strong>Recommended actions:</strong>
                                 <li>
                                     <a t-att-href="prepare_backend_url(
-                                        'crm.crm_stage_act')"
+                                        'crm.crm_lead_opportunities', 'kanban')"
                                         target="_blank">
                                         Configure the stages of your sales pipeline</a>
                                 </li>
