@@ -101,6 +101,8 @@ var PlannerDialog = Widget.extend({
         'click .oe_planner div[id^="planner_page"] a[href^="#planner_page"]': 'change_page',
         'click .oe_planner li a[href^="#planner_page"]': 'change_page',
         'click .oe_planner div[id^="planner_page"] button[data-pageid^="planner_page"]': 'mark_as_done',
+        'hidden.bs.modal': 'on_modal_hide',
+        'shown.bs.modal': 'on_modal_show',
     },
     init: function(parent, planner) {
         this._super(parent);
@@ -199,7 +201,7 @@ var PlannerDialog = Widget.extend({
     // planner data functions
     _get_values: function(page_id){
         // if no page_id, take the complete planner
-        var base_elem = page_id ? this.$el : this.$(".oe_planner div[id='planner_page"+page_id+"']");
+        var base_elem = page_id ? this.$(".oe_planner div[id="+page_id+"]") : this.$(".oe_planner div[id^='planner_page']");
         var values = {};
         // get the selector for all the input and mark_button
         // only INPUT (select, textearea, input, checkbox and radio), and BUTTON (.mark_button#) are observed
@@ -289,6 +291,16 @@ var PlannerDialog = Widget.extend({
         }
         self.update_planner(page_id);
     },
+    on_modal_show : function(e) {
+        instance.web.bus.on('action', this, _.bind(this.on_webclient_action, this));
+    },
+    on_modal_hide : function(e) {
+        instance.web.bus.off('action', this, _.bind(this.on_webclient_action, this));
+        this.update_planner(); // explicit call to save data
+    },
+    on_webclient_action: function(e) {
+        this.$('#PlannerModal').modal('hide');
+    },
 });
 
 // add planner launcher to the systray
@@ -303,5 +315,4 @@ return {
 };
 
 });
-
 
