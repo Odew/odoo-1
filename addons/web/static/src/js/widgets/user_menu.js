@@ -36,17 +36,22 @@ var SystrayMenu = Widget.extend({
             $avatar.attr('src', $avatar.data('default-src'));
             if (!session.uid)
                 return;
-            var func = new Model("res.users").get_func("read");
-            return self.alive(func(session.uid, ["name", "company_id"])).then(function(res) {
+            var Users = new Model("res.users");
+            var func = Users.get_func("read");
+            return self.alive(func(session.uid, ["name", "company_id", "company_ids"])).then(function(res) {
                 var topbar_name = res.name;
                 if(session.debug)
                     topbar_name = _.str.sprintf("%s (%s)", topbar_name, session.db);
-                if(res.company_id[0] > 1)
-                    topbar_name = _.str.sprintf("%s (%s)", topbar_name, res.company_id[1]);
                 self.$el.find('.oe_topbar_name').text(topbar_name);
-                if (!session.debug) {
-                    topbar_name = _.str.sprintf("%s (%s)", topbar_name, session.db);
-                }
+                Users.call('has_group', ['base.group_multi_company']).done(function(is_multicompany) {
+                    if (is_multicompany && res.company_ids.length > 1) {
+                        topbar_name = _.str.sprintf("%s (%s)", topbar_name, res.company_id[1]);
+                        self.$el.find('.oe_topbar_name').text(topbar_name);
+                    }
+                    else {
+                        self.$el.find('a[data-menu="company"]').parent().remove();
+                    }
+                });
                 var avatar_src = session.url('/web/binary/image', {model:'res.users', field: 'image_small', id: session.uid});
                 $avatar.attr('src', avatar_src);
 
@@ -88,6 +93,15 @@ var SystrayMenu = Widget.extend({
             }).fail(function(result, ev){
                 ev.preventDefault();
                 framework.redirect('https://accounts.odoo.com/web');
+            });
+        }
+    },
+    on_menu_company: function() {
+        var self = this;
+        if (!this.getParent().has_uncommitted_changes()) {
+            self.rpc("/web/action/load", { action_id: "base.action_res_users_comp_switch" }).done(function(result) {
+                result.res_id = session.uid;
+                self.getParent().action_manager.do_action(result);
             });
         }
     },
