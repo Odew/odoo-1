@@ -426,10 +426,11 @@ class stock_move(osv.osv):
             res['price_unit'] = res['price_unit'] / uos_coeff
         return res
 
-    def _get_invoice_vals(self, cr, uid, key, inv_type, journal_id, move, context=None):
-        inv_vals = super(stock_move, self)._get_invoice_vals(cr, uid, key, inv_type, journal_id, move, context=context)
-        sale = move.picking_id.sale_id
-        if sale:
+    def _get_invoice_vals(self, cr, uid, key, inv_type, journal_id, moves, context=None):
+        inv_vals = super(stock_move, self)._get_invoice_vals(cr, uid, key, inv_type, journal_id, moves, context=context)
+        sales = [x.picking_id.sale_id for x in moves]
+        if sales:
+            sale = sales[0]
             inv_vals.update({
                 'fiscal_position': sale.fiscal_position.id,
                 'payment_term': sale.payment_term.id,
@@ -447,7 +448,10 @@ class stock_move(osv.osv):
         for invoice in invoice_moves:
             for move in invoice_moves[invoice]:
                 if move.procurement_id.sale_line_id and move.procurement_id.sale_line_id.order_id.id not in sales_done:
-                    sale_line_ids = sale_line_obj.search(cr, uid, [('order_id', '=', move.procurement_id.sale_line_id.order_id.id), ('product_id.type', '=', 'service'), ('invoiced', '=', False)], context=context)
+                    sale_id = move.procurement_id.sale_line_id.order_id.id
+                    sales_done.append(sale_id)
+                    sale_line_ids = sale_line_obj.search(cr, uid, [('order_id', '=', sale_id), ('invoiced', '=', False),
+                                                                    '|', ('product_id', '=', False), ('product_id.type', '=', 'service')], context=context)
                     if sale_line_ids:
                         created_lines = sale_line_obj.invoice_line_create(cr, uid, sale_line_ids, context=context)
                         invoice_line_obj.write(cr, uid, created_lines, {'invoice_id': invoice}, context=context)

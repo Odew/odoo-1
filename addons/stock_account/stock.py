@@ -306,7 +306,7 @@ class stock_picking(osv.osv):
                         todo[key].append(move)
         invoices = []
         for moves in todo.values():
-            invoices += self._invoice_create_line(cr, uid, moves, journal_id, type, context=context)
+            invoices += self.pool['stock.move']._invoice_create_line(cr, uid, moves, journal_id, type, context=context)
         return invoices
 
     def _prepare_values_extra_move(self, cr, uid, op, product, remaining_qty, context=None):
