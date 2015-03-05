@@ -60,19 +60,19 @@ class stock_move(osv.osv):
     def _get_master_data(self, cr, uid, move, company, context=None):
         if move.purchase_line_id:
             purchase_order = move.purchase_line_id.order_id
-            return purchase_order.partner_id, purchase_order.create_uid.id, purchase_order.currency_id.id
+            return purchase_order.partner_id, purchase_order.create_uid.id, purchase_order.currency_id.id, company.id
         elif move.picking_id:
             # In case of an extra move, it is better to use the data from the original moves
             for purchase_move in move.picking_id.move_lines:
                 if purchase_move.purchase_line_id:
                     purchase_order = purchase_move.purchase_line_id.order_id
-                    return purchase_order.partner_id, purchase_order.create_uid.id, purchase_order.currency_id.id
-
+                    return purchase_order.partner_id, purchase_order.create_uid.id, purchase_order.currency_id.id, company.id
+        else:
             partner = move.picking_id and move.picking_id.partner_id or False
             code = self.get_code_from_locs(cr, uid, move, context=context)
             if partner and partner.property_product_pricelist_purchase and code == 'incoming':
                 currency = partner.property_product_pricelist_purchase.currency_id.id
-                return partner, uid, currency
+                return partner, uid, currency, company.id
         return super(stock_move, self)._get_master_data(cr, uid, move, company, context=context)
 
     def _get_invoice_line_vals(self, cr, uid, move, partner, inv_type, context=None):
@@ -139,7 +139,6 @@ class stock_picking(osv.osv):
         purchase_obj = self.pool.get("purchase.order")
         purchase_line_obj = self.pool.get('purchase.order.line')
         invoice_line_obj = self.pool.get('account.invoice.line')
-<<<<<<< HEAD
         invoice_id = super(stock_picking, self)._create_invoice_from_picking(cr, uid, picking, vals, context=context)
         return invoice_id
 
@@ -151,7 +150,6 @@ class stock_picking(osv.osv):
                 'fiscal_position': purchase.fiscal_position.id,
                 'payment_term': purchase.payment_term_id.id,
                 })
-=======
         invoice_vals = super(stock_picking, self)._prepare_invoice_from_picking(cr, uid, picking, vals, context=context)
         if picking.move_lines and picking.move_lines[0].purchase_line_id:
             purchase_id = picking.move_lines[0].purchase_line_id.order_id.id
@@ -176,8 +174,7 @@ class stock_picking(osv.osv):
                     'payment_term': purchase.payment_term_id.id,
                     })
                 purchases.append(purchase.id)
-        inv_vals.update({'purchase_lines'})
->>>>>>> [WIP] Refactor create_invoice to group before and create everything afterwards
+        inv_vals['purchase_ids'] = [(6, 0, list(set(purchases)))]
         return inv_vals
 
 

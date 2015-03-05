@@ -406,8 +406,7 @@ class stock_move(osv.osv):
         elif move.picking_id.sale_id:
             # In case of extra move, it is better to use the same data as the original moves
             sale_order = move.picking_id.sale_id
-            return sale_order.partner_invoice_id, sale_order.user_id.id, sale_order.pricelist_id.currency_id.id
-        return super(stock_move, self)._get_master_data(cr, uid, move, company, context=context)
+            return sale_order.partner_invoice_id, sale_order.user_id.id, sale_order.pricelist_id.currency_id.id, company.id
 
     def _get_invoice_line_vals(self, cr, uid, move, partner, inv_type, context=None):
         res = super(stock_move, self)._get_invoice_line_vals(cr, uid, move, partner, inv_type, context=context)
