@@ -25,7 +25,7 @@ var PlannerLauncher = Widget.extend({
         var self = this;
         self._super();
 
-        self.webclient.menu.on("open_menu", self, self.on_menu_clicked);
+        self.webclient.menu.on("primary_menu_click", self, self.on_primary_menu_clicked);
         self.$el.hide();  // hidden by default
         return self.fetch_application_planner().done(function(apps) {
             self.planner_apps = apps;
@@ -48,21 +48,15 @@ var PlannerLauncher = Widget.extend({
         }
         return def;
     },
-    on_menu_clicked: function(id, $clicked_menu) {
-        var menu_id = $clicked_menu.parents('.oe_secondary_menu').data('menu-parent') || 0; // find top menu id
-        if (_.contains(_.keys(this.planner_apps), menu_id.toString())) {
+    on_primary_menu_clicked: function(options) {
+        var menu_id = options['id'];
+        if (this.planner_apps[menu_id]) {
             this.$el.show();
             this.setup(this.planner_apps[menu_id]);
-            this.need_reflow = true;
         } else {
             if (this.$el.is(":visible")) {
                 this.$el.hide();
-                this.need_reflow = true;
             }
-        }
-        if (this.need_reflow) {
-            this.webclient.menu.reflow();
-            this.need_reflow = false;
         }
     },
     setup: function(planner){
