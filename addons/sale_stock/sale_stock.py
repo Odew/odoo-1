@@ -426,6 +426,33 @@ class stock_move(osv.osv):
             res['price_unit'] = res['price_unit'] / uos_coeff
         return res
 
+    def _get_invoice_vals(self, cr, uid, key, inv_type, journal_id, move, context=None):
+        inv_vals = super(stock_move, self)._get_invoice_vals(cr, uid, key, inv_type, journal_id, move, context=context)
+        sale = move.picking_id.sale_id
+        if sale:
+            inv_vals.update({
+                'fiscal_position': sale.fiscal_position.id,
+                'payment_term': sale.payment_term.id,
+                'user_id': sale.user_id.id,
+                'team_id': sale.team_id.id,
+                'name': sale.client_order_ref or '',
+                })
+        return inv_vals
+
+    def _invoice_create_line(self, cr, uid, moves, journal_id, inv_type='out_invoice', context=None):
+        sale_line_obj=self.pool['sale.order.line']
+        invoice_line_obj = self.pool['account.invoice.line']
+        invoice_moves = super(stock_move, self)._invoice_create_line(cr, uid, moves, journal_id, inv_type, context=context)
+        sales_done = []
+        for invoice in invoice_moves:
+            for move in invoice_moves[invoice]:
+                if move.procurement_id.sale_line_id and move.procurement_id.sale_line_id.order_id.id not in sales_done:
+                    sale_line_ids = sale_line_obj.search(cr, uid, [('order_id', '=', move.procurement_id.sale_line_id.order_id.id), ('product_id.type', '=', 'service'), ('invoiced', '=', False)], context=context)
+                    if sale_line_ids:
+                        created_lines = sale_line_obj.invoice_line_create(cr, uid, sale_line_ids, context=context)
+                        invoice_line_obj.write(cr, uid, created_lines, {'invoice_id': invoice}, context=context)
+        return invoice_moves
+
 
 class stock_location_route(osv.osv):
     _inherit = "stock.location.route"
@@ -463,31 +490,6 @@ class stock_picking(osv.osv):
         'sale_id': fields.function(_get_sale_id, type="many2one", relation="sale.order", string="Sale Order"),
     }
 
-    def _prepare_invoice_from_picking(self, cr, uid, picking, vals, context=None):
-        sale_obj = self.pool.get('sale.order')
-        sale_line_obj = self.pool.get('sale.order.line')
-        invoice_line_obj = self.pool.get('account.invoice.line')
-        invoice_vals = super(stock_picking, self)._prepare_invoice_from_picking(cr, uid, picking, vals, context=context)
-        if picking.group_id:
-            sale_ids = sale_obj.search(cr, uid, [('procurement_group_id', '=', picking.group_id.id)], context=context)
-            if sale_ids:
-                sale_line_ids = sale_line_obj.search(cr, uid, [('order_id', 'in', sale_ids), ('product_id.type', '=', 'service'), ('invoiced', '=', False)], context=context)
-                if sale_line_ids:
-                    invoice_line_data = sale_line_obj.invoice_line_create(cr, uid, sale_line_ids, context=context)
-        return invoice_vals
-
-    def _get_invoice_vals(self, cr, uid, key, inv_type, journal_id, move, context=None):
-        inv_vals = super(stock_picking, self)._get_invoice_vals(cr, uid, key, inv_type, journal_id, move, context=context)
-        sale = move.picking_id.sale_id
-        if sale:
-            inv_vals.update({
-                'fiscal_position': sale.fiscal_position.id,
-                'payment_term': sale.payment_term.id,
-                'user_id': sale.user_id.id,
-                'team_id': sale.team_id.id,
-                'name': sale.client_order_ref or '',
-                })
-        return inv_vals
 
 class account_invoice(osv.Model):
     _inherit = 'account.invoice'

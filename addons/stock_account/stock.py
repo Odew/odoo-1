@@ -162,6 +162,65 @@ class stock_move(osv.osv):
             'account_analytic_id': False,
         }
 
+    def _get_invoice_vals(self, cr, uid, key, inv_type, journal_id, moves, context=None):
+        if context is None:
+            context = {}
+        partner = key[0]
+        user_id = key[1]
+        currency_id = key[2]
+        company_id = key[3]
+        if inv_type in ('out_invoice', 'out_refund'):
+            account_id = partner.property_account_receivable.id
+            payment_term = partner.property_payment_term.id or False
+        else:
+            account_id = partner.property_account_payable.id
+            payment_term = partner.property_supplier_payment_term.id or False
+        return {
+            'origin': ','.join(list(set([x.picking_id.name for x in moves]))),
+            'date_invoice': context.get('date_inv', False),
+            'user_id': user_id,
+            'partner_id': partner.id,
+            'account_id': account_id,
+            'payment_term': payment_term,
+            'type': inv_type,
+            'fiscal_position': partner.property_account_position.id,
+            'company_id': company_id,
+            'currency_id': currency_id,
+            'journal_id': journal_id,
+        }
+
+    def _invoice_create_line(self, cr, uid, moves, journal_id, inv_type='out_invoice', context=None):
+        invoice_obj = self.pool.get('account.invoice')
+        move_obj = self.pool.get('stock.move')
+        invoices_moves = {}
+        # First group by invoices
+        for move in moves:
+            company = move.company_id
+            #origin = move.picking_id.name
+            key = move_obj._get_master_data(cr, uid, move, company, context=context)
+
+            if key not in invoices_moves:
+                invoices_moves[key] = [move]
+            else:
+                invoices_moves[key] += [move]
+
+        inv_moves = {}
+        for key in invoices_moves.keys():
+            # Get account and payment terms
+            moves_key = invoices_moves[key]
+            invoice_vals = self._get_invoice_vals(cr, uid, key, inv_type, journal_id, moves_key, context=context)
+            partner = key[0]
+            invoice_line_vals = []
+            for move in moves_key:
+                line_vals = move_obj._get_invoice_line_vals(cr, uid, move, partner, inv_type, context=context)
+                invoice_line_vals += [(0, 0, line_vals)]
+            invoice_vals['invoice_line'] = invoice_line_vals
+            move_obj.write(cr, uid, [x.id for x in moves_key], {'invoice_state': 'invoiced'}, context=context)
+            # Finally create invoice
+            invoice_id = invoice_obj.create(cr, uid, invoice_vals, context=context)
+            inv_moves[invoice_id] = moves_key
+        return inv_moves
+
 #----------------------------------------------------------
 # Picking
 #----------------------------------------------------------
@@ -249,65 +308,6 @@ class stock_picking(osv.osv):
         for moves in todo.values():
             invoices += self._invoice_create_line(cr, uid, moves, journal_id, type, context=context)
         return invoices
-
-    def _get_invoice_vals(self, cr, uid, key, inv_type, journal_id, moves, context=None):
-        if context is None:
-            context = {}
-        partner = key[0]
-        user_id = key[1]
-        currency_id = key[2]
-        company_id = key[3]
-        if inv_type in ('out_invoice', 'out_refund'):
-            account_id = partner.property_account_receivable.id
-            payment_term = partner.property_payment_term.id or False
-        else:
-            account_id = partner.property_account_payable.id
-            payment_term = partner.property_supplier_payment_term.id or False
-        return {
-            'origin': ','.join(list(set([x.picking_id.name for x in moves]))),
-            'date_invoice': context.get('date_inv', False),
-            'user_id': user_id,
-            'partner_id': partner.id,
-            'account_id': account_id,
-            'payment_term': payment_term,
-            'type': inv_type,
-            'fiscal_position': partner.property_account_position.id,
-            'company_id': company_id,
-            'currency_id': currency_id,
-            'journal_id': journal_id,
-        }
-
-    def _invoice_create_line(self, cr, uid, moves, journal_id, inv_type='out_invoice', context=None):
-        invoice_obj = self.pool.get('account.invoice')
-        move_obj = self.pool.get('stock.move')
-        invoices_moves = {}
-        # First group by invoices
-        for move in moves:
-            company = move.company_id
-            #origin = move.picking_id.name
-            key = move_obj._get_master_data(cr, uid, move, company, context=context)
-
-            if key not in invoices_moves:
-                invoices_moves[key] = [move]
-            else:
-                invoices_moves[key] += [move]
-
-        inv_moves = {}
-        for key in invoices_moves.keys():
-            # Get account and payment terms
-            moves_key = invoices_moves[key]
-            invoice_vals = self._get_invoice_vals(cr, uid, key, inv_type, journal_id, moves_key, context=context)
-            partner = key[0]
-            invoice_line_vals = []
-            for move in moves_key:
-                line_vals = move_obj._get_invoice_line_vals(cr, uid, move, partner, inv_type, context=context)
-                invoice_line_vals += [(0, 0, line_vals)]
-            invoice_vals['invoice_line'] = invoice_line_vals
-            move_obj.write(cr, uid, [x.id for x in moves_key], {'invoice_state': 'invoiced'}, context=context)
-            # Finally create invoice
-            invoice_id = invoice_obj.create(cr, uid, invoice_vals, context=context)
-            inv_moves[invoice_id] = moves_key
-        return inv_moves
 
     def _prepare_values_extra_move(self, cr, uid, op, product, remaining_qty, context=None):
         """
