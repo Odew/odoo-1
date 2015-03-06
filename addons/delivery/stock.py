@@ -179,7 +179,7 @@ class stock_move(osv.osv):
     def _invoice_create_line(self, cr, uid, moves, journal_id, inv_type='out_invoice', context=None):
         invoice_obj = self.pool.get('account.invoice')
         invoice_line_obj = self.pool.get('account.invoice.line')
-        invoice_moves = super(stock_picking, self)._invoice_create_line(cr, uid, moves, journal_id, inv_type=inv_type, context=context)
+        invoice_moves = super(stock_move, self)._invoice_create_line(cr, uid, moves, journal_id, inv_type=inv_type, context=context)
         picking_done = []
         for invoice in invoice_moves:
             for move in invoice_moves[invoice]:
