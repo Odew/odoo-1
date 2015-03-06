@@ -107,7 +107,7 @@ class stock_move(osv.osv):
         super(stock_move, self).attribute_price(cr, uid, move, context=context)
 
     def _get_invoice_vals(self, cr, uid, key, inv_type, journal_id, moves, context=None):
-        inv_vals = super(stock_picking, self)._get_invoice_vals(cr, uid, key, inv_type, journal_id, moves, context=context)
+        inv_vals = super(stock_move, self)._get_invoice_vals(cr, uid, key, inv_type, journal_id, moves, context=context)
         purchases = []
         for move in moves:
             if move.purchase_line_id and move.purchase_line_id.order_id:
