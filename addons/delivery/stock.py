@@ -185,10 +185,11 @@ class stock_move(osv.osv):
             for move in invoice_moves[invoice]:
                 if move.picking_id.id not in picking_done:
                     picking_done.append(move.picking_id.id)
-                    invoice_line = self.pool['stock.picking']._prepare_shipping_invoice_line(cr, uid, move.picking_id, invoice, context=context)
+                    inv = invoice_obj.browse(cr, uid, invoice, context=context)
+                    invoice_line = self.pool['stock.picking']._prepare_shipping_invoice_line(cr, uid, move.picking_id, inv, context=context)
                     if invoice_line:
                         invoice_line_obj.create(cr, uid, invoice_line)
-                        invoice_obj.button_compute(cr, uid, [invoice.id], context=context, set_total=(inv_type in ('in_invoice', 'in_refund')))
+                        invoice_obj.button_compute(cr, uid, [invoice], context=context, set_total=(inv_type in ('in_invoice', 'in_refund')))
         return invoice_moves
 
     def _get_default_uom(self, cr, uid, context=None):

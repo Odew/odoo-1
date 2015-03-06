@@ -424,6 +424,7 @@ class stock_move(osv.osv):
                 res['price_unit'] = sale_line.price_unit
             uos_coeff = move.product_uom_qty and move.product_uos_qty / move.product_uom_qty or 1.0
             res['price_unit'] = res['price_unit'] / uos_coeff
+            res['sale_lines'] = [(4, sale_line.id)]
         return res
 
     def _get_invoice_vals(self, cr, uid, key, inv_type, journal_id, moves, context=None):
@@ -437,6 +438,7 @@ class stock_move(osv.osv):
                 'user_id': sale.user_id.id,
                 'team_id': sale.team_id.id,
                 'name': sale.client_order_ref or '',
+                'sale_ids': (6, 0, list(set([x.id for x in sales]))),
                 })
         return inv_vals
 

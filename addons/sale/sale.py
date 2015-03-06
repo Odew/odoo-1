@@ -1140,6 +1140,11 @@ class mail_compose_message(osv.Model):
 class account_invoice(osv.Model):
     _inherit = 'account.invoice'
 
+    _columns = {
+        'sale_ids': fields.many2many('account.invoice', 'sale_order_invoice_rel', 'invoice_id', 'order_id', 'Sale Orders',
+                                     readonly=True, copy=False, help="This is the list of sale orders related to this invoice. One invoice may have multiple sale orders related. "),
+    }
+
     def _get_default_team_id(self, cr, uid, context=None):
         """ Gives default team by checking if present in the context """
         team_id = self._resolve_team_id_from_context(cr, uid, context=context) or False
@@ -1263,5 +1268,5 @@ class account_invoice_line(osv.Model):
     _inherit = 'account.invoice.line'
 
     _columns= {
-        'sale_line_ids': fields.many2many('sale.order.line', 'sale_order_line_invoice_rel', 'invoice_id', 'order_line_id', 'Sale Order Lines', readonly=True, copy=False)
+        'sale_lines': fields.many2many('sale.order.line', 'sale_order_line_invoice_rel', 'invoice_id', 'order_line_id', 'Sale Order Lines', readonly=True, copy=False)
     }
