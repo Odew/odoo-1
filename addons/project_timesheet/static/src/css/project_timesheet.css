@@ -41,3 +41,16 @@ a.btn.pt_btn{
 span.pt_project{
 	font-weight: bold;
 }
+
+.pt_timer_clock{
+	text-align: center;	
+}
+
+div.pt_activities_list td.pt_duration{
+	vertical-align: middle;
+	text-align: center;
+}
+.pt_duration_color_fill{
+	background-color: #a24689;
+	color:white;
+}

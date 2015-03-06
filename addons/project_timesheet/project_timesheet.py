@@ -317,7 +317,10 @@ class account_analytic_line(osv.osv):
         for new_ls_aal in new_ls_aals:
             sv_project = self.pool.get("ir.model.data").xmlid_to_object(cr, uid, str(new_ls_aal['project_id']))
             new_ls_aal['account_id'] = str(sv_project['analytic_account_id']['id'])
+            if not new_ls_aal.get('task_id'):
+                new_ls_aal['task_id'] = ""
 
         ls_aals_to_import = [[str(new_ls_aals[x]['id']),new_ls_aals[x]['desc'],new_ls_aals[x]['account_id'], new_ls_aals[x]['date'] , new_ls_aals[x]['unit_amount']  , str(new_ls_aals[x].get('task_id')) , uid, 'True'] for x in range(len(new_ls_aals))]
         aals_fields = ['id','name','account_id/.id','date','unit_amount', 'task_id/id', 'user_id/.id', 'is_timesheet']
+
         print self.load(cr, uid, aals_fields, ls_aals_to_import, context)

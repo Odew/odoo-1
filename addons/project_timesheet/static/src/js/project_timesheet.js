@@ -21,80 +21,18 @@ openerp.project_timesheet = function(openerp) {
                             "module_key" : "Project_timesheet_UI_",
 	                        "settings":{
 	                            "default_project_id":undefined,
-	                            "minimal_duration":15,
-	                            "time_unit":15
+	                            "minimal_duration":0.25,
+	                            "time_unit":0.25
 	                        },
-	                        "projects":[
-	                            {
-	                                "id":'Project_timesheet_UI.1',
-	                                "name":"Implementation_P23"
-	                            },
-	                            // {
-	                            //     "id":2,
-	                            //     "name":"Testing"
-	                            // }
-	                        ],
-	                        "tasks": [
-	                            // {
-	                            //     "id":1,
-	                            //     "name":"C#",
-	                            //     "project_id" : 1
-
-	                            // },
-	                            // {
-	                            //     "id":2,
-	                            //     "name":"Python",
-	                            //     "project_id":1
-	                            // },
-	                            // {
-	                            //     "id":3,
-	                            //     "name":"Perl",
-	                            //     "project_id":1
-	                            // }                       
-	                        ],
-	                        "account_analytic_lines":[
-	                            // {
-	                            //     "server_id":undefined,
-	                            //     "id":1,
-	                            //     "desc":"/",
-	                            //     "unit_amount":1,
-	                            //     "project_id":1,
-	                            //     "task_id":1,
-	                            //     "date":"2015-02-09",
-	                            //     "write_date":"2015-02-19 12:45:29"
-	                            // },
-	                            // {
-	                            //     "server_id":undefined,
-	                            //     "id":2,
-	                            //     "desc":"Conversion from py 2.7 to 3.3",
-	                            //     "unit_amount":2,
-	                            //     "project_id":1,
-	                            //     "task_id":2,
-	                            //     "date":"2015-02-09",
-	                            //     "write_date":"2015-02-19 12:45:26"
-
-	                            // },
-	                            // {
-	                            //     "server_id":undefined,
-	                            //     "id":3,
-	                            //     "desc":"/",
-	                            //     "unit_amount":0.5,
-	                            //     "date":"2015-02-09",
-	                            //     "write_date":"2015-02-10 16:03:21"
-	                            // },
-	                        ],
+	                        "projects":[],
+	                        "tasks": [],
+	                        "account_analytic_lines":[],
 	                        "day_plan":[
 	                            {"task_id" : 1},
 	                            {"task_id" : 2}
 	                        ]
 	                    }
 	                },
-	                {
-	                   "session_user":"demoUser",
-	                   "session_uid":1,
-	                    "session_server":"http://localhost:8069",
-	                    "data":{} 
-	                }
 	            ];
                 // Comment or uncomment following line to reset demo data
             	localStorage.setItem("pt_data", JSON.stringify(test_data));
@@ -197,7 +135,7 @@ openerp.project_timesheet = function(openerp) {
         // Takes a decimal hours and converts it to hh:mm string representation
 	    // e.g. 1.5 => "01:30"
 	    unit_amount_to_hours_minutes: function(unit_amount){
-	        if(_.isUndefined(unit_amount)){
+	        if(_.isUndefined(unit_amount) || unit_amount === 0){
 	            return ["00","00"];
 	        }
 
@@ -296,7 +234,13 @@ openerp.project_timesheet = function(openerp) {
                     "click .pt_activity":"edit_activity",
                     "click .pt_btn_start_activity":"start_activity",
                     "click .pt_btn_stop_activity":"stop_activity",
-                    "click .pt_test_btn":"test_fct"
+                    "click .pt_test_btn":"test_fct",
+                    "click .pt_quick_add_time" : "quick_add_time",
+                    "click .pt_quick_subtract_time" : "quick_subtract_time",
+                    "mouseover .pt_duration" : "on_duration_over",
+                    "mouseout .pt_duration" : "on_duration_out",
+                    "click .pt_duration_continue":"on_continue_activity",
+                    "click .pt_btn_interrupt_activity":"on_interrupt_activity"
                 }
             );
             self.account_analytic_lines = self.data.account_analytic_lines;
@@ -317,18 +261,99 @@ openerp.project_timesheet = function(openerp) {
             self = this;
             this.$(".pt_btn_start_activity").html('<span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop </a>');
             this.$(".pt_btn_start_activity").toggleClass("pt_btn_start_activity pt_btn_stop_activity");
-            
+            self.getParent().$(".pt_timer_clock").text("00:00:00");
             function timer_fct(start_time){
-                self.$(".pt_timer_clock").text(moment.utc(new Date() - start_time).format("HH:mm:ss"));
+                self.getParent().$(".pt_timer_clock").text(moment.utc(new Date() - start_time).format("HH:mm:ss"));
             }
-            var start_timer_time = new Date();
-            this.timer_start = setInterval(function(){timer_fct(start_timer_time)},500);
+            self.getParent().start_timer_time = new Date();
+            localStorage.setItem("pt_start_timer_time", JSON.stringify(self.getParent().start_timer_time));
+            this.timer_start = setInterval(function(){timer_fct(self.getParent().start_timer_time)},500);
         },
         stop_activity: function(){
             this.$(".pt_btn_stop_activity").html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start</a>');
             this.$(".pt_btn_stop_activity").toggleClass("pt_btn_start_activity pt_btn_stop_activity");
             clearInterval(this.timer_start);
+            $(".pt_timer_clock").text("")
+            this.goto_create_activity_screen();
+            // Trigger the change event to pre-fill the edit activity form with the time spent working.
+            this.getParent().edit_activity_screen.$("input.pt_activity_duration").val(moment.utc(new Date() - new Date(JSON.parse(localStorage.getItem("pt_start_timer_time")))).format("HH:mm")).change();
+
         },
+        quick_add_time: function(event){
+            var activity = _.findWhere(this.data.account_analytic_lines,  {id: event.currentTarget.dataset.activity_id});
+            if(_.isUndefined(this.data.settings.time_unit)){
+                activity.unit_amount = parseFloat(activity.unit_amount) + 0.25;
+            }
+            else{
+                activity.unit_amount = parseFloat(activity.unit_amount) + this.data.settings.time_unit;
+            }
+            activity.write_date = openerp.datetime_to_str(new Date());
+            this.getParent().update_localStorage();
+            this.renderElement();
+        },
+        quick_subtract_time: function(event){
+            var activity = _.findWhere(this.data.account_analytic_lines,  {id: event.currentTarget.dataset.activity_id});
+            if(_.isUndefined(this.data.settings.time_unit)){
+                activity.unit_amount = parseFloat(activity.unit_amount) - 0.25;
+            }
+            else{
+                activity.unit_amount = parseFloat(activity.unit_amount) - this.data.settings.time_unit;
+            }
+            if (activity.unit_amount < 0){
+                activity.unit_amount = 0;
+            }
+            activity.write_date = openerp.datetime_to_str(new Date());
+            this.getParent().update_localStorage();
+            this.renderElement();            
+            //event.currentTarget.dataset.activity_id
+        },
+        on_duration_over: function(event){
+            var duration_box = this.$(event.currentTarget);
+            duration_box.addClass("pt_duration_continue pt_duration_color_fill");
+            duration_box.children(".pt_duration_time").addClass("hidden");
+            duration_box.children(".pt_continue_activity_btn").removeClass("hidden");
+        },
+        on_duration_out: function(event){
+            var duration_box = this.$(event.currentTarget);
+            duration_box.removeClass("pt_duration_continue pt_duration_color_fill");
+            duration_box.children(".pt_duration_time").removeClass("hidden");
+            duration_box.children(".pt_continue_activity_btn").addClass("hidden");
+        },
+        on_continue_activity: function(event){
+            console.log("clicked acti");
+            var activity = _.findWhere(this.account_analytic_lines , {id : event.currentTarget.dataset.activity_id});
+            // Start a timer with start time = now; but the refresh function fo the timer shows time from start + acti.unitamount
+            self = this;
+            this.$(".pt_btn_start_activity").html('<span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop </a>');
+            this.$(".pt_btn_start_activity").toggleClass("pt_btn_start_activity pt_btn_interrupt_activity");
+            self.getParent().$(".pt_timer_clock").text(this.unit_amount_to_hours_minutes(activity.unit_amount) + ":00");
+            function timer_fct(start_time, start_amount){
+                self.getParent().$(".pt_timer_clock").text(moment.utc(new Date() - start_time).add(start_amount,"hours").format("HH:mm:ss"));
+            }
+            self.getParent().start_amount = activity.unit_amount;
+            self.getParent().start_timer_time = new Date();
+            localStorage.setItem("pt_start_timer_time", JSON.stringify(self.getParent().start_timer_time));
+            localStorage.setItem("pt_timer_activity_id", JSON.stringify(activity.id));
+            this.timer_start = setInterval(function(){timer_fct(self.getParent().start_timer_time, self.getParent().start_amount)},500);
+        },
+        on_interrupt_activity: function(){
+            var activity_id = JSON.parse(localStorage.getItem("pt_timer_activity_id"));
+            var activity = _.findWhere(this.account_analytic_lines , {id : activity_id}); 
+            this.$(".pt_btn_interrupt_activity").html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start</a>');
+            this.$(".pt_btn_interrupt_activity").toggleClass("pt_btn_start_activity pt_btn_interrupt_activity");
+            clearInterval(this.timer_start);
+            $(".pt_timer_clock").text("");
+            hh_mm_value = moment.utc(new Date() - new Date(JSON.parse(localStorage.getItem("pt_start_timer_time")))).add(activity.unit_amount, "hours").format("HH:mm");
+            activity.unit_amount = this.hh_mm_to_unit_amount(hh_mm_value);
+            activity.write_date = openerp.datetime_to_str(new Date());
+
+            this.data.account_analytic_lines.sort(function(a,b){
+                return openerp.str_to_datetime(b.write_date) - openerp.str_to_datetime(a.write_date);
+            });
+            this.getParent().update_localStorage();
+            this.renderElement();
+        },
+
         test_fct: function(){
             this.sync();
             this.renderElement();    
@@ -356,14 +381,12 @@ openerp.project_timesheet = function(openerp) {
                         });
                     }
                     else{
-                        //Check write_date
                         ls_project.name = sv_project[1];
                     }
                     parent.update_localStorage();
                 });
 
                 _.each(sv_tasks, function(sv_task){
-                    // Same logic
                     ls_task = _.findWhere(data.tasks, {id : sv_task[0]})
                     if(_.isUndefined(ls_task)){
                         data.tasks.push({
@@ -373,7 +396,6 @@ openerp.project_timesheet = function(openerp) {
                         });
                     }
                     else{
-                        // check write_date
                         ls_task.name = sv_task[3];
                     }
                     parent.update_localStorage();
@@ -383,6 +405,7 @@ openerp.project_timesheet = function(openerp) {
                     // First, check that the aal is related to a project. If not we don't import it.
                     if(!_.isUndefined(sv_aal[8])){
                         ls_aal = _.findWhere(data.account_analytic_lines, {id : sv_aal[0]})
+                        // Create case
                         if (_.isUndefined(ls_aal)){
                             data.account_analytic_lines.push({
                                 id : sv_aal[0],
@@ -395,7 +418,15 @@ openerp.project_timesheet = function(openerp) {
                             });
                         }
                         else{
-                            //Check write_date
+                            //Update case
+                            if(openerp.str_to_datetime(ls_aal.write_date) < openerp.str_to_datetime(sv_aal[7])){
+                                ls_aal.project_id = sv_aal[8];
+                                ls_aal.task_id = sv_aal[1];
+                                ls_aal.desc = sv_aal[3];
+                                ls_aal.date = sv_aal[5];
+                                ls_aal.unit_amount = sv_aal[6];
+                                ls_aal.write_date = sv_aal[7];
+                            }
                         }
                     }
                     parent.update_localStorage();
@@ -507,12 +538,12 @@ openerp.project_timesheet = function(openerp) {
         },
         on_change_minimal_duration: function(){
             //TODO Check that input is an int between 0 and 60
-            this.data.settings.minimal_duration = (this.$("input.pt_minimal_duration").val());
+            this.data.settings.minimal_duration = (this.$("input.pt_minimal_duration").val()) / 60;
             this.getParent().update_localStorage();
         },
         on_change_time_unit: function(){
         	//TODO Check that input is an int between 0 and 60
-            this.data.settings.time_unit = (this.$("input.pt_time_unit").val());
+            this.data.settings.time_unit = (this.$("input.pt_time_unit").val()) / 60;
             this.getParent().update_localStorage();
         }
     });
