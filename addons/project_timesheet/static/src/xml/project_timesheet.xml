@@ -31,7 +31,7 @@
                                     <span class="pt_project"><t t-esc="widget.get_project_name(account_analytic_line.project_id)"/></span>
                                     <br/>
                                     <t t-if="account_analytic_line.task_id">
-                                        <t t-esc="widget.get_task_name(account_analytic_line.task_id)"/>
+                                        <t t-esc="widget.get_task_name(account_analytic_line.task_id, account_analytic_line.project_id)"/>
                                     </t>
                                 </td>
                                 <td class="col-xs-1">

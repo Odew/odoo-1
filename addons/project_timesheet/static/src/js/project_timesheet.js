@@ -19,6 +19,7 @@ openerp.project_timesheet = function(openerp) {
 	                    	"next_project_id":3,
 	                    	"next_task_id":4,
                             "module_key" : "Project_timesheet_UI_",
+                            "original_timestamp" : "1425653862300",
 	                        "settings":{
 	                            "default_project_id":undefined,
 	                            "minimal_duration":0.25,
@@ -120,8 +121,8 @@ openerp.project_timesheet = function(openerp) {
         		return "No project selected yet";
         	}
         },
-        get_task_name: function(task_id){
-        	task = _.findWhere(self.data.tasks, {id : task_id})
+        get_task_name: function(task_id, project_id){
+        	task = _.findWhere(self.data.tasks, {id : task_id, project_id : project_id})
         	if (!_.isUndefined(task)){
         		return task.name;
         	}
@@ -277,7 +278,7 @@ openerp.project_timesheet = function(openerp) {
             this.goto_create_activity_screen();
             // Trigger the change event to pre-fill the edit activity form with the time spent working.
             this.getParent().edit_activity_screen.$("input.pt_activity_duration").val(moment.utc(new Date() - new Date(JSON.parse(localStorage.getItem("pt_start_timer_time")))).format("HH:mm")).change();
-
+            localStorage.removeItem("pt_start_timer_time");
         },
         quick_add_time: function(event){
             var activity = _.findWhere(this.data.account_analytic_lines,  {id: event.currentTarget.dataset.activity_id});
@@ -308,10 +309,12 @@ openerp.project_timesheet = function(openerp) {
             //event.currentTarget.dataset.activity_id
         },
         on_duration_over: function(event){
-            var duration_box = this.$(event.currentTarget);
-            duration_box.addClass("pt_duration_continue pt_duration_color_fill");
-            duration_box.children(".pt_duration_time").addClass("hidden");
-            duration_box.children(".pt_continue_activity_btn").removeClass("hidden");
+            if(localStorage.getItem("pt_start_timer_time") === null){
+                var duration_box = this.$(event.currentTarget);
+                duration_box.addClass("pt_duration_continue pt_duration_color_fill");
+                duration_box.children(".pt_duration_time").addClass("hidden");
+                duration_box.children(".pt_continue_activity_btn").removeClass("hidden");
+            }
         },
         on_duration_out: function(event){
             var duration_box = this.$(event.currentTarget);
@@ -320,9 +323,7 @@ openerp.project_timesheet = function(openerp) {
             duration_box.children(".pt_continue_activity_btn").addClass("hidden");
         },
         on_continue_activity: function(event){
-            console.log("clicked acti");
             var activity = _.findWhere(this.account_analytic_lines , {id : event.currentTarget.dataset.activity_id});
-            // Start a timer with start time = now; but the refresh function fo the timer shows time from start + acti.unitamount
             self = this;
             this.$(".pt_btn_start_activity").html('<span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop </a>');
             this.$(".pt_btn_start_activity").toggleClass("pt_btn_start_activity pt_btn_interrupt_activity");
@@ -352,6 +353,8 @@ openerp.project_timesheet = function(openerp) {
             });
             this.getParent().update_localStorage();
             this.renderElement();
+            localStorage.removeItem("pt_start_timer_time");
+            localStorage.removeItem("pt_timer_activity_id");
         },
 
         test_fct: function(){
@@ -503,7 +506,7 @@ openerp.project_timesheet = function(openerp) {
                         return undefined;
                     }
                     res = {
-                        id : self.data.module_key + "_project." + self.data.next_project_id,
+                        id : self.data.module_key + self.getParent().session.username + self.data.original_timestamp + "_project." + self.data.next_project_id,
                         name : user_input.trim(),
                         isNew: true,
                     };
@@ -598,7 +601,7 @@ openerp.project_timesheet = function(openerp) {
                         return undefined;
                     }
                     res = {
-                        id : self.data.module_key + "_project." + self.data.next_project_id,
+                        id : self.data.module_key + self.getParent().session.username + self.data.original_timestamp + "_project." + self.data.next_project_id,
                         name : user_input.trim(),
                         isNew: true,
                     };
@@ -637,7 +640,7 @@ openerp.project_timesheet = function(openerp) {
                         return undefined;
                     }
 					res = {
-						id : self.data.module_key + "_task." + self.data.next_task_id,
+						id : self.data.module_key + self.getParent().session.username + self.data.original_timestamp + "_task." + self.data.next_task_id,
 						name : user_input.trim(),
 						isNew: true,
                         project_id: self.activity.project_id
@@ -645,7 +648,7 @@ openerp.project_timesheet = function(openerp) {
 					return res;
 				},
                 initSelection : function(element, callback){
-                    var data = {id: self.activity.task_id, name : self.get_task_name(self.activity.task_id)};
+                    var data = {id: self.activity.task_id, name : self.get_task_name(self.activity.task_id, self.activity.project_id)};
                     callback(data);
                 }
         	});
@@ -721,7 +724,7 @@ openerp.project_timesheet = function(openerp) {
             var old_activity = _.findWhere(this.data.account_analytic_lines,  {id:this.activity.id})
             // If this condition is true, it means that the activity is a newly created one :
             if(_.isUndefined(old_activity)){
-                this.data.account_analytic_lines.unshift({id : self.data.module_key + "_aal." + self.data.next_aal_id});
+                this.data.account_analytic_lines.unshift({id : self.data.module_key + self.getParent().session.username + self.data.original_timestamp + "_aal." + self.data.next_aal_id});
                 old_activity = this.data.account_analytic_lines[0];
                 self.data.next_aal_id++;
             }

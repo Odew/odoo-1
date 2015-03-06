@@ -244,11 +244,6 @@ class account_analytic_line(osv.osv):
         'task_id' : fields.many2one('project.task', 'Task'),
     }
 
-    # Override to be able to import aals from the UI
-    def default_get(self,cr,uid,fields,context=None):
-
-        values = super(account_analytic_line, self).default_get(cr, uid, fields, context=context)
-        return values
 
 
     def export_data_for_ui(self, cr, uid, context=None):
@@ -292,16 +287,15 @@ class account_analytic_line(osv.osv):
             'projects' : projects
         }
     def import_ui_data(self, cr, uid, ls_aals, ls_tasks, ls_projects, context=None):
-
         #Load projects, then tasks and finally aals
         
         ls_projects_to_import = [[str(ls_projects[x]['id']),ls_projects[x]['name']] for x in range(len(ls_projects))]
         projects_fields = ['id','name']
-        self.pool["project.project"].load(cr, uid, projects_fields, ls_projects_to_import)
+        print self.pool["project.project"].load(cr, uid, projects_fields, ls_projects_to_import)
 
         ls_tasks_to_import = [[str(ls_tasks[x]['id']),ls_tasks[x]['name'],str(ls_tasks[x]['project_id']) , uid] for x in range(len(ls_tasks))]
         tasks_fields = ['id','name','project_id/id','user_id/.id']
-        self.pool["project.task"].load(cr, uid, tasks_fields, ls_tasks_to_import)
+        print self.pool["project.task"].load(cr, uid, tasks_fields, ls_tasks_to_import)
 
         # Find the acc id
         # check the write_date
