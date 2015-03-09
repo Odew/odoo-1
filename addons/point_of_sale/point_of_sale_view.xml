@@ -83,6 +83,7 @@
                                 <field name="pos_reference"/>
                             </group>
                             <group string="Accounting Information">
+                                <field name="fiscal_position"/>
                                 <field name="sale_journal" domain="[('type','=','sale')]"/>
                                 <field name="invoice_id" readonly="1"
                                     attrs="{'invisible':[('state','&lt;&gt;','invoiced')]}"/>
