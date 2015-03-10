@@ -1,33 +1,36 @@
 // ------------------------------------------------------------------
+// Odoo
+// ------------------------------------------------------------------
+@odoo-brand-primary: #a24689;
+@odoo-brand-secondary: #8f8f8f;
+@odoo-brand-optional: #21b799;
+
+
+// ------------------------------------------------------------------
 // Bootstrap's variables
 // ------------------------------------------------------------------
+@badge-active-bg: @component-active-bg;
+@badge-active-color: black;
+@badge-bg: none;
+@badge-color: @gray-light;
 @border-radius-base: 0;
-@navbar-inverse-bg: #454343;
-@navbar-inverse-link-color: #fff;
-@navbar-inverse-link-hover-bg: #222;
-// GROSS
-.navbar-nav {
-    margin: 0;
-}
-@nav-link-padding: 2px 12px;
-@component-active-bg: #7c7bad;
-@brand-primary: #7c7bad;
-
-/* Override Bootstrap's behavior: we don't want aligned nested navs. */
-.nav {
-    .nav {
-        padding-left: 6px;
-    }
-}
+@brand-primary: @odoo-brand-primary;
+@breadcrumb-bg: white;
+@component-active-bg: @gray-lighter;
+@component-active-color: @odoo-brand-optional;
+@nav-link-padding: 5px 20px 5px 20px;
+@navbar-inverse-bg: @odoo-brand-primary;
+@navbar-inverse-link-color: white;
+@navbar-inverse-link-hover-bg: darken(@odoo-brand-primary, 10%);
 
 
 // ------------------------------------------------------------------
 // Layout
 // ------------------------------------------------------------------
 .o-primary-menu, .o-secondary-menu {
-    background-color: #f5f5f5;  // FIXME: expose
-    border-right: 1px solid #eee;
-    border-bottom: 1px solid #eee;
+    background-color: white;
+    border-right: 1px solid @gray-lighter;
+    border-bottom: 1px solid @gray-lighter;
     .transition(left 0.15s);  // Slide animation
 }
 
@@ -37,85 +40,107 @@
 }
 
 .o-web-client.overlay:after {
-    background-color: @navbar-inverse-bg;
+    background-color: @gray;
     opacity: 0.6;
     .transition(background-color 0.15s ease);
 }
 
 .o-control-panel {
-    background-color: #f5f5f5;
-    border-bottom: 1px solid #eee;
+    background-color: white;
+    border-bottom: 1px solid @gray-lighter;
 }
 
 
 // ------------------------------------------------------------------
 // Menus
 // ------------------------------------------------------------------
-.oe_systray, .oe_secondary_menu {
-    display: none;  // Needed by the webclient
+.navbar {
+    .o-menu-brand {
+        padding-left: 8px;
+    }
 }
 
-.oe_logo {
-    img {
-        .center-block;
-        width: @o-menu-width - 50px;
-    }
-
-    .oe_logo_edit {
-        display: none;
-        position: absolute;
-        top: 10px;
-        right: 0;
-        left: 0;
-        color: @navbar-inverse-link-color;
-        background: @navbar-inverse-bg;
-        text-align: center;
-    }
-
-    &:hover .oe_logo_edit {
-        display: block;
-    }
-
-    .oe_logo_edit_admin:hover {
-        // Note: class created by the webclient
-        .center-block;
-    }
-
+// Needed by the webclient
+.oe_systray, .oe_secondary_menu, .oe_user_menu_placeholder {
+    display: none;
 }
 
-.oe_applications_link {
-    color: @component-active-bg;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
+.o-primary-menu, .o-secondary-menu {
+    .oe_logo {
+        img {
+            .center-block;
+            width: @o-menu-width - 50px;
+        }
 
-.oe_secondary_menu {
-    >span {
+        .oe_logo_edit {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 0;
+            left: 0;
+            color: @navbar-inverse-link-color;
+            background: @navbar-inverse-bg;
+            text-align: center;
+        }
+
+        &:hover .oe_logo_edit {
+            display: block;
+        }
+
+        .oe_logo_edit_admin:hover {
+            .center-block;  // Note: class created by the webclient
+        }
+    }
+
+    .oe_user_menu_placeholder {
+        padding: 15px;
+
+        .oe_topbar_avatar {
+            width: 35%;
+        }
+    }
+
+    // Button only visible in mobile mode allowing to switch between primary and secondary menu
+    .oe_applications_link {
         color: @component-active-bg;
         font-weight: bold;
-        padding: 0px 6px;
+        margin-bottom: 5px;
     }
 
-    .oe_menu_toggler:after {
-        .o-caret-down;
-        margin-left: 5px;
+    // Override Bootstrap's behavior: we don't want aligned nested navs.
+    .nav {.nav {padding-left: 6px;}}
+
+    li a {
+        color: @gray;
+        font-weight: bold;
     }
 
-    .oe_menu_opened:after {
-        .o-caret-up;
-        margin-left: 5px;
-    }
-}
+    .oe_secondary_menu {
+        > span {
+            color: @gray-light;
+            padding: 5px 10px 5px 10px;
+            cursor: default;
+        }
 
+        // Default bootstrap's margins for hr are derived from font-size-base & line-height-base.
+        // Override them here without touching these values.
+        hr {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
 
-// ------------------------------------------------------------------
-// Widgets
-// ------------------------------------------------------------------
-.oe_user_menu_placeholder {
-    display: none;
-    padding: 15px;
+        li a {
+            padding: 5px 10px 5px 25px;
+        }
 
-    .oe_topbar_avatar {
-        width: 35%;
+        .oe_menu_toggler:after {
+            .o-caret-down;
+            margin-left: 5px;
+        }
+
+        .oe_menu_opened:after {
+            .o-caret-up;
+            margin-left: 5px;
+        }
     }
 }
