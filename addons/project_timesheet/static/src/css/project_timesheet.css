@@ -3,7 +3,7 @@
 	border-color: #E0E0E0;
 }
 
-div.pt_activities_list div:nth-of-type(even).pt_activity_box {
+table tr:nth-of-type(even) {
 	background-color: rgba(200,200,200,0.14);
 }
 
@@ -11,12 +11,29 @@ div.pt_activities_list div:nth-of-type(even).pt_activity_box {
 	border-top:0 ;
 }
 
+.pt_current_activity{
+	margin-bottom: 1em;
+	margin-left:0;
+}
+
 .pt_day_plan_select{
 	border: 1px solid;
 	border-color: #E0E0E0;
 }
+.pt_table_day_plan{
+	margin-bottom: 1em;
+}
 
 .pt_day_plan_select + .pt_day_plan_select {
+	border-top:0 ;
+}
+
+.pt_day_plan_remove{
+	border: 1px solid;
+	border-color: #E0E0E0;
+}
+
+.pt_day_plan_remove + .pt_day_plan_remove{
 	border-top:0 ;
 }
 
@@ -41,9 +58,13 @@ a.btn.pt_btn{
 span.pt_project{
 	font-weight: bold;
 }
+span.pt_bold{
+	font-weight: bold;
+}
 
 .pt_timer_clock{
-	text-align: center;	
+	text-align: center;
+	vertical-align: middle;
 }
 
 div.pt_activities_list td.pt_duration{
@@ -53,4 +74,13 @@ div.pt_activities_list td.pt_duration{
 .pt_duration_color_fill{
 	background-color: #a24689;
 	color:white;
+}
+
+.pt_start_planned_task{
+	background-color: #a24689;
+	color:white;	
+}
+
+table.pt_day_plan_table tr:hover{
+	background-color: #E0E0E0;	
 }

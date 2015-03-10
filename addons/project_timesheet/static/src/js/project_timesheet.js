@@ -28,15 +28,12 @@ openerp.project_timesheet = function(openerp) {
 	                        "projects":[],
 	                        "tasks": [],
 	                        "account_analytic_lines":[],
-	                        "day_plan":[
-	                            {"task_id" : 1},
-	                            {"task_id" : 2}
-	                        ]
+	                        "day_plan":[]
 	                    }
 	                },
 	            ];
                 // Comment or uncomment following line to reset demo data
-            	localStorage.setItem("pt_data", JSON.stringify(test_data));
+            	//localStorage.setItem("pt_data", JSON.stringify(test_data));
 
 
             	// Load (demo) data from local storage
@@ -109,6 +106,7 @@ openerp.project_timesheet = function(openerp) {
         },
         goto_activities: function(){
         	this.hide();
+            this.getParent().activities_screen.renderElement();
             this.getParent().activities_screen.show();
         },
         // Methods that might be moved later if necessary :
@@ -121,14 +119,26 @@ openerp.project_timesheet = function(openerp) {
         		return "No project selected yet";
         	}
         },
-        get_task_name: function(task_id, project_id){
-        	task = _.findWhere(self.data.tasks, {id : task_id, project_id : project_id})
+        get_task_name: function(task_id){
+        	task = _.findWhere(self.data.tasks, {id : task_id});
         	if (!_.isUndefined(task)){
         		return task.name;
         	}
         	else{
         		return "No task selected yet";
         	}
+        },
+        get_project_name_from_task_id: function(task_id){
+            task = _.findWhere(self.data.tasks, {id : task_id});
+            if (!_.isUndefined(task)){
+                project = _.findWhere(self.data.projects, {id : task.project_id});
+                if (!_.isUndefined(project)){
+                    return project.name;
+                }
+                else{
+                    return "No project selected yet";
+                }
+            }
         },
 
         //Utility methods to format and validate time
@@ -228,6 +238,19 @@ openerp.project_timesheet = function(openerp) {
             self = this;
             self.screen_name = "Activities";
             self._super(parent);
+            if(localStorage.getItem("pt_start_timer_time") !== null){
+                self.timer_on = true;
+                // restart the interval
+            }
+            else{
+                self.timer_on = false;
+            }
+            if(localStorage.getItem("pt_timer_activity_id") !== null){
+                self.current_activity = JSON.parse(localStorage.getItem("pt_timer_activity_id"));
+            }
+            else{
+                self.current_activity = false;
+            }
             // Events specific to this screen
             _.extend(self.events,
                 {
@@ -241,7 +264,8 @@ openerp.project_timesheet = function(openerp) {
                     "mouseover .pt_duration" : "on_duration_over",
                     "mouseout .pt_duration" : "on_duration_out",
                     "click .pt_duration_continue":"on_continue_activity",
-                    "click .pt_btn_interrupt_activity":"on_interrupt_activity"
+                    "click .pt_btn_interrupt_activity":"on_interrupt_activity",
+                    "click .pt_day_plan_task" : "start_day_plan_activity"
                 }
             );
             self.account_analytic_lines = self.data.account_analytic_lines;
@@ -260,8 +284,8 @@ openerp.project_timesheet = function(openerp) {
         },
         start_activity: function(){
             self = this;
-            this.$(".pt_btn_start_activity").html('<span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop </a>');
-            this.$(".pt_btn_start_activity").toggleClass("pt_btn_start_activity pt_btn_stop_activity");
+            self.timer_on = true;
+            this.renderElement();
             self.getParent().$(".pt_timer_clock").text("00:00:00");
             function timer_fct(start_time){
                 self.getParent().$(".pt_timer_clock").text(moment.utc(new Date() - start_time).format("HH:mm:ss"));
@@ -271,13 +295,22 @@ openerp.project_timesheet = function(openerp) {
             this.timer_start = setInterval(function(){timer_fct(self.getParent().start_timer_time)},500);
         },
         stop_activity: function(){
-            this.$(".pt_btn_stop_activity").html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start</a>');
-            this.$(".pt_btn_stop_activity").toggleClass("pt_btn_start_activity pt_btn_stop_activity");
+            this.timer_on = false;
             clearInterval(this.timer_start);
-            $(".pt_timer_clock").text("")
+            $(".pt_timer_clock").text("");
             this.goto_create_activity_screen();
             // Trigger the change event to pre-fill the edit activity form with the time spent working.
             this.getParent().edit_activity_screen.$("input.pt_activity_duration").val(moment.utc(new Date() - new Date(JSON.parse(localStorage.getItem("pt_start_timer_time")))).format("HH:mm")).change();
+            // The activity was started from the day plan:
+            if(this.current_activity){
+                this.getParent().edit_activity_screen.$(".pt_activity_project").select2("data", {id : this.current_activity.project_id , name : this.get_project_name(this.current_activity.project_id)});
+                this.getParent().edit_activity_screen.activity.project_id = this.current_activity.project_id;
+                this.getParent().edit_activity_screen.initialize_task_selector();
+                this.getParent().edit_activity_screen.$(".pt_activity_task").select2("data", {id : this.current_activity.task_id , name : this.get_task_name(this.current_activity.task_id)})
+                this.getParent().edit_activity_screen.activity.task_id = this.current_activity.task_id;
+            }
+            this.current_activity = false;
+            localStorage.removeItem("pt_current_activity");
             localStorage.removeItem("pt_start_timer_time");
         },
         quick_add_time: function(event){
@@ -325,8 +358,8 @@ openerp.project_timesheet = function(openerp) {
         on_continue_activity: function(event){
             var activity = _.findWhere(this.account_analytic_lines , {id : event.currentTarget.dataset.activity_id});
             self = this;
-            this.$(".pt_btn_start_activity").html('<span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop </a>');
-            this.$(".pt_btn_start_activity").toggleClass("pt_btn_start_activity pt_btn_interrupt_activity");
+            this.current_activity = activity;
+            this.renderElement();
             self.getParent().$(".pt_timer_clock").text(this.unit_amount_to_hours_minutes(activity.unit_amount) + ":00");
             function timer_fct(start_time, start_amount){
                 self.getParent().$(".pt_timer_clock").text(moment.utc(new Date() - start_time).add(start_amount,"hours").format("HH:mm:ss"));
@@ -340,8 +373,6 @@ openerp.project_timesheet = function(openerp) {
         on_interrupt_activity: function(){
             var activity_id = JSON.parse(localStorage.getItem("pt_timer_activity_id"));
             var activity = _.findWhere(this.account_analytic_lines , {id : activity_id}); 
-            this.$(".pt_btn_interrupt_activity").html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start</a>');
-            this.$(".pt_btn_interrupt_activity").toggleClass("pt_btn_start_activity pt_btn_interrupt_activity");
             clearInterval(this.timer_start);
             $(".pt_timer_clock").text("");
             hh_mm_value = moment.utc(new Date() - new Date(JSON.parse(localStorage.getItem("pt_start_timer_time")))).add(activity.unit_amount, "hours").format("HH:mm");
@@ -351,10 +382,22 @@ openerp.project_timesheet = function(openerp) {
             this.data.account_analytic_lines.sort(function(a,b){
                 return openerp.str_to_datetime(b.write_date) - openerp.str_to_datetime(a.write_date);
             });
+            this.current_activity = false;
             this.getParent().update_localStorage();
             this.renderElement();
             localStorage.removeItem("pt_start_timer_time");
             localStorage.removeItem("pt_timer_activity_id");
+        },
+        start_day_plan_activity: function(event){
+            var task_id = event.currentTarget.dataset.task_id;
+            var project_id = _.findWhere(this.data.tasks, {id : task_id}).project_id;
+            this.current_activity = {
+                task_id : task_id,
+                project_id : project_id
+            };
+            localStorage.setItem("pt_current_activity" , JSON.stringify(this.current_activity))
+            this.data.day_plan.splice(_.indexOf(this.data.day_plan, event.currentTarget.dataset.task_id), 1);
+            this.start_activity();
         },
 
         test_fct: function(){
@@ -451,13 +494,21 @@ openerp.project_timesheet = function(openerp) {
             this.screen_name = "Day Planner";
             _.extend(self.events,
                 {
-                    "click .pt_day_plan_select":"add_to_day_plan"
+                    "click .pt_day_plan_select":"add_to_day_plan",
+                    "click .pt_day_plan_remove" : "remove_from_day_plan"
                 }
             );
             this.tasks = this.data.tasks;
         },
-        add_to_day_plan: function(event){
-            console.log(event.currentTarget.dataset.task_id);
+        add_to_day_plan: function(event){ 
+            this.data.day_plan.push(event.currentTarget.dataset.task_id);
+            this.getParent().update_localStorage();
+            this.renderElement();
+        },
+        remove_from_day_plan: function(event){
+            this.data.day_plan.splice(_.indexOf(this.data.day_plan, event.currentTarget.dataset.task_id), 1);
+            this.getParent().update_localStorage();
+            this.renderElement();
         }
     });
 
@@ -648,7 +699,7 @@ openerp.project_timesheet = function(openerp) {
 					return res;
 				},
                 initSelection : function(element, callback){
-                    var data = {id: self.activity.task_id, name : self.get_task_name(self.activity.task_id, self.activity.project_id)};
+                    var data = {id: self.activity.task_id, name : self.get_task_name(self.activity.task_id)};
                     callback(data);
                 }
         	});

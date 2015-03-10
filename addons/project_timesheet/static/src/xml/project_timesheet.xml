@@ -12,26 +12,69 @@
     	<div class="pt_activities_screen">
     		<div class="row pt_timer">
     			<!--"main" section-->
-	    		<div class="col-xs-6 pt_timer_clock">
-		    		<!--Put time here-->
-		    		
+	    		<div class="col-xs-6">
+                    <div class="pt_timer_clock">
+                        
+                    </div>
+                    
 		    	</div>
-		    	<div class="col-xs-3">
+		    	<div class="col-xs-2">
 		    		<!--Start button / stop button-->
-		    		<a href="javascript:void(0)" class="btn btn-link pt_btn_start_activity pt_btn"><span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start</a>
+                    <t t-if="(!widget.current_activity) &amp;&amp; (!widget.timer_on)">
+                        <a href="javascript:void(0)" class="btn btn-link pt_btn_start_activity pt_btn"><span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start</a>
+                    </t>
+                    <t t-if="widget.timer_on">
+                        <a href="javascript:void(0)" class="btn btn-link pt_btn_stop_activity pt_btn"><span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop </a>
+                    </t>
+                    <t t-if="widget.current_activity &amp;&amp; !widget.timer_on">
+                        <a href="javascript:void(0)" class="btn btn-link pt_btn_interrupt_activity pt_btn"><span class="glyphicon glyphicon-stop" aria-hidden="true"></span> Stop </a>  
+                    </t>
 				</div>
 			</div>
+            <div class="row pt_current_activity">
+                <div class="col-xs-12">
+                    <!--Current activity-->
+                    <t t-if="widget.current_activity">
+                        <span class="pt_project"><t t-esc="widget.get_project_name(widget.current_activity.project_id)"/></span><br/>
+                        <t t-if="widget.current_activity.task_id">
+                            <t t-esc="widget.get_task_name(widget.current_activity.task_id)"/><br/>
+                        </t>
+                    </t>
+                </div>
+            </div>
+            <div class="pt_day_plan">
+                <t t-if="widget.data.day_plan.length > 0">
+                    <table class="table bordered pt_table_day_plan">
+                        <tr>
+                            <span class="pt_bold">Today's Tasks</span>
+                        </tr>
+                        <t t-foreach="widget.data.day_plan" t-as="day_plan_task_id">
+                            <tr class="pt_day_plan_task" t-att-data-task_id="day_plan_task_id">
+                                <td class="col-xs-10">
+                                    <span class="pt_project"><t t-esc="widget.get_project_name_from_task_id(day_plan_task_id)"/></span><br/>
+                                    <t t-esc="widget.get_task_name(day_plan_task_id)"/>
+                                </td>
+                                <td class="col-xs-2">
+                                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                                </td>
+                           </tr> 
+                        </t>
+                    </table>
+                </t>
+            </div>
             <div class="pt_activities_list">
     			<!--Rows etc.-->
-    			<t t-if="widget.account_analytic_lines">
-                    <table class="table table-condensed bordered">
+                <table class="table table-condensed bordered">
+                    <!--Activities-->
+                    <t t-if="widget.account_analytic_lines.length > 0">
+                        <span class="pt_bold">My activities</span>
         				<t t-foreach="widget.account_analytic_lines" t-as="account_analytic_line">
                             <tr>
                                 <td class="col-xs-8 pt_activity" t-att-data-activity_id="account_analytic_line.id">
                                     <span class="pt_project"><t t-esc="widget.get_project_name(account_analytic_line.project_id)"/></span>
                                     <br/>
                                     <t t-if="account_analytic_line.task_id">
-                                        <t t-esc="widget.get_task_name(account_analytic_line.task_id, account_analytic_line.project_id)"/>
+                                        <t t-esc="widget.get_task_name(account_analytic_line.task_id)"/>
                                     </t>
                                 </td>
                                 <td class="col-xs-1">
@@ -54,37 +97,10 @@
                                         <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
                                     </div>
                                 </td>
-            					<!-- <div class="col-xs-12 pt_activity_box">
-                					<div class="row">
-            							<div class="col-xs-8 pt_activity" t-att-data-activity_id="account_analytic_line.id">
-            								<span class="pt_project"><t t-esc="widget.get_project_name(account_analytic_line.project_id)"/></span>
-                                            <br/>
-            								<t t-if="account_analytic_line.task_id">
-            						    		<t t-esc="widget.get_task_name(account_analytic_line.task_id)"/>
-            						    	</t>
-            							</div>
-            							<div class="col-xs-1">
-            								<div class="row pt_quick_add_time" t-att-data-activity_id="account_analytic_line.id">
-            								<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-            								</div>
-            								<div class="row pt_quick_subtract_time" t-att-data-activity_id="account_analytic_line.id">
-            								<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-            								</div>
-            							</div>
-            							<div class="col-xs-2 pt_duration">
-                                            <t t-if="account_analytic_line.unit_amount">
-                								<t t-esc="widget.unit_amount_to_hours_minutes(account_analytic_line.unit_amount)"/>
-                                            </t>
-                                            <t t-if="!account_analytic_line.unit_amount">
-                                                00:00
-                                            </t>
-            							</div>
-                					</div>
-            					</div> -->
                             </tr>
         				</t>
-                    </table>
-    			</t>
+                    </t>    
+                </table>
             </div>
             <br/>
             <a href="javascript:void(0)" class="btn btn-link pt_test_btn pt_btn">Test Sync</a>
@@ -97,28 +113,26 @@
     		<div class="well">
     			What will you be working on today?
     		</div>
-    		<div class="container-fluid">
-                <t t-if="widget.tasks">
-    	    		<t t-foreach="widget.tasks" t-as="task">
-        				<div class="row pt_day_plan_select" t-att-data-task_id="task.id">
-	    					<div class="col-xs-3 pt_day_plan_selected">
-	    						<!-- Hidden at the moment, should appear dynamically when selected.
-	    						<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-	    						-->
-	    					</div>
-	    				
-	    					<div class="col-xs-9">
-	    						<div class="row">
-	    							<span class="pt_project"> <t t-esc="widget.get_project_name(task.project_id)"/></span>
-	    						</div>
-	    						<div class="row">
-	    							<t t-esc="task.name"/>
-	    						</div>
-	    					</div>
-        				</div>
-                    </t>
+    		<!-- <div class="container-fluid"> -->
+                <t t-if="widget.tasks.length > 0">
+                    <table class="table pt_day_plan_table">
+        	    		<t t-foreach="widget.tasks" t-as="task">
+            				<tr t-att-class="(widget.data.day_plan.indexOf(task.id) > -1) ? 'pt_day_plan_remove' : 'pt_day_plan_select'" t-att-data-task_id="task.id">
+    	    					<td class="col-xs-3 pt_day_plan_selected">
+                                    <t t-if="widget.data.day_plan.indexOf(task.id) > -1">
+    	    						    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                    </t>
+    	    					</td>
+    	    					<td class="col-xs-9">
+    	    						<span class="pt_project"> <t t-esc="widget.get_project_name(task.project_id)"/></span>
+                                    <br/>
+    	    						<t t-esc="task.name"/>
+    	    					</td>
+            				</tr>
+                        </t>
+                    </table>
 	    		</t>
-    		</div>
+    		<!-- </div> -->
     	</div>
     </t>
 
