@@ -39,6 +39,5 @@ United States - Chart of accounts.
     ],
     'demo': [],
     'test': [],
-    'installable': False,
-    'auto_install': False,
+    'installable': True,
 }

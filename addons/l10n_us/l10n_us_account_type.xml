@@ -6,67 +6,11 @@
 
         <!-- Asset -->
 
-        <record id="user_type_current_asset" model="account.account.type">
-            <field name="name">Current Asset</field>
-        </record>
-        <record id="user_type_cash" model="account.account.type">
-            <field name="name">Cash</field>
-        </record>        
-        <record id="user_type_account_receivable" model="account.account.type">
-            <field name="name">Account Receivable</field>
-        </record>        
-        <record id="user_type_other_current_asset" model="account.account.type">
-            <field name="name">Other Current Asset</field>
-        </record>
-        <record id="user_type_fixed_asset" model="account.account.type">
-            <field name="name">Fixed Asset</field>
-        </record>
         <record id="user_type_accumulated_depreciation" model="account.account.type">
             <field name="name">Accumulated Depreciation</field>
         </record>        
-        <record id="user_type_other_asset" model="account.account.type">
-            <field name="name">Other Asset</field>
-        </record>
-
-        <!-- liability -->
-        <record id="user_type_account_payable" model="account.account.type">
-            <field name="name">Account Payable</field>
-        </record>
-        <record id="user_type_credit_card" model="account.account.type">
-            <field name="name">Credit Card</field>
-        </record>
-        <record id="user_type_current_liability" model="account.account.type">
-            <field name="name">Current Liability</field>
-        </record>
-        <record id="user_type_other_current_liability" model="account.account.type">
-            <field name="name">Other Current Liability</field>
-        </record>
-        <record id="user_type_long_term_liability" model="account.account.type">
-            <field name="name">Long term Liability</field>
-        </record>
-        <record id="user_type_liability" model="account.account.type">
-            <field name="name">Liability</field>
-        </record>
-        <!-- Equity -->
-        <record id="user_type_equity" model="account.account.type">
-            <field name="name">Equity</field>
-        </record>
-
-        <!-- Income -->
-        <record id="user_type_income" model="account.account.type">
-            <field name="name">Income</field>
-        </record>
-        <record id="user_type_other_income" model="account.account.type">
-            <field name="name">Other Income</field>
-        </record>
 
         <!-- Expense -->  
-        <record id="user_type_expense" model="account.account.type">
-            <field name="name">Expense</field>
-        </record>
-        <record id="user_type_other_expense" model="account.account.type">
-            <field name="name">Other Expense</field>
-        </record>
         
         <record id="user_type_cogs" model="account.account.type">
             <field name="name">Cost of Goods Sold</field>
