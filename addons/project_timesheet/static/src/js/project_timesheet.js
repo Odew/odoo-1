@@ -238,19 +238,6 @@ openerp.project_timesheet = function(openerp) {
             self = this;
             self.screen_name = "Activities";
             self._super(parent);
-            if(localStorage.getItem("pt_start_timer_time") !== null){
-                self.timer_on = true;
-                // restart the interval
-            }
-            else{
-                self.timer_on = false;
-            }
-            if(localStorage.getItem("pt_timer_activity_id") !== null){
-                self.current_activity = JSON.parse(localStorage.getItem("pt_timer_activity_id"));
-            }
-            else{
-                self.current_activity = false;
-            }
             // Events specific to this screen
             _.extend(self.events,
                 {
@@ -270,6 +257,29 @@ openerp.project_timesheet = function(openerp) {
             );
             self.account_analytic_lines = self.data.account_analytic_lines;
         },
+        start: function(){
+            var self = this;
+            if(localStorage.getItem("pt_start_timer_time") !== null && localStorage.getItem("pt_timer_activity_id") === null){
+                this.timer_on = true;
+                this.getParent().start_timer_time = JSON.parse(localStorage.getItem("pt_start_timer_time"));
+                this.getParent().timer_start = setInterval(function(){self.timer_fct(self.getParent().start_timer_time, 0)},500);
+            }
+            else{
+                this.timer_on = false;
+            }
+            if(localStorage.getItem("pt_timer_activity_id") !== null){
+                var current_activity_id = JSON.parse(localStorage.getItem("pt_timer_activity_id"));
+                self.current_activity = _.findWhere(self.account_analytic_lines , {id : current_activity_id});
+                this.getParent().start_timer_time = JSON.parse(localStorage.getItem("pt_start_timer_time"));
+                this.getParent().timer_start = setInterval(function(){self.timer_fct(self.getParent().start_timer_time, self.current_activity.unit_amount)},500);
+                
+                this.timer_on = false;
+            }
+            else{
+                self.current_activity = false;
+            }
+            this.renderElement();
+        },
         //Go to the create / edit activity
         goto_create_activity_screen: function(){
             this.getParent().edit_activity_screen.re_render();
@@ -282,21 +292,22 @@ openerp.project_timesheet = function(openerp) {
             this.hide();
             this.getParent().edit_activity_screen.show();
         },
+        timer_fct: function(start_time, start_amount){
+            console.log(new Date());
+            this.getParent().$(".pt_timer_clock").text(moment.utc(new Date() - moment(start_time)).add(start_amount,"hours").format("HH:mm:ss"));
+        },
         start_activity: function(){
             self = this;
             self.timer_on = true;
             this.renderElement();
             self.getParent().$(".pt_timer_clock").text("00:00:00");
-            function timer_fct(start_time){
-                self.getParent().$(".pt_timer_clock").text(moment.utc(new Date() - start_time).format("HH:mm:ss"));
-            }
             self.getParent().start_timer_time = new Date();
             localStorage.setItem("pt_start_timer_time", JSON.stringify(self.getParent().start_timer_time));
-            this.timer_start = setInterval(function(){timer_fct(self.getParent().start_timer_time)},500);
+            this.getParent().timer_start = setInterval(function(){self.timer_fct(self.getParent().start_timer_time, 0)},500);
         },
         stop_activity: function(){
             this.timer_on = false;
-            clearInterval(this.timer_start);
+            clearInterval(this.getParent().timer_start);
             $(".pt_timer_clock").text("");
             this.goto_create_activity_screen();
             // Trigger the change event to pre-fill the edit activity form with the time spent working.
@@ -361,19 +372,16 @@ openerp.project_timesheet = function(openerp) {
             this.current_activity = activity;
             this.renderElement();
             self.getParent().$(".pt_timer_clock").text(this.unit_amount_to_hours_minutes(activity.unit_amount) + ":00");
-            function timer_fct(start_time, start_amount){
-                self.getParent().$(".pt_timer_clock").text(moment.utc(new Date() - start_time).add(start_amount,"hours").format("HH:mm:ss"));
-            }
             self.getParent().start_amount = activity.unit_amount;
             self.getParent().start_timer_time = new Date();
             localStorage.setItem("pt_start_timer_time", JSON.stringify(self.getParent().start_timer_time));
             localStorage.setItem("pt_timer_activity_id", JSON.stringify(activity.id));
-            this.timer_start = setInterval(function(){timer_fct(self.getParent().start_timer_time, self.getParent().start_amount)},500);
+            this.getParent().timer_start = setInterval(function(){self.timer_fct(self.getParent().start_timer_time, self.getParent().start_amount)},500);
         },
         on_interrupt_activity: function(){
             var activity_id = JSON.parse(localStorage.getItem("pt_timer_activity_id"));
             var activity = _.findWhere(this.account_analytic_lines , {id : activity_id}); 
-            clearInterval(this.timer_start);
+            clearInterval(this.getParent().timer_start);
             $(".pt_timer_clock").text("");
             hh_mm_value = moment.utc(new Date() - new Date(JSON.parse(localStorage.getItem("pt_start_timer_time")))).add(activity.unit_amount, "hours").format("HH:mm");
             activity.unit_amount = this.hh_mm_to_unit_amount(hh_mm_value);
@@ -389,17 +397,19 @@ openerp.project_timesheet = function(openerp) {
             localStorage.removeItem("pt_timer_activity_id");
         },
         start_day_plan_activity: function(event){
-            var task_id = event.currentTarget.dataset.task_id;
-            var project_id = _.findWhere(this.data.tasks, {id : task_id}).project_id;
-            this.current_activity = {
-                task_id : task_id,
-                project_id : project_id
-            };
-            localStorage.setItem("pt_current_activity" , JSON.stringify(this.current_activity))
-            this.data.day_plan.splice(_.indexOf(this.data.day_plan, event.currentTarget.dataset.task_id), 1);
-            this.start_activity();
+            if(!this.current_activity){
+                var task_id = event.currentTarget.dataset.task_id;
+                var project_id = _.findWhere(this.data.tasks, {id : task_id}).project_id;
+                this.current_activity = {
+                    task_id : task_id,
+                    project_id : project_id
+                };
+                localStorage.setItem("pt_current_activity" , JSON.stringify(this.current_activity));
+                this.data.day_plan.splice(_.indexOf(this.data.day_plan, event.currentTarget.dataset.task_id), 1);
+                this.getParent().update_localStorage();
+                this.start_activity();
+            }
         },
-
         test_fct: function(){
             this.sync();
             this.renderElement();    
