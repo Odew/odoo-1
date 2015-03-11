@@ -1007,7 +1007,13 @@ openerp.web_calendar = function(instance) {
                 self.trigger('close');
             })
             .open();
-            this.$input = this.$dialog.$('input').keyup(function enterHandler (e) {
+            this.$input = this.$dialog.$('input');
+            if (_.has(this.getParent().fields, "name")) {
+                this.dataset.call("default_get", [["name"]]).then(function(result) {
+                    self.$input.val(result.name);
+                });
+            }
+            this.$input.keyup(function enterHandler (e) {
                 if(event.keyCode == 13){
                     self.$input.off('keyup', enterHandler);
                     if (!self.quick_add()){
