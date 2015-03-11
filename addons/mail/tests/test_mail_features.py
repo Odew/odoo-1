@@ -864,22 +864,20 @@ class test_mail(TestMail):
         last_msg = self.group_pigs.message_ids[-1]
 
         self.assertFalse(last_msg.subtype_id.id, 'tracked: message should not have been linked to a subtype')
-        self.assertIn(u"Selectedgroupofusers\u2192Everyone", _strip_string_spaces(last_msg.body), 'tracked: message body incorrect')
-        self.assertIn('Pigs', _strip_string_spaces(last_msg.body), 'tracked: message body does not hold always tracked field')
+        self.assertEqual(u"", _strip_string_spaces(last_msg.body), 'tracked: message body incorrect (should be empty)')
+        # self.assertIn('Pigs', _strip_string_spaces(last_msg.body), 'tracked: message body does not hold always tracked field')
 
         # Test: change name as supername, public as private -> 2 subtypes
-        # New : only the first subtype is taken in account
         self.mail_group.write(cr, self.user_raoul_id, [self.group_pigs_id], {'name': 'supername', 'public': 'private'})
         self.group_pigs.refresh()
 
         self.assertEqual(len(self.group_pigs.message_ids), 2, 'tracked: one new tracking message should have been produced')
 
         # Test: first produced message: mt_name_supername
-        # New : empty body
         last_msg = self.group_pigs.message_ids[-2]
         self.assertEqual(last_msg.subtype_id.id, mt_private_id, 'tracked: message should be linked to mt_private subtype')
-        self.assertIn('Private public', last_msg.body, 'tracked: message body does not hold the subtype description')
-        self.assertIn(u'Pigs\u2192supername', _strip_string_spaces(last_msg.body), 'tracked: message body incorrect')
+        self.assertEqual('', last_msg.body, 'tracked: message body incorrect (should be empty)')
+        #self.assertIn(u'Pigs\u2192supername', _strip_string_spaces(last_msg.body), 'tracked: message body incorrect')
 
         # Test: change public as public, group_public_id -> 1 subtype, name always tracked
 
