@@ -43,7 +43,8 @@ class test_mail_access_rights(TestMail):
         msg_id9 = self.group_pigs.message_post(body='1-1-1', subtype='mt_comment', parent_id=msg_id3)
         msg_id10 = self.group_pigs.message_post(body='2-1-1', subtype='mt_comment', parent_id=msg_id4)
         msg_ids = [msg_id10, msg_id9, msg_id8, msg_id7, msg_id6, msg_id5, msg_id4, msg_id3, msg_id2, msg_id1, msg_id0]
-        ordered_msg_ids = [msg_id2, msg_id4, msg_id6, msg_id8, msg_id10, msg_id1, msg_id3, msg_id5, msg_id7, msg_id9, msg_id0]
+        #ordered_msg_ids = [msg_id2, msg_id4, msg_id6, msg_id8, msg_id10, msg_id1, msg_id3, msg_id5, msg_id7, msg_id9, msg_id0]
+        ordered_msg_ids = [msg_id10, msg_id8, msg_id6, msg_id4, msg_id2, msg_id9, msg_id7, msg_id5, msg_id3, msg_id1, msg_id0]
 
         # Test: raoul received notifications
         raoul_notification_ids = self.mail_notification.search(cr, user_raoul.id, [('is_read', '=', False), ('message_id', 'in', msg_ids), ('partner_id', '=', user_raoul.partner_id.id)])
@@ -51,19 +52,20 @@ class test_mail_access_rights(TestMail):
 
         # Test: read some specific ids
         read_msg = self.mail_message.message_read(cr, user_raoul.id, ids=msg_ids[2:4], domain=[('body', 'like', 'dummy')], context={'mail_read_set_read': True}, mode='default')
-        read_msg_list = read_msg.threads[0][1]
+        read_msg_list = read_msg[threads][0][1]
         read_msg_ids = [msg.get('id') for msg in read_msg_list]
         self.assertEqual(msg_ids[2:4], read_msg_ids, 'message_read with direct ids should read only the requested ids')
 
         # Test: read messages of Pigs through a domain
-        #read_msg = self.mail_message.message_read(cr, user_raoul.id, domain=pigs_domain, mode='thread', limit=200, child_limit=200)
-        #read_msg_list = [thread[1] for thread in read_msg.threads]
-        #read_msg_ids = [msg.get('id') for msg in read_msg_list]
-        #self.assertEqual(msg_ids, read_msg_ids, 'message_read flat with domain on Pigs should equal all messages of Pigs')
-        #read_msg_list = self.mail_message.message_read(cr, user_raoul.id, domain=pigs_domain, limit=200, thread_level=1)
-        #read_msg_ids = [msg.get('id') for msg in read_msg_list]
-        #self.assertEqual(ordered_msg_ids, read_msg_ids,
-        #    'message_read threaded with domain on Pigs should equal all messages of Pigs, and sort them with newer thread first, last message last in thread')
+        # read_msg = self.mail_message.message_read(cr, user_raoul.id, domain=pigs_domain, mode='default', limit=200, child_limit=200)
+        # read_msg_list = [thread[1] for thread in read_msg[threads]]
+        # read_msg_ids = [msg.get('id') for msg in read_msg_list]
+        # self.assertEqual(msg_ids, read_msg_ids, 'message_read flat with domain on Pigs should equal all messages of Pigs')
+        # read_msg = self.mail_message.message_read(cr, user_raoul.id, domain=pigs_domain, mode='thread', limit=200, child_limit=200)
+        # read_msg_list = [thread[1] for thread in read_msg[threads]]
+        # read_msg_ids = [msg.get('id') for msg in read_msg_list]
+        # self.assertEqual(ordered_msg_ids, read_msg_ids,
+        #      'message_read threaded with domain on Pigs should equal all messages of Pigs, and sort them with newer thread first, last message last in thread')
 
         # ----------------------------------------
         # CASE1: message_read with domain, threaded
