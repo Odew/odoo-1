@@ -57,15 +57,15 @@ class test_mail_access_rights(TestMail):
         self.assertEqual(msg_ids[2:4], read_msg_ids, 'message_read with direct ids should read only the requested ids')
 
         # Test: read messages of Pigs through a domain
-        #read_msg = self.mail_message.message_read(cr, user_raoul.id, domain=pigs_domain, mode='default', limit=200, child_limit=200)
-        #read_msg_list = [thread[1] for thread in read_msg['threads']]
-        #read_msg_ids = [msg.get('id') for msg in read_msg_list]
-        #self.assertEqual(msg_ids, read_msg_ids, 'message_read flat with domain on Pigs should equal all messages of Pigs')
-        # read_msg = self.mail_message.message_read(cr, user_raoul.id, domain=pigs_domain, mode='thread', limit=200, child_limit=200)
-        # read_msg_list = [thread[1] for thread in read_msg['threads']]
-        # read_msg_ids = [msg.get('id') for msg in read_msg_list]
-        # self.assertEqual(ordered_msg_ids, read_msg_ids,
-        #      'message_read threaded with domain on Pigs should equal all messages of Pigs, and sort them with newer thread first, last message last in thread')
+        read_msg = self.mail_message.message_read(cr, user_raoul.id, domain=pigs_domain, mode='default', limit=200, child_limit=200)
+        read_msg_list = [thread[1] for thread in read_msg['threads']]
+        read_msg_ids = [msg.get('id') for msg in read_msg_list]
+        self.assertEqual(msg_ids, read_msg_ids, 'message_read flat with domain on Pigs should equal all messages of Pigs')
+        read_msg = self.mail_message.message_read(cr, user_raoul.id, domain=pigs_domain, mode='thread', limit=200, child_limit=200)
+        read_msg_list = [thread[1] for thread in read_msg['threads']]
+        read_msg_ids = [msg.get('id') for msg in read_msg_list]
+        self.assertEqual(ordered_msg_ids, read_msg_ids,
+              'message_read threaded with domain on Pigs should equal all messages of Pigs, and sort them with newer thread first, last message last in thread')
 
         # ----------------------------------------
         # CASE1: message_read with domain, threaded
