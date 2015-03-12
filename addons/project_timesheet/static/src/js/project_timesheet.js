@@ -9,6 +9,7 @@ openerp.project_timesheet = function(openerp) {
 			this.session = new openerp.Session();
             this.session.session_reload().then(function(){
             	// Set demo data in local storage. TO REMOVE LATER
+                var timestamp = (new Date()).getTime();
             	var test_data = [
 	                {
 	                    "session_user":"admin",
@@ -19,7 +20,7 @@ openerp.project_timesheet = function(openerp) {
 	                    	"next_project_id":3,
 	                    	"next_task_id":4,
                             "module_key" : "Project_timesheet_UI_",
-                            "original_timestamp" : "1425653862300",
+                            "original_timestamp" : timestamp,
 	                        "settings":{
 	                            "default_project_id":undefined,
 	                            "minimal_duration":0.25,
@@ -33,7 +34,7 @@ openerp.project_timesheet = function(openerp) {
 	                },
 	            ];
                 // Comment or uncomment following line to reset demo data
-            	//localStorage.setItem("pt_data", JSON.stringify(test_data));
+            	localStorage.setItem("pt_data", JSON.stringify(test_data));
 
 
             	// Load (demo) data from local storage
@@ -293,8 +294,13 @@ openerp.project_timesheet = function(openerp) {
             this.getParent().edit_activity_screen.show();
         },
         timer_fct: function(start_time, start_amount){
-            console.log(new Date());
-            this.getParent().$(".pt_timer_clock").text(moment.utc(new Date() - moment(start_time)).add(start_amount,"hours").format("HH:mm:ss"));
+            var ms = moment(moment(new Date()).add(start_amount,"hours")).diff(moment(start_time));
+            var d = moment.duration(ms);
+            var hours = Math.floor(d.asHours());
+            if (hours < 10){
+                hours = "0" + hours;
+            }
+            this.getParent().$(".pt_timer_clock").text(hours + moment.utc(d.asMilliseconds()).format(":mm:ss"));
         },
         start_activity: function(){
             self = this;
@@ -421,7 +427,6 @@ openerp.project_timesheet = function(openerp) {
             var account_analytic_line_model = new openerp.Model("account.analytic.line");
             account_analytic_line_model.call("export_data_for_ui" , []).then(function(sv_data){
                 // SV => LS sync
-                console.log(sv_data);
                 sv_aals = sv_data.aals.datas;
                 sv_tasks = sv_data.tasks.datas;
                 sv_projects = sv_data.projects.datas;
@@ -492,7 +497,19 @@ openerp.project_timesheet = function(openerp) {
             .then(function(){
                 //LS => SV sync
                 var context = new openerp.web.CompoundContext({default_is_timesheet : true});
-                account_analytic_line_model.call("import_ui_data" , [data.account_analytic_lines , data.tasks, data.projects, context])
+                account_analytic_line_model.call("import_ui_data" , [data.account_analytic_lines , data.tasks, data.projects, context]).then(function(sv_response){
+                    console.log(sv_response);
+                    //@TAC TODO : Better error processing system !
+                    if (sv_response.aals_errors.length > 0){
+                        alert("Some activities could no be synchronized !");
+                    }
+                    if (sv_response.project_errors.length > 0){
+                        alert("Some projects could no be synchronized !");
+                    }
+                    if (sv_response.task_errors.length > 0){
+                        alert("Some tasks could no be synchronized !");
+                    }
+                });
             });   
         }
     });

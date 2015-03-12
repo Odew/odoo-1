@@ -288,14 +288,16 @@ class account_analytic_line(osv.osv):
         }
     def import_ui_data(self, cr, uid, ls_aals, ls_tasks, ls_projects, context=None):
         #Load projects, then tasks and finally aals
-        
-        ls_projects_to_import = [[str(ls_projects[x]['id']),ls_projects[x]['name']] for x in range(len(ls_projects))]
+        #@TAC TODO : rewrite list comprehension in a cleaner way !
+        ls_projects_to_import = [[str(ls_projects[x]['id']),ls_projects[x]['name']] for x in range(len(ls_projects)) if self.pool.get("ir.model.data").xmlid_to_object(cr, uid, str(ls_projects[x]['id'])) == None]
         projects_fields = ['id','name']
-        print self.pool["project.project"].load(cr, uid, projects_fields, ls_projects_to_import)
+        #print self.pool["project.project"].load(cr, uid, projects_fields, ls_projects_to_import)
+        project_errors = self.load_wrapper(cr, uid, self.pool["project.project"], projects_fields, ls_projects_to_import)
 
-        ls_tasks_to_import = [[str(ls_tasks[x]['id']),ls_tasks[x]['name'],str(ls_tasks[x]['project_id']) , uid] for x in range(len(ls_tasks))]
+        ls_tasks_to_import = [[str(ls_tasks[x]['id']),ls_tasks[x]['name'],str(ls_tasks[x]['project_id']) , uid] for x in range(len(ls_tasks)) if self.pool.get("ir.model.data").xmlid_to_object(cr, uid, str(ls_tasks[x]['id'])) == None]
         tasks_fields = ['id','name','project_id/id','user_id/.id']
-        print self.pool["project.task"].load(cr, uid, tasks_fields, ls_tasks_to_import)
+        #print self.pool["project.task"].load(cr, uid, tasks_fields, ls_tasks_to_import)
+        task_errors = self.load_wrapper(cr, uid, self.pool["project.task"], tasks_fields, ls_tasks_to_import)
 
         # Find the acc id
         # check the write_date
@@ -315,6 +317,26 @@ class account_analytic_line(osv.osv):
                 new_ls_aal['task_id'] = ""
 
         ls_aals_to_import = [[str(new_ls_aals[x]['id']),new_ls_aals[x]['desc'],new_ls_aals[x]['account_id'], new_ls_aals[x]['date'] , new_ls_aals[x]['unit_amount']  , str(new_ls_aals[x].get('task_id')) , uid, 'True'] for x in range(len(new_ls_aals))]
-        aals_fields = ['id','name','account_id/.id','date','unit_amount', 'task_id/id', 'user_id/.id', 'is_timesheet']
+        aals_fields  = ['id','name','account_id/.id','date','unit_amount', 'task_id/id', 'user_id/.id', 'is_timesheet']
 
-        print self.load(cr, uid, aals_fields, ls_aals_to_import, context)
+        #print self.load(cr, uid, aals_fields, ls_aals_to_import, context)
+        aals_errors = self.load_wrapper(cr, uid, self, aals_fields, ls_aals_to_import, context)
+
+        return {'project_errors' : project_errors , 'task_errors' : task_errors , 'aals_errors' : aals_errors}
+
+    def load_wrapper(self, cr, uid, model, fields, data_rows, context=None):
+
+        errors = []
+        messages = model.load(cr, uid, fields, data_rows, context=context)['messages']
+        print messages
+        failed_records = [messages[x].get('record') for x in range(len(messages)) if messages[x].get('type') == 'error']
+
+        correct_data_rows = [v for i, v in enumerate(data_rows) if i not in failed_records]
+        print model.load(cr, uid, fields, correct_data_rows, context=context);
+        
+        return [v for i, v in enumerate(data_rows) if i in failed_records]
+
+    def write(self, cr, uid, ids, vals, context=None):
+        res = self.on_change_account_id(cr, uid, ids, vals['account_id'], vals['is_timesheet'], vals['user_id'], context)
+        vals['to_invoice'] = res['value']['to_invoice']
+        return super(account_analytic_line,self).write(cr, uid, ids, vals,context=context)
