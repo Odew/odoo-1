@@ -1965,8 +1965,6 @@ $.summernote.pluginEvents.applyFont = function (event, editor, layoutInfo, color
       }
     }
 
-    range.create(startPoint.node, startPoint.offset, endPoint.node, endPoint.offset).select();
-};
 $.summernote.pluginEvents.fontSize = function (event, editor, layoutInfo, value) {
   var $editable = layoutInfo.editable();
   event.preventDefault();
@@ -2032,6 +2030,9 @@ function summernote_table_update (oStyle) {
         return;
     }
     var table = dom.ancestor(oStyle.range.sc, dom.isTable);
+    if (!table) { // if the editable tag is inside the table
+        return;
+    }
     var $editable = $(table).closest('.o_editable');
 
     $('.o_table_handler').remove();
