@@ -2032,6 +2032,9 @@ define('summernote/openerp', ['summernote/editing/Editor', 'summernote/summernot
             return;
         }
         var table = dom.ancestor(oStyle.range.sc, dom.isTable);
+        if (!table) { // if the editable tag is inside the table
+            return;
+        }
         var $editable = $(table).closest('.o_editable');
 
         $('.o_table_handler').remove();
