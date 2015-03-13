@@ -73,14 +73,15 @@ class test_mail_access_rights(TestMail):
         # ----------------------------------------
 
         # # Do: read last message, threaded
-        # read_msg_list = self.mail_message.message_read(cr, uid, domain=pigs_domain, limit=1, thread_level=1)
-        # read_msg_ids = [msg.get('id') for msg in read_msg_list if msg.get('type') != 'expandable']
-        # # TDE TODO: test expandables order
-        # type_list = map(lambda item: item.get('type'), read_msg_list)
-        # # Test: structure content, ancestor is added to the read messages, ordered by id, ancestor is set, 2 expandables
-        # self.assertEqual(len(read_msg_list), 4, 'message_read on last Pigs message should return 2 messages and 2 expandables')
-        # self.assertEqual(set([msg_id2, msg_id10]), set(read_msg_ids), 'message_read on the last Pigs message should also get its parent')
-        # self.assertEqual(read_msg_list[1].get('parent_id'), read_msg_list[0].get('id'), 'message_read should set the ancestor to the thread header')
+        read_msg = self.mail_message.message_read(cr, user_raoul.id, domain=pigs_domain, mode='thread', limit=1, child_limit=1)
+        read_msg_list = [[thread] if 'type' in thread and thread['type'] == 'expandable' else thread[1] for thread in read_msg['threads']]
+        read_msg_ids = [msg.get('id') for msg_list in read_msg_list for msg in msg_list if msg.get('type') != 'expandable']
+        read_ancestor_ids = [msg.get('parent_id') if msg.get('parent_id') != 0 else msg.get('id') for msg_list in read_msg_list for msg in msg_list if msg.get('type') != 'expandable']
+        type_list = [msg.get('type') for msg_list in read_msg_list for msg in msg_list]
+        # Test: structure content, ancestor is added to the read messages, ordered by id, ancestor is set, 2 expandables
+        self.assertEqual(len(type_list), 4, 'message_read on last Pigs message should return 2 messages and 2 expandables')
+        self.assertEqual(set([msg_id2, msg_id10]), set(read_msg_ids), 'message_read on the last Pigs message should also get its parent')
+        self.assertEqual(read_ancestor_ids[0], read_ancestor_ids[1], 'message_read should set the ancestor to the thread header')
         # # Data: get expandables
         # new_threads_exp, new_msg_exp = None, None
         # for msg in read_msg_list:
