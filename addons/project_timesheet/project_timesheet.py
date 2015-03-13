@@ -286,6 +286,7 @@ class account_analytic_line(osv.osv):
             'tasks' : tasks,
             'projects' : projects
         }
+
     def import_ui_data(self, cr, uid, ls_aals, ls_tasks, ls_projects, context=None):
         #Load projects, then tasks and finally aals
         #@TAC TODO : rewrite list comprehension in a cleaner way !
@@ -336,7 +337,9 @@ class account_analytic_line(osv.osv):
         
         return [v for i, v in enumerate(data_rows) if i in failed_records]
 
-    def write(self, cr, uid, ids, vals, context=None):
-        res = self.on_change_account_id(cr, uid, ids, vals['account_id'], vals['is_timesheet'], vals['user_id'], context)
-        vals['to_invoice'] = res['value']['to_invoice']
-        return super(account_analytic_line,self).write(cr, uid, ids, vals,context=context)
+    def create(self, cr, uid, vals, context=None):
+        if vals.get('is_timesheet'):
+            if vals.get('account_id'):
+                res = self.on_change_account_id(cr, uid, [], vals['account_id'], vals['is_timesheet'], vals['user_id'], context)
+                vals['to_invoice'] = res['value']['to_invoice']
+        return super(account_analytic_line,self).create(cr, uid, vals, context=context)

@@ -34,7 +34,7 @@ openerp.project_timesheet = function(openerp) {
 	                },
 	            ];
                 // Comment or uncomment following line to reset demo data
-            	localStorage.setItem("pt_data", JSON.stringify(test_data));
+            	//localStorage.setItem("pt_data", JSON.stringify(test_data));
 
 
             	// Load (demo) data from local storage
@@ -175,16 +175,13 @@ openerp.project_timesheet = function(openerp) {
 	    validate_duration: function(hh_mm){
 	        var time = hh_mm.split(":");
 	        if(time.length === 1){
-	            var hours = parseInt(time[0]);
-	            if(hours % 1 != 0){
+	            var hours = parseFloat(time[0]);
+	            if(isNaN(hours)){
 	                return undefined;
 	            }
-	            if (hours < 10){
-	                return "0" + hours.toString() + ":00";
-	            }
-	            else{
-	                return hours.toString() + ":00";
-	            }
+                else{
+                    return hours.toString();
+                }
 	        }
 	        else if(time.length === 2){
 	            var hours = parseInt(time[0]);
@@ -212,13 +209,12 @@ openerp.project_timesheet = function(openerp) {
 	        else{
 	            return undefined;
 	        }
-
 	    },
 
 	    hh_mm_to_unit_amount: function(hh_mm){
 	        var time = hh_mm.split(":");
 	        if(time.length === 1){
-	            return parseInt(time[0]);
+	            return parseFloat(time[0]);
 	        }
 	        else if(time.length === 2){
 	            var hours = parseInt(time[0]);
@@ -227,10 +223,8 @@ openerp.project_timesheet = function(openerp) {
 	        }
 	        else{
 	            return undefined;
-	        }
-	            
+	        }       
 	    }
-
 	});
 
 	openerp.project_timesheet.Activities_screen = openerp.project_timesheet.BasicScreenWidget.extend({
@@ -303,7 +297,7 @@ openerp.project_timesheet = function(openerp) {
             this.getParent().$(".pt_timer_clock").text(hours + moment.utc(d.asMilliseconds()).format(":mm:ss"));
         },
         start_activity: function(){
-            self = this;
+            var self = this;
             self.timer_on = true;
             this.renderElement();
             self.getParent().$(".pt_timer_clock").text("00:00:00");
@@ -374,7 +368,7 @@ openerp.project_timesheet = function(openerp) {
         },
         on_continue_activity: function(event){
             var activity = _.findWhere(this.account_analytic_lines , {id : event.currentTarget.dataset.activity_id});
-            self = this;
+            var self = this;
             this.current_activity = activity;
             this.renderElement();
             self.getParent().$(".pt_timer_clock").text(this.unit_amount_to_hours_minutes(activity.unit_amount) + ":00");
@@ -389,14 +383,20 @@ openerp.project_timesheet = function(openerp) {
             var activity = _.findWhere(this.account_analytic_lines , {id : activity_id}); 
             clearInterval(this.getParent().timer_start);
             $(".pt_timer_clock").text("");
-            hh_mm_value = moment.utc(new Date() - new Date(JSON.parse(localStorage.getItem("pt_start_timer_time")))).add(activity.unit_amount, "hours").format("HH:mm");
+            var start_time = new Date(JSON.parse(localStorage.getItem("pt_start_timer_time")))
+            var ms = moment(moment(new Date()).add(activity.unit_amount,"hours")).diff(moment(start_time));
+            var d = moment.duration(ms);
+            var hours = Math.floor(d.asHours());
+            hh_mm_value = hours + moment.utc(d.asMilliseconds()).format(":mm");
             activity.unit_amount = this.hh_mm_to_unit_amount(hh_mm_value);
             activity.write_date = openerp.datetime_to_str(new Date());
+            activity.date = openerp.date_to_str(new Date());
 
             this.data.account_analytic_lines.sort(function(a,b){
                 return openerp.str_to_datetime(b.write_date) - openerp.str_to_datetime(a.write_date);
             });
             this.current_activity = false;
+            this.timer_on = false;
             this.getParent().update_localStorage();
             this.renderElement();
             localStorage.removeItem("pt_start_timer_time");
@@ -762,16 +762,16 @@ openerp.project_timesheet = function(openerp) {
             self.initialize_task_selector();
         },
         on_change_duration: function(event){
+            var self = this;
             var duration = self.validate_duration(this.$("input.pt_activity_duration").val());
             if(_.isUndefined(duration)){
                 this.$("input.pt_activity_duration").val("00:00");
-                this.$("input.pt_activity_duration + p").text("Please entre a valid duration in the hh:mm format, such as 01:30");
+                this.$("input.pt_activity_duration + p").text("Please enter a valid duration in the hh:mm format, such as 01:30, or 1.5");
             }
             else{
-                this.$("input.pt_activity_duration").val(duration);
-                this.$("input.pt_activity_duration + p").text("");
-                
                 this.activity.unit_amount = self.hh_mm_to_unit_amount(duration);
+                this.$("input.pt_activity_duration").val(this.unit_amount_to_hours_minutes(this.activity.unit_amount));
+                this.$("input.pt_activity_duration + p").text("");
             }
         },
         on_change_description: function(event){
@@ -804,13 +804,13 @@ openerp.project_timesheet = function(openerp) {
             if(_.isUndefined(old_activity)){
                 this.data.account_analytic_lines.unshift({id : self.data.module_key + self.getParent().session.username + self.data.original_timestamp + "_aal." + self.data.next_aal_id});
                 old_activity = this.data.account_analytic_lines[0];
+                old_activity.date = this.activity.date;
                 self.data.next_aal_id++;
             }
             old_activity.project_id = this.activity.project_id;
             old_activity.task_id = this.activity.task_id;
             old_activity.desc = this.activity.desc;
             old_activity.unit_amount = this.activity.unit_amount;
-            old_activity.date = this.activity.date;
             old_activity.write_date = openerp.datetime_to_str(new Date());
             
             this.data.account_analytic_lines.sort(function(a,b){
