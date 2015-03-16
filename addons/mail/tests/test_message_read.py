@@ -180,7 +180,7 @@ class test_mail_access_rights(TestMail):
         self.assertFalse(read_msg_list[1].get('parent_id'), 'message_read flat should set the ancestor as False')
         # Data: get expandables
         new_msg_exp = None
-        for msg in read_msg_list[0]:
+        for msg in read_msg_list:
             if msg.get('type') == 'expandable':
                 new_msg_exp = msg
 
@@ -194,7 +194,7 @@ class test_mail_access_rights(TestMail):
         read_msg = self.mail_message.message_read(cr, user_raoul.id, domain=domain, mode='default', limit=20)
         read_msg_list = read_msg['threads'][0][1]
         read_msg_ids = [msg.get('id') for msg in read_msg_list if msg.get('type') != 'expandable']
-        # Test: structure content, ancestor is added to the read messages, ordered by id, ancestor is set, 2 expandables
+        # Test: structure content
         self.assertEqual(len(read_msg_list), 9, 'message_read on Pigs should return 9 messages and 0 expandable')
         self.assertEqual([msg_id8, msg_id7, msg_id6, msg_id5, msg_id4, msg_id3, msg_id2, msg_id1, msg_id0], read_msg_ids,
             'message_read, More on flat, should return all remaning messages')
