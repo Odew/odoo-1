@@ -712,7 +712,11 @@ class Tags(models.Model):
     post_ids = fields.Many2many('forum.post', 'forum_tag_rel', 'forum_tag_id', 'forum_id', string='Posts')
     posts_count = fields.Integer('Number of Posts', compute='_get_posts_count', store=True)
 
-    _constraints = [(models.Model._check_unique_accent, _('Error! Tag name already exists.'), ['name'])]
+    @api.one
+    @api.constrains('name')
+    def _check_unique_name(self):
+        return self._check_unique_accent()
+    
     @api.multi
     @api.depends("post_ids.tag_ids")
     def _get_posts_count(self):

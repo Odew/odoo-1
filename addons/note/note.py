@@ -47,7 +47,7 @@ class note_tag(osv.osv):
     _columns = {
         'name' : fields.char('Tag Name', required=True),
     }
-    _constraints = [(osv.osv._check_unique_accent, _('Error! Tag name already exists.'), ['name'])]
+    _constraints = [(osv.osv._check_unique, _('Error! Tag name already exists.'), ['name'])]
 
 class note_note(osv.osv):
     """ Note """

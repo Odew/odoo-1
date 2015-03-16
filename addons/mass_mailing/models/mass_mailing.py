@@ -25,7 +25,7 @@ class MassMailingTag(osv.Model):
     _columns = {
         'name': fields.char('Name', required=True),
     }
-    _constraints = [(osv.Model._check_unique_accent, _('Error! Tag name already exists.'), ['name'])]
+    _constraints = [(osv.Model._check_unique, _('Error! Tag name already exists.'), ['name'])]
 
 class MassMailingContact(osv.Model):
     """Model of a contact. This model is different from the partner model

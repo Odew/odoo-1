@@ -140,7 +140,7 @@ class res_partner_category(osv.Model):
     }
     _constraints = [
         (osv.osv._check_recursion, 'Error ! You can not create recursive categories.', ['parent_id']),
-        (osv.Model._check_unique_accent, _('Error! Tag name already exists.'), ['name']),
+        (osv.Model._check_unique, _('Error! Tag name already exists.'), ['name']),
     ]
     _defaults = {
         'active': 1,
