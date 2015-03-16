@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-import crm_claim_report
+import crm_claim

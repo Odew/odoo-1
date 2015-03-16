@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data>
 
 <!-- CRM Claim Report Pivot View -->
@@ -93,4 +93,4 @@
             action="action_report_crm_claim" parent="base.next_id_64" sequence="15"/>
 
     </data>
-</openerp>
+</odoo>
