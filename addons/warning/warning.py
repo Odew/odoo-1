@@ -60,6 +60,8 @@ class sale_order(osv.osv):
         title = False
         message = False
         partner = self.pool.get('res.partner').browse(cr, uid, part, context=context)
+        if partner.sale_warn == 'no-message' and partner.parent_id:
+            partner = partner.parent_id
         if partner.sale_warn != 'no-message':
             title =  _("Warning for %s") % partner.name
             message = partner.sale_warn_msg
@@ -90,6 +92,8 @@ class purchase_order(osv.osv):
         title = False
         message = False
         partner = self.pool.get('res.partner').browse(cr, uid, part, context=context)
+        if partner.purchase_warn == 'no-message' and partner.parent_id:
+            partner = partner.parent_id
         if partner.purchase_warn != 'no-message':
             title = _("Warning for %s") % partner.name
             message = partner.purchase_warn_msg
@@ -128,6 +132,8 @@ class account_invoice(osv.osv):
         title = False
         message = False
         partner = self.pool.get('res.partner').browse(cr, uid, partner_id, context=context)
+        if partner.invoice_warn == 'no-message' and partner.parent_id:
+            partner = partner.parent_id
         if partner.invoice_warn != 'no-message':
             title = _("Warning for %s") % partner.name
             message = partner.invoice_warn_msg
@@ -159,6 +165,8 @@ class stock_picking(osv.osv):
         if not partner_id:
             return {}
         partner = self.pool.get('res.partner').browse(cr, uid, partner_id, context=context)
+        if partner.picking_warn == 'no-message' and partner.parent_id:
+            partner = partner.parent_id
         warning = {}
         title = False
         message = False
