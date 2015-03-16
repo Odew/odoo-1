@@ -89,7 +89,7 @@ class test_mail_access_rights(TestMail):
             if msg['type'] == 'expandable':
                 new_msg_exp = msg 
 
-        Do: fetch new messages in first thread, domain from expandable
+        #sDo: fetch new messages in first thread, domain from expandable
         self.assertIsNotNone(new_msg_exp, 'message_read on last Pigs message should have returned a new messages expandable')
         domain = new_msg_exp.get('domain', [])
         # Test: expandable, conditions in domain
@@ -97,9 +97,10 @@ class test_mail_access_rights(TestMail):
         self.assertIn(('id', '>', msg_id2), domain, 'new messages expandable domain should contain an id greater than condition')
         self.assertIn(('id', '<', msg_id10), domain, 'new messages expandable domain should contain an id less than condition')
         self.assertEqual(new_msg_exp.get('parent_id'), msg_id2, 'new messages expandable should have parent_id set to the thread header')
-        # # Do: message_read with domain, thread_level=0, parent_id=msg_id2 (should be imposed by JS), 2 messages
-        # read_msg_list = self.mail_message.message_read(cr, uid, domain=domain, limit=2, thread_level=0, parent_id=msg_id2)
-        # read_msg_ids = [msg.get('id') for msg in read_msg_list if msg.get('type') != 'expandable']
+        # Do: message_read with domain, 2 messages
+        read_msg = self.mail_message.message_read(cr, user_raoul.id, domain=domain, mode='default', limit=2)
+        read_msg_list = read_msg['threads'][0][1]
+        read_msg_ids = [msg.get('id') for msg in read_msg_list if msg.get('type') != 'expandable']
         # new_msg_exp = [msg for msg in read_msg_list if msg.get('type') == 'expandable'][0]
         # # Test: structure content, 2 messages and 1 thread expandable
         # self.assertEqual(len(read_msg_list), 3, 'message_read in Pigs thread should return 2 messages and 1 expandables')
