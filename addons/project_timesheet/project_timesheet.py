@@ -289,27 +289,53 @@ class account_analytic_line(osv.osv):
 
     def import_ui_data(self, cr, uid, ls_aals, ls_tasks, ls_projects, context=None):
         #Load projects, then tasks and finally aals
-        #@TAC TODO : rewrite list comprehension in a cleaner way !
-        ls_projects_to_import = [[str(ls_projects[x]['id']),ls_projects[x]['name']] for x in range(len(ls_projects)) if self.pool.get("ir.model.data").xmlid_to_object(cr, uid, str(ls_projects[x]['id'])) == None]
+        ls_projects_to_import = []
+        ls_projects_to_remove = []
+        for ls_project in ls_projects:
+            if self.pool.get("ir.model.data").xmlid_to_object(cr, uid, str(ls_project['id'])) == None:
+                if ls_project.get('to_sync') == True:
+                    temp_project = []
+                    temp_project.append(str(ls_project['id']))
+                    temp_project.append(str(ls_project['name']))
+                    ls_projects_to_import.append(temp_project)
+                else:
+                    ls_projects_to_remove.append(str(ls_project['id']))
+
         projects_fields = ['id','name']
-        #print self.pool["project.project"].load(cr, uid, projects_fields, ls_projects_to_import)
         project_errors = self.load_wrapper(cr, uid, self.pool["project.project"], projects_fields, ls_projects_to_import)
 
-        ls_tasks_to_import = [[str(ls_tasks[x]['id']),ls_tasks[x]['name'],str(ls_tasks[x]['project_id']) , uid] for x in range(len(ls_tasks)) if self.pool.get("ir.model.data").xmlid_to_object(cr, uid, str(ls_tasks[x]['id'])) == None]
+        ls_tasks_to_import = []
+        ls_tasks_to_remove = []
+        for ls_task in ls_tasks:
+            if self.pool.get("ir.model.data").xmlid_to_object(cr, uid, str(ls_task['id'])) == None:
+                if ls_task.get('to_sync') == True:
+                    temp_task = []
+                    temp_task.append(str(ls_task['id']))
+                    temp_task.append(str(ls_task['name']))
+                    temp_task.append(str(ls_task['project_id']))
+                    temp_task.append(uid)
+                    ls_tasks_to_import.append(temp_task)
+                else:
+                    ls_tasks_to_remove.append(str(ls_task['id']))
+
         tasks_fields = ['id','name','project_id/id','user_id/.id']
-        #print self.pool["project.task"].load(cr, uid, tasks_fields, ls_tasks_to_import)
         task_errors = self.load_wrapper(cr, uid, self.pool["project.task"], tasks_fields, ls_tasks_to_import)
 
         # Find the acc id
         # check the write_date
         new_ls_aals = []
+        ls_aals_to_remove = []
         for ls_aal in ls_aals:
             sv_aal = self.pool.get("ir.model.data").xmlid_to_object(cr, uid, str(ls_aal['id']))
-            if(sv_aal):
-                if(datetime.datetime.strptime(ls_aal['write_date'] , tools.DEFAULT_SERVER_DATETIME_FORMAT) > datetime.datetime.strptime(sv_aal['__last_update'] , tools.DEFAULT_SERVER_DATETIME_FORMAT)):
+            if ls_aal.get('to_sync') == True:
+                if(sv_aal):
+                    if(datetime.datetime.strptime(ls_aal['write_date'] , tools.DEFAULT_SERVER_DATETIME_FORMAT) > datetime.datetime.strptime(sv_aal['__last_update'] , tools.DEFAULT_SERVER_DATETIME_FORMAT)):
+                        new_ls_aals.append(ls_aal)
+                else:
                     new_ls_aals.append(ls_aal)
-            else:
-                new_ls_aals.append(ls_aal)
+            elif not sv_aal:
+                ls_aals_to_remove.append(str(ls_aal['id']))
+
 
         for new_ls_aal in new_ls_aals:
             sv_project = self.pool.get("ir.model.data").xmlid_to_object(cr, uid, str(new_ls_aal['project_id']))
@@ -317,13 +343,19 @@ class account_analytic_line(osv.osv):
             if not new_ls_aal.get('task_id'):
                 new_ls_aal['task_id'] = ""
 
-        ls_aals_to_import = [[str(new_ls_aals[x]['id']),new_ls_aals[x]['desc'],new_ls_aals[x]['account_id'], new_ls_aals[x]['date'] , new_ls_aals[x]['unit_amount']  , str(new_ls_aals[x].get('task_id')) , uid, 'True'] for x in range(len(new_ls_aals))]
+        ls_aals_to_import = [[str(new_ls_aals[x]['id']),new_ls_aals[x]['desc'],new_ls_aals[x]['account_id'], new_ls_aals[x]['date'] , new_ls_aals[x]['unit_amount']  , str(new_ls_aals[x].get('task_id')) , uid, 'True'] for x in range(len(new_ls_aals)) if new_ls_aals[x].get('to_sync') == True]
         aals_fields  = ['id','name','account_id/.id','date','unit_amount', 'task_id/id', 'user_id/.id', 'is_timesheet']
 
         #print self.load(cr, uid, aals_fields, ls_aals_to_import, context)
         aals_errors = self.load_wrapper(cr, uid, self, aals_fields, ls_aals_to_import, context)
 
-        return {'project_errors' : project_errors , 'task_errors' : task_errors , 'aals_errors' : aals_errors}
+        return {'project_errors' : project_errors,
+            'task_errors' : task_errors,
+            'aals_errors' : aals_errors,
+            'projects_to_remove' : ls_projects_to_remove,
+            'tasks_to_remove' : ls_tasks_to_remove,
+            'aals_to_remove' : ls_aals_to_remove
+            }
 
     def load_wrapper(self, cr, uid, model, fields, data_rows, context=None):
 

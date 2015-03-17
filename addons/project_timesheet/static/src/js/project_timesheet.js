@@ -33,9 +33,10 @@ openerp.project_timesheet = function(openerp) {
 	                    }
 	                },
 	            ];
-                // Comment or uncomment following line to reset demo data
-            	//localStorage.setItem("pt_data", JSON.stringify(test_data));
-
+                // Comment or uncomment following lines to reset demo data
+                if(localStorage.getItem("pt_data") === null){
+            	   localStorage.setItem("pt_data", JSON.stringify(test_data));
+                }
 
             	// Load (demo) data from local storage
             	self.stored_data = JSON.parse(localStorage.getItem("pt_data"));
@@ -148,7 +149,7 @@ openerp.project_timesheet = function(openerp) {
 	    // e.g. 1.5 => "01:30"
 	    unit_amount_to_hours_minutes: function(unit_amount){
 	        if(_.isUndefined(unit_amount) || unit_amount === 0){
-	            return ["00","00"];
+	            return "00:00";
 	        }
 
 	        var minutes = Math.round((unit_amount % 1) * 60);
@@ -333,6 +334,7 @@ openerp.project_timesheet = function(openerp) {
                 activity.unit_amount = parseFloat(activity.unit_amount) + this.data.settings.time_unit;
             }
             activity.write_date = openerp.datetime_to_str(new Date());
+            activity.to_sync = true;
             this.getParent().update_localStorage();
             this.renderElement();
         },
@@ -348,8 +350,9 @@ openerp.project_timesheet = function(openerp) {
                 activity.unit_amount = 0;
             }
             activity.write_date = openerp.datetime_to_str(new Date());
+            activity.to_sync = true;
             this.getParent().update_localStorage();
-            this.renderElement();            
+            this.renderElement();
             //event.currentTarget.dataset.activity_id
         },
         on_duration_over: function(event){
@@ -391,6 +394,7 @@ openerp.project_timesheet = function(openerp) {
             activity.unit_amount = this.hh_mm_to_unit_amount(hh_mm_value);
             activity.write_date = openerp.datetime_to_str(new Date());
             activity.date = openerp.date_to_str(new Date());
+            activity.to_sync = true;
 
             this.data.account_analytic_lines.sort(function(a,b){
                 return openerp.str_to_datetime(b.write_date) - openerp.str_to_datetime(a.write_date);
@@ -492,11 +496,23 @@ openerp.project_timesheet = function(openerp) {
                     }
                     parent.update_localStorage();
                 });
-                self.renderElement();
             })
             .then(function(){
                 //LS => SV sync
                 var context = new openerp.web.CompoundContext({default_is_timesheet : true});
+                // For the aals that need to be synced, update unit_amount with minimal duration or round with time_unit.
+                _.each(data.account_analytic_lines, function(aal){
+                    if(aal.to_sync){
+                        //
+                        if (aal.unit_amount < data.settings.minimal_duration){
+                            aal.unit_amount = data.settings.minimal_duration;
+                        }
+                        else if(data.settings.time_unit > 0){
+                            var round_to = 1 / data.settings.time_unit;
+                            aal.unit_amount = (Math.ceil(aal.unit_amount * round_to) / round_to).toFixed(2);
+                        }
+                    }
+                });
                 account_analytic_line_model.call("import_ui_data" , [data.account_analytic_lines , data.tasks, data.projects, context]).then(function(sv_response){
                     console.log(sv_response);
                     //@TAC TODO : Better error processing system !
@@ -509,6 +525,37 @@ openerp.project_timesheet = function(openerp) {
                     if (sv_response.task_errors.length > 0){
                         alert("Some tasks could no be synchronized !");
                     }
+                    // The entries that have been removed in the backend must be removed from the LS 
+                    if(sv_response.projects_to_remove.length > 0){
+                        _.each(sv_response.projects_to_remove, function(project_to_remove_id){
+                            p_to_remove = _.findWhere(data.projects, {id : project_to_remove_id});
+                            data.projects.splice(_.indexOf(data.projects, p_to_remove), 1);
+                        });
+                    }
+                    if(sv_response.tasks_to_remove.length > 0){
+                        _.each(sv_response.tasks_to_remove, function(task_to_remove_id){
+                            t_to_remove = _.findWhere(data.tasks, {id : task_to_remove_id});
+                            data.tasks.splice(_.indexOf(data.tasks, t_to_remove), 1);
+                        });
+                    }
+                    if(sv_response.aals_to_remove.length > 0){
+                        _.each(sv_response.aals_to_remove, function(aal_to_remove_id){
+                            aal_to_remove = _.findWhere(data.account_analytic_lines, {id : aal_to_remove_id});
+                            data.account_analytic_lines.splice(_.indexOf(data.account_analytic_lines, aal_to_remove), 1);
+                        });
+                    }
+                    self.renderElement();
+                    // Set to_sync to false for further syncs.
+                    _.each(data.account_analytic_lines, function(aal){
+                        aal.to_sync = false;
+                    });
+                    _.each(data.projects, function(project){
+                        project.to_sync = false;
+                    });
+                    _.each(data.tasks, function(task){
+                        task.to_sync = false;
+                    });
+                    parent.update_localStorage();
                 });
             });   
         }
@@ -610,6 +657,7 @@ openerp.project_timesheet = function(openerp) {
                 };
                 if(event.added.isNew){
                     self.data.next_project_id++;
+                    selected_project.to_sync = true;
                     self.data.projects.push(selected_project);
                 }
                 self.data.settings.default_project_id = selected_project.id;
@@ -618,14 +666,22 @@ openerp.project_timesheet = function(openerp) {
             
         },
         on_change_minimal_duration: function(){
-            //TODO Check that input is an int between 0 and 60
-            this.data.settings.minimal_duration = (this.$("input.pt_minimal_duration").val()) / 60;
-            this.getParent().update_localStorage();
+            if (parseInt(this.$("input.pt_minimal_duration").val()) >= 0){
+                this.data.settings.minimal_duration = (this.$("input.pt_minimal_duration").val()) / 60;
+                this.getParent().update_localStorage();
+            }
+            else{
+                this.$('.pt_minimal_duration_tip').show(0).delay(5000).hide(0);
+            }
         },
         on_change_time_unit: function(){
-        	//TODO Check that input is an int between 0 and 60
-            this.data.settings.time_unit = (this.$("input.pt_time_unit").val()) / 60;
-            this.getParent().update_localStorage();
+            if (parseInt(this.$("input.pt_time_unit").val()) >= 0){
+                this.data.settings.time_unit = (this.$("input.pt_time_unit").val()) / 60;
+                this.getParent().update_localStorage();
+            }
+            else{
+                this.$('.pt_time_unit_tip').show(0).delay(5000).hide(0);
+            }
         }
     });
 	//TODO : clean up select2 inittialize method and re-rendering logic
@@ -642,7 +698,8 @@ openerp.project_timesheet = function(openerp) {
                     "change input.pt_activity_project":"on_change_project",
                     "change input.pt_activity_task":"on_change_task",
                     "click .pt_discard_changes":"discard_changes",
-                    "click .pt_validate_edit_btn" : "save_changes"
+                    "click .pt_validate_edit_btn" : "save_changes",
+                    "click .pt_delete_activity" : "delete_activity"
                 }
             );
             this.activity = {
@@ -740,6 +797,7 @@ openerp.project_timesheet = function(openerp) {
         	};
         	if(event.added.isNew){
         		self.data.next_task_id++;
+                selected_task.to_sync = true;
         		self.data.tasks.push(selected_task);
                 self.task_list.push(selected_task);
         		self.getParent().update_localStorage();
@@ -753,6 +811,7 @@ openerp.project_timesheet = function(openerp) {
         	};
         	if(event.added.isNew){
         		self.data.next_project_id++;
+                selected_project.to_sync = true;
         		self.data.projects.push(selected_project);
         		self.getParent().update_localStorage();
     		}
@@ -812,6 +871,7 @@ openerp.project_timesheet = function(openerp) {
             old_activity.desc = this.activity.desc;
             old_activity.unit_amount = this.activity.unit_amount;
             old_activity.write_date = openerp.datetime_to_str(new Date());
+            old_activity.to_sync = true;
             
             this.data.account_analytic_lines.sort(function(a,b){
                 return openerp.str_to_datetime(b.write_date) - openerp.str_to_datetime(a.write_date);
@@ -839,6 +899,15 @@ openerp.project_timesheet = function(openerp) {
             if (!_.isUndefined(self.data.settings.default_project)){
                 this.activity.project = self.data.settings.default_project;
             }
+        },
+
+        delete_activity: function(){
+            if (!_.isUndefined(this.activity.id)){
+                aal_to_remove = _.findWhere(this.data.account_analytic_lines, {id : this.activity.id});
+                this.data.account_analytic_lines.splice(_.indexOf(this.data.account_analytic_lines, aal_to_remove), 1);
+            }
+            this.reset_activity();
+            this.goto_activities();
         }
     });
 };
