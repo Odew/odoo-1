@@ -492,7 +492,6 @@
                 </xpath>
             </field>
         </record>
-        
 
         <record id="action_location_form" model="ir.actions.act_window">
             <field name="name">Locations</field>

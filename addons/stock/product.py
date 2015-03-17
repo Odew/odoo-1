@@ -218,6 +218,23 @@ class product_product(osv.osv):
             res[product.id] = str(product.qty_available) +  _(" On Hand")
         return res
 
+    def _count_reordering_rules(self, cr, uid, ids, field_names=None, arg=None, context=None):
+        Rules = self.pool['stock.warehouse.orderpoint']
+        res = {}
+        for product in self.browse(cr, uid, ids, context=context):
+            counter = Rules.search_count(cr, uid, [('product_id', '=', product.id)], context=context)
+            res[product.id] = int(counter)
+        return res
+
+    def _count_routes(self, cr, uid, ids, field_names=None, arg=None, context=None):
+        Routes = self.pool['stock.location.route']
+        res = {}
+        for product in self.browse(cr, uid, ids, context=context):
+            route_ids = list(set([r.id for r in product.product_tmpl_id.route_ids] + [r.id for r in product.product_tmpl_id.categ_id.total_route_ids]))
+            counter = Routes.search_count(cr, uid, [('id', 'in', route_ids)], context=context)
+            res[product.id] = int(counter)
+        return res
+
     _columns = {
         'reception_count': fields.function(_stock_move_count, string="Receipt", type='integer', multi='pickings'),
         'delivery_count': fields.function(_stock_move_count, string="Delivery", type='integer', multi='pickings'),
@@ -276,6 +293,8 @@ class product_product(osv.osv):
         'location_id': fields.dummy(string='Location', relation='stock.location', type='many2one'),
         'warehouse_id': fields.dummy(string='Warehouse', relation='stock.warehouse', type='many2one'),
         'orderpoint_ids': fields.one2many('stock.warehouse.orderpoint', 'product_id', 'Minimum Stock Rules'),
+        'nbr_reordering_rules': fields.function(_count_reordering_rules, string='Reordering Rules', type='integer'),
+        'nbr_routes': fields.function(_count_routes, string='Routes', type='integer'),
     }
 
     def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
@@ -368,7 +387,22 @@ class product_template(osv.osv):
             res[product.id] = str(product.qty_available) +  _(" On Hand")
         return res
 
+    def _count_reordering_rules(self, cr, uid, ids, field_names=None, arg=None, context=None):
+        Rules = self.pool['stock.warehouse.orderpoint']
+        res = {}
+        for product in self.browse(cr, uid, ids, context=context):
+            counter = Rules.search_count(cr, uid, [('product_id.product_tmpl_id', '=', product.id)], context=context)
+            res[product.id] = int(counter)
+        return res
 
+    def _count_routes(self, cr, uid, ids, field_names=None, arg=None, context=None):
+        Routes = self.pool['stock.location.route']
+        res = {}
+        for product in self.browse(cr, uid, ids, context=context):
+            route_ids = list(set([r.id for r in product.route_ids] + [r.id for r in product.categ_id.total_route_ids]))
+            counter = Routes.search_count(cr, uid, [('id', 'in', route_ids)], context=context)
+            res[product.id] = int(counter)
+        return res
 
     _columns = {
         'type': fields.selection([('product', 'Stockable Product'), ('consu', 'Consumable'), ('service', 'Service')], 'Product Type', required=True, help="Consumable: Will not imply stock management for this product. \nStockable product: Will imply stock management for this product."),
@@ -415,6 +449,9 @@ class product_template(osv.osv):
         
         'route_ids': fields.many2many('stock.location.route', 'stock_route_product', 'product_id', 'route_id', 'Routes', domain="[('product_selectable', '=', True)]",
                                     help="Depending on the modules installed, this will allow you to define the route of the product: whether it will be bought, manufactured, MTO/MTS,..."),
+        'nbr_reordering_rules': fields.function(_count_reordering_rules, string='Reordering Rules', type='integer'),
+        'nbr_routes': fields.function(_count_routes, string='Routes', type='integer'),
+        'route_from_categ_ids': fields.related('categ_id', 'total_route_ids', type="many2many", relation="stock.location.route", string="Category Routes"),
     }
 
     _defaults = {
@@ -434,7 +471,6 @@ class product_template(osv.osv):
         result = act_obj.read(cr, uid, [result], context=context)[0]
         result['domain'] = "[('id','in',[" + ','.join(map(str, route_ids)) + "])]"
         return result
-
 
     def _get_products(self, cr, uid, ids, context=None):
         products = []
@@ -465,7 +501,6 @@ class product_template(osv.osv):
             result['domain'] = "[('product_id','in',[" + ','.join(map(str, products)) + "])]"
             result['context'] = "{}"
         return result
-
 
     def action_view_stock_moves(self, cr, uid, ids, context=None):
         products = self._get_products(cr, uid, ids, context=context)
