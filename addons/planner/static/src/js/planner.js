@@ -68,8 +68,9 @@ var PlannerLauncher = Widget.extend({
     setup: function(planner){
         var self = this;
         this.planner = planner;
+        this.dialog && this.dialog.destroy();
         this.dialog = new PlannerDialog(this, planner);
-        this.$(".oe_planner_progress").tooltip({html: true, title: this.planner.tooltip_planner, placement: 'bottom', delay: {'show': 500}});
+        this.$(".oe_planner_progress").tooltip('destroy').tooltip({html: true, title: this.planner.tooltip_planner, placement: 'bottom', delay: {'show': 500}});
         this.dialog.on("planner_progress_changed", this, function(percent){
             self.update_parent_progress_bar(percent);
         });
@@ -186,6 +187,7 @@ var PlannerDialog = Widget.extend({
         ev.preventDefault();
         var page_id = $(ev.currentTarget).attr('href').replace('#', '');
         this._switch_page(page_id);
+        this.$(".pages").scrollTop("0");
     },
     _switch_page: function(page_id) {
         this.$(".oe_planner li a[href^='#planner_page']").parent().removeClass('active');
