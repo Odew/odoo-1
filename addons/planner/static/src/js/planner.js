@@ -9,6 +9,7 @@ var Widget = require('web.Widget');
 
 
 var QWeb = core.qweb;
+var bus = core.bus;
 
 var PlannerLauncher = Widget.extend({
     template: "PlannerLauncher",
@@ -195,6 +196,7 @@ var PlannerDialog = Widget.extend({
         this.$(".oe_planner li a[href=#"+page_id+"]").parent().addClass('active');
         this.$(".oe_planner div[id^='planner_page']").removeClass('show');
         this.$(".oe_planner div[id="+page_id+"]").addClass('show');
+        this.$(".oe_planner .pages").scrollTop("0");
         this.planner.data['last_open_page'] = page_id;
         session.set_cookie(this.cookie_name, page_id, 8*60*60); // create cookie for 8h
     },
@@ -292,10 +294,10 @@ var PlannerDialog = Widget.extend({
         self.update_planner(page_id);
     },
     on_modal_show : function(e) {
-        instance.web.bus.on('action', this, _.bind(this.on_webclient_action, this));
+        bus.on('action', this, _.bind(this.on_webclient_action, this));
     },
     on_modal_hide : function(e) {
-        instance.web.bus.off('action', this, _.bind(this.on_webclient_action, this));
+        bus.off('action', this, _.bind(this.on_webclient_action, this));
         this.update_planner(); // explicit call to save data
     },
     on_webclient_action: function(e) {
