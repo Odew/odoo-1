@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
     <t t-name="website_contract.modal_removal">
-        <form method="post" t-att-action="'/account/contract/'+data.account_id+'/remove_option'">
+        <form method="post" t-att-action="'/account/contract/'+data.account_id+'/remove_option'+'/?uuid='+data.account_uuid">
             <div class="modal-header">
                 <h4 class="modal-title">Confirm Option Removal</h4>
             </div>
@@ -32,7 +32,7 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button class="btn btn-primary contract-submit">Confirm</button>
             </form>
-            <form method="post" t-att-action="'/account/contract/'+data.account_id+'/add_option'" t-if="(data.option_price)==0.0">
+            <form method="post" t-att-action="'/account/contract/'+data.account_id+'/add_option'+'/?uuid='+data.account_uuid" t-if="(data.option_price)==0.0">
                 <input name="new_option_id" type="hidden" t-att-value="data.option_id" />
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button class="btn btn-primary contract-submit">Confirm</button>
@@ -44,7 +44,7 @@
         <div class="modal-header">
             <h4 class="modal-title">Close your contract</h4>
         </div>
-        <form method="post" t-att-action="'/account/contract/'+data.account_id+'/close'">
+        <form method="post" t-att-action="'/account/contract/'+data.account_id+'/close'+'/?uuid='+data.account_uuid">
             <div class="modal-body">
                 <input type="checkbox" name="confirm_close"> Yes, I wish to close this contract</input>
                 <p>If you confirm, you contract will be closed right away. Your current invoicing period is valid until <span t-esc="data.next_date" />.</p>

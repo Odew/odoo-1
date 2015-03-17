@@ -12,7 +12,7 @@
 
     <template id="contract" name="Contract">
         <t t-call="website.layout">
-            <div id="wrap" t-att-data-account-id="account.id">
+            <div id="wrap" t-att-data-account-id="account.id" t-att-data-account-uuid="account.uuid">
                 <div class="container">
                     <div class="row" t-if="user.partner_id == account.partner_id">
                         <div class="col-sm-6">
@@ -49,7 +49,7 @@
                             <div class="col-md-5">
                                 <p t-if="account.date"><strong>Valid until: </strong><span t-field="account.date"/></p>
                                 <p><strong>Billing: </strong>
-                                    Every 
+                                    Every
                                     <span t-field="account.recurring_interval"/>
                                     <t t-if="account.recurring_rule_type=='daily'">
                                         day(s)
@@ -67,9 +67,9 @@
                                 <p><strong>Next invoice: </strong><span id="wc-next-invoice" t-field="account.recurring_next_date"/></p>
                                 <p t-if="account.sudo().template_id.user_closable and account.state!='close'"><button class="btn btn-default btn-xs" id="wc-close-account">Close Contract</button></p>
                             </div>
-                            
+
                     </div>
-                    <h3>Your Plan: <span t-field="account.sudo().template_id.name"/> <a t-if="account.state!='close'" class="btn btn-default" t-att-href="'/account/contract/'+str(account.id)+'/change'">Change</a></h3>
+                    <h3>Your Plan: <span t-field="account.sudo().template_id.name"/> <a t-if="account.state!='close'" class="btn btn-default" t-att-href="'/account/contract/'+str(account.id)+'/change'+'?uuid='+str(account.uuid)">Change</a></h3>
                         <table class="table table-default" id="wc-account-table">
                             <thead>
                                 <tr><th>Description</th><th></th><th>Price</th><th/></tr>
@@ -133,7 +133,7 @@
                                         <h4>Total</h4>
                                     </td>
                                     <td>
-                                        <h4 t-field="account.recurring_amount_total" t-field-options='{"widget": "monetary", "display_currency": "account.company_id.currency_id"}'/> 
+                                        <h4 t-field="account.recurring_amount_total" t-field-options='{"widget": "monetary", "display_currency": "account.company_id.currency_id"}'/>
                                     </td>
                                     <td/>
                                 </tr>
@@ -192,14 +192,14 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <ol class="breadcrumb mt8">
-                                <li><a href="/account">My Account</a></li>
-                                <li><a t-att-href="'/account/contract/'+str(account.id)">Contract <span t-field="account.name"/></a></li>
+                                <li t-if="user.partner_id == account.partner_id"><a href="/account">My Account</a></li>
+                                <li><a t-att-href="'/account/contract/'+str(account.id)+'/'+str(account.uuid)">Contract <span t-field="account.name"/></a></li>
                                 <li>Change Your Plan</li>
                             </ol>
                         </div>
                     </div>
                     <h1>Change Your Plan</h1>
-                    <p>Your options will be carried to the new contract if they are available.</p>
+                    <p>Your options will be carried to the new plan if they are available.</p>
                     <div class="row">
                         <t t-set="template" t-value="account.sudo().template_id"/>
                         <t t-call="website_contract.template_panel"/>
@@ -272,6 +272,7 @@
                     <h4 class="pull-left">Base Price: <span t-field="template.recurring_total" t-field-options='{"widget": "monetary", "display_currency": "template.company_id.currency_id"}'/></h4>
                     <form method="post" t-if="template.user_selectable and account.template_id.id != template.id">
                         <input class="hidden" name="new_template_id" t-att-value="template.id"/>
+                        <input class="hidden" name="uuid" t-att-value="account.uuid"/>
                         <button type="button" class="btn btn-primary pull-right" data-toggle="modal" t-att-data-target="'#contract_confirm_'+str(template.id)"><i class="fa fa-fw fa-arrow-circle-right"></i> Select</button>
                         <div class="modal fade" t-att-id="'contract_confirm_'+str(template.id)">
                             <div class="modal-dialog">
@@ -280,9 +281,9 @@
                                         <h4 class="modal-title">Change Contract</h4>
                                     </div>
                                     <div class="modal-body">
-                                        <p>Please ensure that you have selected the correct contract:</p>
+                                        <p>Please ensure that you have selected the correct plan:</p>
                                         <ul>
-                                            <li>Contract: <span t-field="template.name"/></li>
+                                            <li>Plan: <span t-field="template.name"/></li>
                                             <li>
                                                 Billing Period: <span t-field="template.recurring_interval"/>
                                                 <t t-if="template.recurring_rule_type=='daily'">
@@ -326,7 +327,7 @@
 
     <template id="contracts" name="Contracts">
         <h3 class="page-header">Your Subscriptions</h3>
-        
+
         <t t-if="not cust_accounts">
             <p>You don't have any subscriptions yet.</p>
         </t>
@@ -339,7 +340,7 @@
                 </thead>
                 <t t-foreach="cust_accounts" t-as="account">
                     <tr>
-                        <td><a t-att-href="'/account/contract/'+str(account.id)"><t t-esc="account.name"/></a></td>
+                        <td><a t-att-href="'/account/contract/'+str(account.id)+'/'+str(account.uuid)"><t t-esc="account.name"/></a></td>
                         <td><span t-field="account.recurring_amount_total" t-field-options='{"widget": "monetary", "display_currency": "account.company_id.currency_id"}'/></td>
                         <td>
                             <t t-if="account.state == 'open'">

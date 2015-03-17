@@ -11,14 +11,13 @@
         });
 
         $('.wc-remove-option,.wc-add-option').off('click').on('click', function() {
-            console.log("prout");
             var data = {};
+            data.account_uuid = $('#wrap').data('account-uuid');
             data.option_name = $(this).parent().siblings('.line-description').html();
             data.option_id = $(this).data('option-id');
             data.option_price = $(this).data('option-subtotal');
             data.account_id = $('#wrap').data('account-id');
             data.next_date = $('#wc-next-invoice').html();
-            console.log(data);
             var template = 'website_contract.modal_'+$(this).data('target');
 
             $('#wc-modal-confirm .modal-content').html(qweb.render(template, {data: data}));
@@ -27,8 +26,8 @@
         });
 
         $('#wc-close-account').off('click').on('click', function() {
-            console.log('plop');
             var data = {};
+            data.account_uuid = $('#wrap').data('account-uuid');
             data.account_id = $('#wrap').data('account-id');
             data.next_date = $('#wc-next-invoice').html();
             var template = 'website_contract.modal_close';
