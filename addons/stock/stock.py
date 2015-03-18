@@ -1141,7 +1141,7 @@ class stock_picking(osv.osv):
     @api.cr_uid_ids_context
     def open_barcode_interface(self, cr, uid, picking_ids, context=None):
         final_url="/stock/barcode/#action=stock.ui&picking_id="+str(picking_ids[0])
-        return {'type': 'ir.actions.act_url', 'url':final_url, 'target': 'self',}
+        return {'type': 'ir.actions.act_url', 'url':final_url, 'target': 'new',}
 
     @api.cr_uid_ids_context
     def do_partial_open_barcode(self, cr, uid, picking_ids, context=None):
@@ -3979,6 +3979,20 @@ class stock_pack_operation(osv.osv):
                     }
         return res
 
+    def _can_remove_operation(self, cr, uid, ids, name, args, context=None):
+        ''' Used by barcode interface, on product scan we create operation line but there is not related
+            move line for this product so it can be remove from bardcoe ui
+        '''
+        res = {}
+        for operation in self.browse(cr, uid, ids, context=context):
+            res[operation.id] = False
+            move_line_products = set()
+            for move in operation.picking_id.move_lines:
+                move_line_products.add(move.product_id.id)
+            if operation.product_id.id not in move_line_products:
+                res[operation.id] = True
+        return res
+
     _columns = {
         'picking_id': fields.many2one('stock.picking', 'Stock Picking', help='The stock operation where the packing has been made', required=True),
         'product_id': fields.many2one('product.product', 'Product', ondelete="CASCADE"),  # 1
@@ -3998,6 +4012,7 @@ class stock_pack_operation(osv.osv):
         'location_id': fields.many2one('stock.location', 'Source Location', required=True),
         'location_dest_id': fields.many2one('stock.location', 'Destination Location', required=True),
         'processed': fields.selection([('true','Yes'), ('false','No')],'Has been processed?', required=True),
+        'can_remove': fields.function(_can_remove_operation, type='boolean')
     }
 
     _defaults = {
@@ -4299,7 +4314,7 @@ class stock_picking_type(osv.osv):
 
     def open_barcode_interface(self, cr, uid, ids, context=None):
         final_url = "/stock/barcode/#action=stock.ui&picking_type_id=" + str(ids[0]) if len(ids) else '0'
-        return {'type': 'ir.actions.act_url', 'url': final_url, 'target': 'self'}
+        return {'type': 'ir.actions.act_url', 'url': final_url, 'target': 'new'}
 
     def _get_tristate_values(self, cr, uid, ids, field_name, arg, context=None):
         picking_obj = self.pool.get('stock.picking')

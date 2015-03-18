@@ -110,6 +110,7 @@ var PickingEditorWidget = Widget.extend({
                             processed: packopline.processed,
                             package_id: undefined,
                             ul_id: -1,
+                            can_remove: packopline.can_remove
                     },
                     classes: color + (packopline.result_package_id[1] !== undefined ? 'in_container_hidden ' : '') + (packopline.processed === "true" ? 'processed hidden ':''),
                 });
@@ -288,6 +289,10 @@ var PickingEditorWidget = Widget.extend({
             self.$('#js_loc_select').addClass('pack');
             self.$('#js_loc_select').data('op-id',op_id);
             self.$el.siblings('#js_LocationChooseModal').modal();
+        });
+        this.$('.js_remove_prd').click(function(){
+            var pack_op_id = $(this).parents("[data-id]:first").data('id');
+            self.getParent().delete_pack_op_line(pack_op_id)
         });
         this.$('.js_validate_location').click(function(){
             //get current selection
@@ -831,11 +836,14 @@ var PickingMainWidget = MobileWidget.extend({
             });
     },
     get_header: function(){
+        var header = '';
         if(this.picking){
-            return this.picking.name;
-        }else{
-            return '';
+            header = this.picking.name ;
+            if (this.picking.origin) {
+                header = _.str.sprintf("%s (%s)", header, this.picking.origin);
+            }
         }
+        return header;
     },
     menu: function(){
         $.bbq.pushState('#action=stock.menu');
@@ -985,6 +993,12 @@ var PickingMainWidget = MobileWidget.extend({
                         return self.refresh_ui(self.picking.id);
                     });
             });
+    },
+    delete_pack_op_line: function(pack_op_id){
+        var self = this;
+        return new Model('stock.pack.operation').call('unlink', [pack_op_id]).then(function() {
+            return self.refresh_ui(self.picking_id);
+        });
     },
     set_operation_quantity: function(quantity, op_id){
         var self = this;

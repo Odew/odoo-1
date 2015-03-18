@@ -72,10 +72,10 @@
         
         <div class="row">
                 <div>
-                    <div class="col-sm-4 col-xs-6">
+                    <div class="col-sm-8 col-xs-6">
                         <h2 class="oe_pick_app_header" />
                     </div>
-                    <div class="col-sm-8 col-xs⁻6 text-right">
+                    <div class="col-sm-4 col-xs⁻6 text-right">
 
                     <button type="button" class='btn btn-default js_pick_done'> Create backorder </button>
                     <button type="button" class='btn btn-default js_pick_print'> Print </button>
@@ -100,7 +100,7 @@
                         <div class="input-group">
                             <input type="text" class="form-control oe_searchbox" placeholder="Filter by location..."/>
                             <span class="input-group-btn">
-                                <button class="btn btn-danger js_clear_search" type="button">x</button>
+                                <button class="btn btn-default js_clear_search" type="button">x</button>
                             </span>
                         </div>
                     </h2>
@@ -108,7 +108,7 @@
                 <div class="col-md-6 col-sm-4 col-xs-12 text-right">
                     <h3>
                         <button type="button" class='btn btn-default js_pick_pack js_putinpack'> Put in Pack </button>
-                        <button type="button" class='btn btn-danger js_drop_down fa fa-download'> Put in Cart </button>
+                        <button type="button" class='btn btn-primary js_drop_down fa fa-download'> Put in Cart </button>
                     </h3>
                 </div>
             </div>
@@ -168,6 +168,7 @@
                                         <t t-if="!row.cols.head_container &amp;&amp; !row.cols.container">
                                             <li><a class="js_change_src" href="#">Change source location</a></li>
                                             <li><a class="js_change_dst" href="#">Change destination location</a></li>
+                                            <li t-if='row.cols.can_remove'><a class="js_remove_prd" href="#">Remove product</a></li>
                                         </t>
                                         <t t-if="row.cols.head_container">
                                             <li><a class="js_pack_change_dst" href="#">Change destination location</a></li>
