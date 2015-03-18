@@ -47,7 +47,11 @@
         <form method="post" t-att-action="'/account/contract/'+data.account_id+'/close'+'/?uuid='+data.account_uuid">
             <div class="modal-body">
                 <input type="checkbox" name="confirm_close"> Yes, I wish to close this contract</input>
-                <p>If you confirm, you contract will be closed right away. Your current invoicing period is valid until <span t-esc="data.next_date" />.</p>
+                <p>If you confirm, you contract will be closed right away. Your current invoicing period is valid until <span t-esc="data.next_date"/>.</p>
+                <p>
+                    We would like to know the reason why you want to close this contract.
+                    <input type="textarea" required="required" name="closing_reason" style="width: 100%;" row="4"></input>
+                </p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

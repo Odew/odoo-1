@@ -85,6 +85,9 @@ class website_contract(website_account):
 
     @http.route(['/account/contract/<int:account_id>/close'], type='http', methods=["POST"], auth="public", website=True)
     def close_account(self, account_id, uuid=None, **post):
+
+        account_res = request.env['account.analytic.account']
+
         if uuid:
             account_cust = account_res.sudo().browse(account_id)
             if uuid != account_cust.uuid:
@@ -93,6 +96,9 @@ class website_contract(website_account):
             account_cust = account_res.browse(account_id)
 
         if account_cust.sudo().template_id.user_closable and post.get('confirm_close'):
+            if post.get('closing_reason'):
+                account_cust.closing_reason = post.get('closing_reason')
+                account_cust.message_post('Closing reason : ' + account_cust.closing_reason)
             account_cust.set_close()
         return request.redirect('/account')
 

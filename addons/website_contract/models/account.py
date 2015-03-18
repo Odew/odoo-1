@@ -22,6 +22,8 @@ class account_analytic_account(models.Model):
     recurring_amount_tax = fields.Float('Taxes', compute="_amount_all")
     recurring_amount_total = fields.Float('Total', compute="_amount_all")
 
+    closing_reason = fields.Char('Closing Reason')
+
     @api.depends('recurring_invoice_line_ids')
     def _amount_all(self):
         for account in self:
