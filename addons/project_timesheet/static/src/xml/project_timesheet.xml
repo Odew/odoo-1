@@ -35,10 +35,12 @@
                 <div class="col-xs-12">
                     <!--Current activity-->
                     <t t-if="widget.current_activity">
-                        <span class="pt_project"><t t-esc="widget.get_project_name(widget.current_activity.project_id)"/></span><br/>
-                        <t t-if="widget.current_activity.task_id">
-                            <t t-esc="widget.get_task_name(widget.current_activity.task_id)"/><br/>
-                        </t>
+                        <div class="pt_activity" t-att-data-activity_id="widget.current_activity.id">
+                            <span class="pt_project"><t t-esc="widget.get_project_name(widget.current_activity.project_id)"/></span><br/>
+                            <t t-if="widget.current_activity.task_id">
+                                <t t-esc="widget.get_task_name(widget.current_activity.task_id)"/><br/>
+                            </t>
+                        </div>
                     </t>
                 </div>
             </div>
@@ -69,35 +71,37 @@
                     <t t-if="widget.account_analytic_lines.length > 0">
                         <span class="pt_bold">My activities</span>
         				<t t-foreach="widget.account_analytic_lines" t-as="account_analytic_line">
-                            <tr>
-                                <td class="col-xs-8 pt_activity" t-att-data-activity_id="account_analytic_line.id">
-                                    <span class="pt_project"><t t-esc="widget.get_project_name(account_analytic_line.project_id)"/></span>
-                                    <br/>
-                                    <t t-if="account_analytic_line.task_id">
-                                        <t t-esc="widget.get_task_name(account_analytic_line.task_id)"/>
-                                    </t>
-                                </td>
-                                <td class="col-xs-1">
-                                    <div class="row pt_quick_add_time" t-att-data-activity_id="account_analytic_line.id">
-                                        <a class="fa fa-plus" aria-hidden="true" href="#"></a>
-                                    </div>
-                                    <div class="row pt_quick_subtract_time" t-att-data-activity_id="account_analytic_line.id">
-                                        <a class="fa fa-minus" aria-hidden="true" href="#"></a>
-                                    </div>                                </td>
-                                <td class="col-xs-3 pt_duration" t-att-data-activity_id="account_analytic_line.id">
-                                    <div class="pt_duration_time">
-                                        <t t-if="account_analytic_line.unit_amount">
-                                            <t t-esc="widget.unit_amount_to_hours_minutes(account_analytic_line.unit_amount)"/>
+                            <t t-if="!(widget.current_activity &amp;&amp; account_analytic_line.id == widget.current_activity.id)">
+                                <tr>
+                                    <td class="col-xs-8 pt_activity" t-att-data-activity_id="account_analytic_line.id">
+                                        <span class="pt_project"><t t-esc="widget.get_project_name(account_analytic_line.project_id)"/></span>
+                                        <br/>
+                                        <t t-if="account_analytic_line.task_id">
+                                            <t t-esc="widget.get_task_name(account_analytic_line.task_id)"/>
                                         </t>
-                                        <t t-if="!account_analytic_line.unit_amount">
-                                            00:00
-                                        </t>
-                                    </div>
-                                    <div class="pt_continue_activity_btn hidden">
-                                        <span class="fa fa-play" aria-hidden="true"></span>
-                                    </div>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="col-xs-1">
+                                        <div class="row pt_quick_add_time" t-att-data-activity_id="account_analytic_line.id">
+                                            <a class="fa fa-plus" aria-hidden="true" href="#"></a>
+                                        </div>
+                                        <div class="row pt_quick_subtract_time" t-att-data-activity_id="account_analytic_line.id">
+                                            <a class="fa fa-minus" aria-hidden="true" href="#"></a>
+                                        </div>                                </td>
+                                    <td class="col-xs-3 pt_duration" t-att-data-activity_id="account_analytic_line.id">
+                                        <div class="pt_duration_time">
+                                            <t t-if="account_analytic_line.unit_amount">
+                                                <t t-esc="widget.unit_amount_to_hours_minutes(account_analytic_line.unit_amount)"/>
+                                            </t>
+                                            <t t-if="!account_analytic_line.unit_amount">
+                                                00:00
+                                            </t>
+                                        </div>
+                                        <div class="pt_continue_activity_btn hidden">
+                                            <span class="fa fa-play" aria-hidden="true"></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </t>
         				</t>
                     </t>    
                 </table>

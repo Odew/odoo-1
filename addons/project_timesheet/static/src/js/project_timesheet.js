@@ -375,11 +375,11 @@ openerp.project_timesheet = function(openerp) {
             this.current_activity = activity;
             this.renderElement();
             self.getParent().$(".pt_timer_clock").text(this.unit_amount_to_hours_minutes(activity.unit_amount) + ":00");
-            self.getParent().start_amount = activity.unit_amount;
+            self.getParent().current_activity = this.current_activity;
             self.getParent().start_timer_time = new Date();
             localStorage.setItem("pt_start_timer_time", JSON.stringify(self.getParent().start_timer_time));
             localStorage.setItem("pt_timer_activity_id", JSON.stringify(activity.id));
-            this.getParent().timer_start = setInterval(function(){self.timer_fct(self.getParent().start_timer_time, self.getParent().start_amount)},500);
+            this.getParent().timer_start = setInterval(function(){self.timer_fct(self.getParent().start_timer_time, self.getParent().current_activity.unit_amount)},500);
         },
         on_interrupt_activity: function(){
             var activity_id = JSON.parse(localStorage.getItem("pt_timer_activity_id"));
