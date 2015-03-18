@@ -454,7 +454,6 @@ var ThreadComposeMessage = MessageCommon.extend({
 
         this.display_attachments();
         this.bind_events();
-        this.options.root_thread.show_mark_all_btn();
     },
 
     on_cancel: function (event) {
@@ -816,7 +815,6 @@ var ThreadMessage = MessageCommon.extend({
 
         this.ds_notification = new data.DataSetSearch(this, 'mail.notification');
         this.ds_message = new data.DataSetSearch(this, 'mail.message');
-        this.options.root_thread.show_mark_all_btn();
     },
 
     /**
@@ -1593,10 +1591,8 @@ var Thread = Widget.extend({
     /* If there is unread message in thread, displays Mark all read button, else hide it.
         */
     show_mark_all_btn: function(){
-        console.log('CALLED', mail_utils.show_mark_all_read, $(".oe_read").length);
-        if ($(".oe_read").length && mail_utils.show_mark_all_read) {
+        if ($(".oe_read").length && this.options.show_mark_all_read) {
             $(".mark_all_read").removeClass('hide');
-            console.log('>>>',$(".mark_all_read"));
         } else {
             $(".mark_all_read").addClass('hide');
         }
@@ -1659,6 +1655,7 @@ var MailWidget = Widget.extend({
             'message_ids': undefined,
             'compose_as_todo' : false,
             'readonly' : false,
+            'show_mark_all_read': false,
             'emails_from_on_composer': true,
             'fetch_limit': 30   // limit of chatter messages
         }, this.action.params);
@@ -1925,7 +1922,6 @@ var MailWall = Widget.extend({
      * Create the root thread widget and display this object in the DOM
      */
     message_render: function (search) {
-        mail_utils.show_mark_all_read = search && search['domain'].length ? true : false;
         var domain = this.domain.concat(search && search.domain ? search.domain : []);
         var context = _.extend(this.context, search && search.context ? search.context : {});
 
@@ -1933,7 +1929,9 @@ var MailWall = Widget.extend({
             'domain' : domain,
             'context' : context,
         }));
-        return this.root.replace(this.$('.oe_mail-placeholder'));
+        var res = this.root.replace(this.$('.oe_mail-placeholder'));
+        this.root.action.params.show_mark_all_read = search && search['domain'].length ? true : false;
+        return res
     },
 
     bind_events: function () {
