@@ -40,11 +40,13 @@ Tour.register({
         },
         {
             title:     _t("Validate the version name"),
+            placement: 'right',
             popover:   { fixed: true },
             element:   '.modal button.btn-primary',
         },
         {
             title:     _t("Confirm"),
+            placement: 'right',
             popover:   { fixed: true },
             waitNot:   '.modal input',
             element:   '.modal button.o_confirm',
@@ -94,7 +96,7 @@ Tour.register({
             popover:   { next: _t("Continue") },
         },
         {
-            snippet:   '#snippet_structure .oe_snippet:eq(6)',
+            snippet:   '#snippet_structure .oe_snippet:eq(7)',
             placement: 'bottom',
             title:     _t("Drag & Drop This Block"),
             content:   _t("Drag the <em>'Features'</em> block and drop it below the banner."),
@@ -138,11 +140,12 @@ Tour.register({
         {
             title:     _t("Click on Publish button"),
             element:   '.modal button.o_confirm',
-            placement: 'left',
+            placement: 'right',
         },
 
         {
             title:     _t("Confirm"),
+            placement: 'right',
             element:   '.modal button.o_confirm[data-dismiss]',
             popover:   { fixed: true },
         },
@@ -170,12 +173,14 @@ Tour.register({
 
         {
             title:     _t("Click on delete version button"),
+            placement: 'right',
             element:   '.modal:has(.cancel) button.o_confirm',
             popover:   { fixed: true },
         },
 
         {
             title:     _t("Confirm"),
+            placement: 'right',
             element:   '.modal:not(:has(.cancel)) button.o_confirm[data-dismiss]',
             popover:   { fixed: true },
         },
