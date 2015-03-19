@@ -43,6 +43,7 @@ body {
 }
 
 .well.o_color {
+	font-size: 1.5em;
 	background-color: #a24689;
 }
 
@@ -71,6 +72,11 @@ div.pt_activities_list td.pt_duration{
 	vertical-align: middle;
 	text-align: center;
 }
+div.pt_activities_list td.pt_plus_or_minus{
+	vertical-align: middle;
+	text-align: center;
+	font-size:  1.5em;
+}
 .pt_duration_color_fill{
 	background-color: #a24689;
 	color:white;
@@ -83,4 +89,18 @@ div.pt_activities_list td.pt_duration{
 
 table.pt_day_plan_table tr:hover{
 	background-color: #E0E0E0;	
+}
+
+.o-drawer-menu{
+	z-index: 9999;
+	left:0;
+	position:absolute;
+	bottom: 0
+	top:40px;
+	width:80%;
+	overflow: auto;
+}
+
+.o-menu-slided{
+	left:80%;
 }

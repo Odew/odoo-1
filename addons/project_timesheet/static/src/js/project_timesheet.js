@@ -501,18 +501,20 @@ openerp.project_timesheet = function(openerp) {
                 //LS => SV sync
                 var context = new openerp.web.CompoundContext({default_is_timesheet : true});
                 // For the aals that need to be synced, update unit_amount with minimal duration or round with time_unit.
-                _.each(data.account_analytic_lines, function(aal){
-                    if(aal.to_sync){
-                        //
-                        if (aal.unit_amount < data.settings.minimal_duration){
-                            aal.unit_amount = data.settings.minimal_duration;
-                        }
-                        else if(data.settings.time_unit > 0){
-                            var round_to = 1 / data.settings.time_unit;
-                            aal.unit_amount = (Math.ceil(aal.unit_amount * round_to) / round_to).toFixed(2);
-                        }
-                    }
-                });
+                // TAC TODO
+                // This feature is currently disabled. It might need to be moved to the backend.
+                // _.each(data.account_analytic_lines, function(aal){
+                //     if(aal.to_sync){
+                //         //
+                //         if (aal.unit_amount < data.settings.minimal_duration){
+                //             aal.unit_amount = data.settings.minimal_duration;
+                //         }
+                //         else if(data.settings.time_unit > 0){
+                //             var round_to = 1 / data.settings.time_unit;
+                //             aal.unit_amount = (Math.ceil(aal.unit_amount * round_to) / round_to).toFixed(2);
+                //         }
+                //     }
+                // });
                 account_analytic_line_model.call("import_ui_data" , [data.account_analytic_lines , data.tasks, data.projects, context]).then(function(sv_response){
                     console.log(sv_response);
                     //@TAC TODO : Better error processing system !
