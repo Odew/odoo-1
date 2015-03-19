@@ -27,7 +27,7 @@
     now = datetime.now()
     dt = now - timedelta(days=now.weekday()) 
     for resource in resources:
-        result = calendar_pool.working_hours_on_day(cr, uid, resource.calendar_id, dt, context)
+        result = calendar_pool.working_hours_on_day(cr, uid, resource.calendar_id.id, dt, context)
         assert float_compare(result, 9.0, precision_digits=2) == 0, 'Wrong calculation of day work hour availability of the Resource (found %d).' % result
 -
   Now, resource "Developer" drafted leave on Thursday in this week.

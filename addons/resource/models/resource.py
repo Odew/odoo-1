@@ -1,37 +1,17 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-TODAY OpenERP SA (http://www.openerp.com)
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
-
 import datetime
+from operator import itemgetter
 from dateutil import rrule
 from dateutil.relativedelta import relativedelta
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
-from operator import itemgetter
 
-from openerp import tools
-from openerp.osv import fields, osv
+from openerp import api, fields, models, _
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.float_utils import float_compare
-from openerp.tools.translate import _
 from openerp.exceptions import UserError
 
-class resource_calendar(osv.osv):
+
+class ResourceCalendar(models.Model):
+
     """ Calendar model for a resource. It has
 
      - attendance_ids: list of resource.calendar.attendance that are a working
@@ -45,20 +25,14 @@ class resource_calendar(osv.osv):
     _name = "resource.calendar"
     _description = "Resource Calendar"
 
-    _columns = {
-        'name': fields.char("Name", required=True),
-        'company_id': fields.many2one('res.company', 'Company', required=False),
-        'attendance_ids': fields.one2many('resource.calendar.attendance', 'calendar_id', 'Working Time', copy=True),
-        'manager': fields.many2one('res.users', 'Workgroup Manager'),
-        'leave_ids': fields.one2many(
-            'resource.calendar.leaves', 'calendar_id', 'Leaves',
-            help=''
-        ),
-    }
-    _defaults = {
-        'company_id': lambda self, cr, uid, context: self.pool.get('res.company')._company_default_get(cr, uid, 'resource.calendar', context=context)
-    }
-
+    name = fields.Char(required=True)
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env[
+                                 'res.company']._company_default_get('resource.calendar'))
+    attendance_ids = fields.One2many(
+        'resource.calendar.attendance', 'calendar_id', string='Working Time', copy=True)
+    manager = fields.Many2one('res.users', string='Workgroup Manager')
+    leave_ids = fields.One2many(
+        'resource.calendar.leaves', 'calendar_id', string='Leaves')
     # --------------------------------------------------
     # Utility methods
     # --------------------------------------------------
@@ -71,23 +45,26 @@ class resource_calendar(osv.osv):
         :param list intervals: list of intervals; each interval is a tuple
                                (datetime_from, datetime_to)
         :return list cleaned: list of sorted intervals without overlap """
-        intervals = sorted(intervals, key=itemgetter(0))  # sort on first datetime
+        # sort on first datetime
+        intervals = sorted(intervals, key=itemgetter(0))
         cleaned = []
         working_interval = None
         while intervals:
             current_interval = intervals.pop(0)
             if not working_interval:  # init
                 working_interval = [current_interval[0], current_interval[1]]
-            elif working_interval[1] < current_interval[0]:  # interval is disjoint
+            # interval is disjoint
+            elif working_interval[1] < current_interval[0]:
                 cleaned.append(tuple(working_interval))
                 working_interval = [current_interval[0], current_interval[1]]
-            elif working_interval[1] < current_interval[1]:  # union of greater intervals
+            # union of greater intervals
+            elif working_interval[1] < current_interval[1]:
                 working_interval[1] = current_interval[1]
         if working_interval:  # handle void lists
             cleaned.append(tuple(working_interval))
         return cleaned
 
-    def interval_remove_leaves(self, cr, uid, interval, leave_intervals, context=None):
+    def interval_remove_leaves(self, interval, leave_intervals):
         """ Utility method that remove leave intervals from a base interval:
 
          - clean the leave intervals, to have an ordered list of not-overlapping
@@ -113,7 +90,7 @@ class resource_calendar(osv.osv):
                                 that are the remaining valid intervals """
         if not interval:
             return interval
-        if leave_intervals is None:
+        if not leave_intervals:
             leave_intervals = []
         intervals = []
         leave_intervals = self.interval_clean(leave_intervals)
@@ -130,7 +107,8 @@ class resource_calendar(osv.osv):
             # if current_interval[0] <= leave[1] <= current_interval[1]:
             if current_interval[0] <= leave[1]:
                 current_interval[0] = leave[1]
-        if current_interval and current_interval[0] < interval[1]:  # remove intervals moved outside base interval due to leaves
+        # remove intervals moved outside base interval due to leaves
+        if current_interval and current_interval[0] < interval[1]:
             intervals.append((current_interval[0], current_interval[1]))
         return intervals
 
@@ -159,9 +137,11 @@ class resource_calendar(osv.osv):
         for interval in intervals:
             res += interval[1] - interval[0]
             if res > limit and remove_at_end:
-                interval = (interval[0], interval[1] + relativedelta(seconds=seconds(limit-res)))
+                interval = (interval[0], interval[
+                            1] + relativedelta(seconds=seconds(limit - res)))
             elif res > limit:
-                interval = (interval[0] + relativedelta(seconds=seconds(res-limit)), interval[1])
+                interval = (interval[0] + relativedelta(
+                    seconds=seconds(res - limit)), interval[1])
             results.append(interval)
             if res > limit:
                 break
@@ -171,30 +151,28 @@ class resource_calendar(osv.osv):
     # Date and hours computation
     # --------------------------------------------------
 
-    def get_attendances_for_weekday(self, cr, uid, id, date, context=None):
+    def get_attendances_for_weekday(self, date):
         """ Given a list of weekdays, return matching resource.calendar.attendance"""
-        calendar = self.browse(cr, uid, id, context=None)
         weekday = date.weekday()
         date = date.strftime(DEFAULT_SERVER_DATE_FORMAT)
         res = []
-        for att in calendar.attendance_ids:
+        for att in self.attendance_ids:
             if int(att.dayofweek) == weekday:
                 if not ((att.date_from and date < att.date_from) or (att.date_to and date > att.date_to)):
                     res.append(att)
         return res
 
-    def get_weekdays(self, cr, uid, id, default_weekdays=None, context=None):
+    def get_weekdays(self, default_weekdays=None):
         """ Return the list of weekdays that contain at least one working interval.
         If no id is given (no calendar), return default weekdays. """
-        if id is None:
-            return default_weekdays if default_weekdays is not None else [0, 1, 2, 3, 4]
-        calendar = self.browse(cr, uid, id, context=None)
+        if not self.id:
+            return default_weekdays if not default_weekdays else [0, 1, 2, 3, 4]
         weekdays = set()
-        for attendance in calendar.attendance_ids:
+        for attendance in self.attendance_ids:
             weekdays.add(int(attendance.dayofweek))
         return list(weekdays)
 
-    def get_next_day(self, cr, uid, id, day_date, context=None):
+    def get_next_day(self, day_date):
         """ Get following date of day_date, based on resource.calendar. If no
         calendar is provided, just return the next day.
 
@@ -203,24 +181,21 @@ class resource_calendar(osv.osv):
         :param date day_date: current day as a date
 
         :return date: next day of calendar, or just next day """
-        if not id:
+        if not self.id:
             return day_date + relativedelta(days=1)
-        weekdays = self.get_weekdays(cr, uid, id, context)
-
+        weekdays = self.get_weekdays()
         base_index = -1
         for weekday in weekdays:
             if weekday > day_date.weekday():
                 break
             base_index += 1
-
         new_index = (base_index + 1) % len(weekdays)
         days = (weekdays[new_index] - day_date.weekday())
         if days < 0:
             days = 7 + days
-
         return day_date + relativedelta(days=days)
 
-    def get_previous_day(self, cr, uid, id, day_date, context=None):
+    def get_previous_day(self, day_date):
         """ Get previous date of day_date, based on resource.calendar. If no
         calendar is provided, just return the previous day.
 
@@ -229,9 +204,9 @@ class resource_calendar(osv.osv):
         :param date day_date: current day as a date
 
         :return date: previous day of calendar, or just previous day """
-        if not id:
+        if not self.id:
             return day_date + relativedelta(days=-1)
-        weekdays = self.get_weekdays(cr, uid, id, context)
+        weekdays = self.get_weekdays()
         weekdays.reverse()
 
         base_index = -1
@@ -247,9 +222,7 @@ class resource_calendar(osv.osv):
 
         return day_date + relativedelta(days=days)
 
-    def get_leave_intervals(self, cr, uid, id, resource_id=None,
-                            start_datetime=None, end_datetime=None,
-                            context=None):
+    def get_leave_intervals(self, resource_id=None, start_datetime=None, end_datetime=None):
         """Get the leaves of the calendar. Leaves can be filtered on the resource,
         the start datetime or the end datetime.
 
@@ -265,23 +238,26 @@ class resource_calendar(osv.osv):
         :return list leaves: list of tuples (start_datetime, end_datetime) of
                              leave intervals
         """
-        resource_calendar = self.browse(cr, uid, id, context=context)
         leaves = []
-        for leave in resource_calendar.leave_ids:
+        for leave in self.leave_ids:
             if leave.resource_id and not resource_id == leave.resource_id.id:
                 continue
-            date_from = datetime.datetime.strptime(leave.date_from, tools.DEFAULT_SERVER_DATETIME_FORMAT)
+            date_from = datetime.datetime.strptime(
+                leave.date_from, DEFAULT_SERVER_DATETIME_FORMAT)
             if end_datetime and date_from > end_datetime:
                 continue
-            date_to = datetime.datetime.strptime(leave.date_to, tools.DEFAULT_SERVER_DATETIME_FORMAT)
+            date_to = datetime.datetime.strptime(
+                leave.date_to, DEFAULT_SERVER_DATETIME_FORMAT)
             if start_datetime and date_to < start_datetime:
                 continue
             leaves.append((date_from, date_to))
         return leaves
 
-    def get_working_intervals_of_day(self, cr, uid, id, start_dt=None, end_dt=None,
-                                     leaves=None, compute_leaves=False, resource_id=None,
-                                     default_interval=None, context=None):
+    @api.multi
+    def get_working_intervals_of_day(
+        self, start_dt=None, end_dt=None,
+        leaves=None, compute_leaves=False, resource_id=None,
+        default_interval=None):
         """ Get the working intervals of the day based on calendar. This method
         handle leaves that come directly from the leaves parameter or can be computed.
 
@@ -315,42 +291,52 @@ class resource_calendar(osv.osv):
 
         :return list intervals: a list of tuples (start_datetime, end_datetime)
                                 of work intervals """
-        if isinstance(id, (list, tuple)):
-            id = id[0]
-
-        # Computes start_dt, end_dt (with default values if not set) + off-interval work limits
+        # Computes start_dt, end_dt (with default values if not set) +
+        # off-interval work limits
         work_limits = []
         if start_dt is None and end_dt is not None:
             start_dt = end_dt.replace(hour=0, minute=0, second=0)
         elif start_dt is None:
-            start_dt = datetime.datetime.now().replace(hour=0, minute=0, second=0)
+            start_dt = datetime.datetime.now().replace(
+                hour=0, minute=0, second=0)
         else:
-            work_limits.append((start_dt.replace(hour=0, minute=0, second=0), start_dt))
+            work_limits.append(
+                (start_dt.replace(hour=0, minute=0, second=0), start_dt))
         if end_dt is None:
             end_dt = start_dt.replace(hour=23, minute=59, second=59)
         else:
-            work_limits.append((end_dt, end_dt.replace(hour=23, minute=59, second=59)))
-        assert start_dt.date() == end_dt.date(), 'get_working_intervals_of_day is restricted to one day'
+            work_limits.append(
+                (end_dt, end_dt.replace(hour=23, minute=59, second=59)))
+        assert start_dt.date() == end_dt.date(
+        ), 'get_working_intervals_of_day is restricted to one day'
 
         intervals = []
+        working_interval = []
         work_dt = start_dt.replace(hour=0, minute=0, second=0)
-
         # no calendar: try to use the default_interval, then return directly
-        if id is None:
+        if not self.id:
             if default_interval:
-                working_interval = (start_dt.replace(hour=default_interval[0], minute=0, second=0),
-                                    start_dt.replace(hour=default_interval[1], minute=0, second=0))
-            intervals = self.interval_remove_leaves(cr, uid, working_interval, work_limits, context=context)
+                working_interval = (
+                    start_dt.replace(
+                        hour=default_interval[0], minute=0, second=0),
+                    start_dt.replace(hour=default_interval[1], minute=0, second=0))
+            intervals = self.interval_remove_leaves(
+                working_interval, work_limits)
             return intervals
 
         working_intervals = []
-        for calendar_working_day in self.get_attendances_for_weekday(cr, uid, id, start_dt, context=context):
-            if context and context.get('no_round_hours'):
-                min_from = int((calendar_working_day.hour_from - int(calendar_working_day.hour_from)) * 60)
-                min_to = int((calendar_working_day.hour_to - int(calendar_working_day.hour_to)) * 60)
+        for calendar_working_day in self.get_attendances_for_weekday(start_dt):
+            if self._context and self._context.get('no_round_hours'):
+                min_from = int(
+                    (calendar_working_day.hour_from - int(calendar_working_day.hour_from)) * 60)
+                min_to = int(
+                    (calendar_working_day.hour_to - int(calendar_working_day.hour_to)) * 60)
                 working_interval = (
-                    work_dt.replace(hour=int(calendar_working_day.hour_from), minute=min_from),
-                    work_dt.replace(hour=int(calendar_working_day.hour_to), minute=min_to),
+                    work_dt.replace(
+                        hour=int(
+                            calendar_working_day.hour_from), minute=min_from),
+                    work_dt.replace(
+                        hour=int(calendar_working_day.hour_to), minute=min_to),
                     calendar_working_day.id,
                 )
             else:
@@ -360,41 +346,43 @@ class resource_calendar(osv.osv):
                     calendar_working_day.id,
                 )
 
-            working_intervals += self.interval_remove_leaves(cr, uid, working_interval, work_limits, context=context)
+            working_intervals += self.interval_remove_leaves(
+                working_interval, work_limits)
 
         # find leave intervals
-        if leaves is None and compute_leaves:
-            leaves = self.get_leave_intervals(cr, uid, id, resource_id=resource_id, context=context)
+        if not leaves and compute_leaves:
+            leaves = self.get_leave_intervals(resource_id=resource_id)
 
         # filter according to leaves
         for interval in working_intervals:
-            work_intervals = self.interval_remove_leaves(cr, uid, interval, leaves, context=context)
+            work_intervals = self.interval_remove_leaves(interval, leaves)
             intervals += work_intervals
 
         return intervals
 
-    def get_working_hours_of_date(self, cr, uid, id, start_dt=None, end_dt=None,
+    @api.multi
+    def get_working_hours_of_date(self, start_dt=None, end_dt=None,
                                   leaves=None, compute_leaves=False, resource_id=None,
-                                  default_interval=None, context=None):
+                                  default_interval=None):
         """ Get the working hours of the day based on calendar. This method uses
         get_working_intervals_of_day to have the work intervals of the day. It
         then calculates the number of hours contained in those intervals. """
         res = datetime.timedelta()
         intervals = self.get_working_intervals_of_day(
-            cr, uid, id,
             start_dt, end_dt, leaves,
             compute_leaves, resource_id,
-            default_interval, context)
+            default_interval)
         for interval in intervals:
             res += interval[1] - interval[0]
         return seconds(res) / 3600.0
 
-    def get_working_hours(self, cr, uid, id, start_dt, end_dt, compute_leaves=False,
-                          resource_id=None, default_interval=None, context=None):
+    def get_working_hours(self, start_dt, end_dt, compute_leaves=False,
+                          resource_id=None, default_interval=None):
         hours = 0.0
         for day in rrule.rrule(rrule.DAILY, dtstart=start_dt,
-                               until=(end_dt + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0),
-                               byweekday=self.get_weekdays(cr, uid, id, context=context)):
+                               until=(end_dt + datetime.timedelta(days=1)).replace(
+                                   hour=0, minute=0, second=0),
+                               byweekday=self.get_weekdays()):
             day_start_dt = day.replace(hour=0, minute=0, second=0)
             if start_dt and day.date() == start_dt.date():
                 day_start_dt = start_dt
@@ -402,19 +390,18 @@ class resource_calendar(osv.osv):
             if end_dt and day.date() == end_dt.date():
                 day_end_dt = end_dt
             hours += self.get_working_hours_of_date(
-                cr, uid, id, start_dt=day_start_dt, end_dt=day_end_dt,
+                start_dt=day_start_dt, end_dt=day_end_dt,
                 compute_leaves=compute_leaves, resource_id=resource_id,
-                default_interval=default_interval,
-                context=context)
+                default_interval=default_interval)
         return hours
 
     # --------------------------------------------------
     # Hours scheduling
     # --------------------------------------------------
 
-    def _schedule_hours(self, cr, uid, id, hours, day_dt=None,
+    def _schedule_hours(self, hours, day_dt=None,
                         compute_leaves=False, resource_id=None,
-                        default_interval=None, context=None):
+                        default_interval=None):
         """ Schedule hours of work, using a calendar and an optional resource to
         compute working and leave days. This method can be used backwards, i.e.
         scheduling days before a deadline.
@@ -445,7 +432,7 @@ class resource_calendar(osv.osv):
         Note: Why not using rrule.rrule ? Because rrule does not seem to allow
         getting back in time.
         """
-        if day_dt is None:
+        if not day_dt:
             day_dt = datetime.datetime.now()
         backwards = (hours < 0)
         hours = abs(hours)
@@ -454,22 +441,23 @@ class resource_calendar(osv.osv):
         iterations = 0
         current_datetime = day_dt
 
-        call_args = dict(compute_leaves=compute_leaves, resource_id=resource_id, default_interval=default_interval, context=context)
-
+        call_args = dict(compute_leaves=compute_leaves,
+                         resource_id=resource_id, default_interval=default_interval)
         while float_compare(remaining_hours, 0.0, precision_digits=2) in (1, 0) and iterations < 1000:
             if backwards:
                 call_args['end_dt'] = current_datetime
             else:
                 call_args['start_dt'] = current_datetime
 
-            working_intervals = self.get_working_intervals_of_day(cr, uid, id, **call_args)
-
-            if id is None and not working_intervals:  # no calendar -> consider working 8 hours
+            working_intervals = self.get_working_intervals_of_day(**call_args)
+            # no calendar -> consider working 8 hours
+            if not self.id and not working_intervals:
                 remaining_hours -= 8.0
             elif working_intervals:
                 if backwards:
                     working_intervals.reverse()
-                new_working_intervals = self.interval_schedule_hours(working_intervals, remaining_hours, not backwards)
+                new_working_intervals = self.interval_schedule_hours(
+                    working_intervals, remaining_hours, not backwards)
                 if backwards:
                     new_working_intervals.reverse()
 
@@ -483,36 +471,40 @@ class resource_calendar(osv.osv):
                     intervals = intervals + new_working_intervals
             # get next day
             if backwards:
-                current_datetime = datetime.datetime.combine(self.get_previous_day(cr, uid, id, current_datetime, context), datetime.time(23, 59, 59))
+                current_datetime = datetime.datetime.combine(self.get_previous_day(
+                    current_datetime), datetime.time(23, 59, 59))
             else:
-                current_datetime = datetime.datetime.combine(self.get_next_day(cr, uid, id, current_datetime, context), datetime.time())
+                current_datetime = datetime.datetime.combine(
+                    self.get_next_day(current_datetime), datetime.time())
             # avoid infinite loops
             iterations += 1
-
         return intervals
 
-    def schedule_hours_get_date(self, cr, uid, id, hours, day_dt=None,
+    @api.model
+    def schedule_hours_get_date(self, hours, day_dt=None,
                                 compute_leaves=False, resource_id=None,
-                                default_interval=None, context=None):
+                                default_interval=None):
         """ Wrapper on _schedule_hours: return the beginning/ending datetime of
         an hours scheduling. """
-        res = self._schedule_hours(cr, uid, id, hours, day_dt, compute_leaves, resource_id, default_interval, context)
+        res = self._schedule_hours(
+            hours, day_dt, compute_leaves, resource_id, default_interval)
         return res and res[0][0] or False
 
-    def schedule_hours(self, cr, uid, id, hours, day_dt=None,
+    @api.multi
+    def schedule_hours(self, hours, day_dt=None,
                        compute_leaves=False, resource_id=None,
-                       default_interval=None, context=None):
+                       default_interval=None):
         """ Wrapper on _schedule_hours: return the working intervals of an hours
         scheduling. """
-        return self._schedule_hours(cr, uid, id, hours, day_dt, compute_leaves, resource_id, default_interval, context)
-
+        return self._schedule_hours(hours, day_dt, compute_leaves, resource_id, default_interval)
 
     # --------------------------------------------------
     # Days scheduling
     # --------------------------------------------------
 
-    def _schedule_days(self, cr, uid, id, days, day_date=None, compute_leaves=False,
-                       resource_id=None, default_interval=None, context=None):
+    @api.multi
+    def _schedule_days(self, days, day_date=None, compute_leaves=False,
+                       resource_id=None, default_interval=None):
         """Schedule days of work, using a calendar and an optional resource to
         compute working and leave days. This method can be used backwards, i.e.
         scheduling days before a deadline.
@@ -543,7 +535,7 @@ class resource_calendar(osv.osv):
         Implementation note: rrule.rrule is not used because rrule it des not seem
         to allow getting back in time.
         """
-        if day_date is None:
+        if not day_date:
             day_date = datetime.datetime.now()
         backwards = (days < 0)
         days = abs(days)
@@ -552,186 +544,193 @@ class resource_calendar(osv.osv):
         iterations = 0
 
         current_datetime = day_date.replace(hour=0, minute=0, second=0)
-
         while planned_days < days and iterations < 100:
             working_intervals = self.get_working_intervals_of_day(
-                cr, uid, id, current_datetime,
+                current_datetime,
                 compute_leaves=compute_leaves, resource_id=resource_id,
-                default_interval=default_interval,
-                context=context)
-            if id is None or working_intervals:  # no calendar -> no working hours, but day is considered as worked
+                default_interval=default_interval)
+            # no calendar -> no working hours, but day is considered as worked
+            if not self.id or working_intervals:
                 planned_days += 1
                 intervals += working_intervals
             # get next day
             if backwards:
-                current_datetime = self.get_previous_day(cr, uid, id, current_datetime, context)
+                current_datetime = self.get_previous_day(current_datetime)
             else:
-                current_datetime = self.get_next_day(cr, uid, id, current_datetime, context)
+                current_datetime = self.get_next_day(current_datetime)
             # avoid infinite loops
             iterations += 1
-
         return intervals
 
-    def schedule_days_get_date(self, cr, uid, id, days, day_date=None, compute_leaves=False,
-                               resource_id=None, default_interval=None, context=None):
+    @api.multi
+    def schedule_days_get_date(self, days, day_date=None, compute_leaves=False,
+                               resource_id=None, default_interval=None):
         """ Wrapper on _schedule_days: return the beginning/ending datetime of
         a days scheduling. """
-        res = self._schedule_days(cr, uid, id, days, day_date, compute_leaves, resource_id, default_interval, context)
+        res = self._schedule_days(
+            days, day_date, compute_leaves, resource_id, default_interval)
         return res and res[-1][1] or False
 
-    def schedule_days(self, cr, uid, id, days, day_date=None, compute_leaves=False,
-                      resource_id=None, default_interval=None, context=None):
+    @api.model
+    def schedule_days(self, days, day_date=None, compute_leaves=False,
+                      resource_id=None, default_interval=None):
         """ Wrapper on _schedule_days: return the working intervals of a days
         scheduling. """
-        return self._schedule_days(cr, uid, id, days, day_date, compute_leaves, resource_id, default_interval, context)
+        return self._schedule_days(days, day_date, compute_leaves, resource_id, default_interval)
 
     # --------------------------------------------------
     # Compatibility / to clean / to remove
     # --------------------------------------------------
 
-    def working_hours_on_day(self, cr, uid, resource_calendar_id, day, context=None):
+    @api.multi
+    def working_hours_on_day(self, day):
         """ Used in hr_payroll/hr_payroll.py
 
-        :deprecated: OpenERP saas-3. Use get_working_hours_of_date instead. Note:
+        :deprecated: Odoo saas-3. Use get_working_hours_of_date instead. Note:
         since saas-3, take hour/minutes into account, not just the whole day."""
         if isinstance(day, datetime.datetime):
             day = day.replace(hour=0, minute=0)
-        return self.get_working_hours_of_date(cr, uid, resource_calendar_id.id, start_dt=day, context=None)
+        return self.get_working_hours_of_date(start_dt=day)
 
-    def interval_min_get(self, cr, uid, id, dt_from, hours, resource=False):
+    @api.multi
+    def interval_min_get(self, dt_from, hours, resource=False):
         """ Schedule hours backwards. Used in mrp_operations/mrp_operations.py.
 
-        :deprecated: OpenERP saas-3. Use schedule_hours instead. Note: since
+        :deprecated: Odoo saas-3. Use schedule_hours instead. Note: since
         saas-3, counts leave hours instead of all-day leaves."""
-        return self.schedule_hours(
-            cr, uid, id, hours * -1.0,
-            day_dt=dt_from.replace(minute=0, second=0),
-            compute_leaves=True, resource_id=resource,
-            default_interval=(8, 16)
-        )
+        return self.schedule_hours(hours * -1.0,
+                                   day_dt=dt_from.replace(minute=0, second=0),
+                                   compute_leaves=True, resource_id=resource,
+                                   default_interval=(8, 16)
+                                   )
 
-    def interval_get_multi(self, cr, uid, date_and_hours_by_cal, resource=False, byday=True):
+    @api.multi
+    def interval_get_multi(self, date_and_hours_by_cal, resource=False, byday=True):
         """ Used in mrp_operations/mrp_operations.py (default parameters) and in
         interval_get()
 
-        :deprecated: OpenERP saas-3. Use schedule_hours instead. Note:
+        :deprecated: Odoo saas-3. Use schedule_hours instead. Note:
         Byday was not used. Since saas-3, counts Leave hours instead of all-day leaves."""
         res = {}
         for dt_str, hours, calendar_id in date_and_hours_by_cal:
-            result = self.schedule_hours(
-                cr, uid, calendar_id, hours,
-                day_dt=datetime.datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S').replace(minute=0, second=0),
-                compute_leaves=True, resource_id=resource,
-                default_interval=(8, 16)
-            )
+            result = self.schedule_hours(hours,
+                                         day_dt=datetime.datetime.strptime(
+                                         dt_str, '%Y-%m-%d %H:%M:%S').replace(minute=0, second=0),
+                                         compute_leaves=True, resource_id=resource,
+                                         default_interval=(8, 16)
+                                         )
             res[(dt_str, hours, calendar_id)] = result
         return res
 
-    def interval_get(self, cr, uid, id, dt_from, hours, resource=False, byday=True):
+    @api.multi
+    def interval_get(self, dt_from, hours, resource=False, byday=True):
         """ Unifier of interval_get_multi. Used in: mrp_operations/mrp_operations.py,
         crm/crm_lead.py (res given).
 
-        :deprecated: OpenERP saas-3. Use get_working_hours instead."""
+        :deprecated: Odoo saas-3. Use get_working_hours instead."""
         res = self.interval_get_multi(
-            cr, uid, [(dt_from.strftime('%Y-%m-%d %H:%M:%S'), hours, id)], resource, byday)[(dt_from.strftime('%Y-%m-%d %H:%M:%S'), hours, id)]
+            [(dt_from.strftime('%Y-%m-%d %H:%M:%S'), hours, self.id)], resource, byday)[(dt_from.strftime('%Y-%m-%d %H:%M:%S'), hours, self.id)]
         return res
 
-    def interval_hours_get(self, cr, uid, id, dt_from, dt_to, resource=False):
+    @api.multi
+    def interval_hours_get(self, dt_from, dt_to, resource=False):
         """ Unused wrapper.
 
-        :deprecated: OpenERP saas-3. Use get_working_hours instead."""
-        return self._interval_hours_get(cr, uid, id, dt_from, dt_to, resource_id=resource)
+        :deprecated: Odoo saas-3. Use get_working_hours instead."""
+        return self._interval_hours_get(dt_from, dt_to, resource_id=resource)
 
-    def _interval_hours_get(self, cr, uid, id, dt_from, dt_to, resource_id=False, timezone_from_uid=None, exclude_leaves=True, context=None):
+    @api.multi
+    def _interval_hours_get(self, dt_from, dt_to, resource_id=False, timezone_from_uid=None, exclude_leaves=True):
         """ Computes working hours between two dates, taking always same hour/minuts.
 
-        :deprecated: OpenERP saas-3. Use get_working_hours instead. Note: since saas-3,
+        :deprecated: Odoo saas-3. Use get_working_hours instead. Note: since saas-3,
         now resets hour/minuts. Now counts leave hours instead of all-day leaves."""
-        return self.get_working_hours(
-            cr, uid, id, dt_from, dt_to,
-            compute_leaves=(not exclude_leaves), resource_id=resource_id,
-            default_interval=(8, 16), context=context)
+        return self.get_working_hours(dt_from, dt_to,
+                                      compute_leaves=(not exclude_leaves), resource_id=resource_id,
+                                      default_interval=(8, 16))
 
 
-class resource_calendar_attendance(osv.osv):
+class ResourceCalendarAttendance(models.Model):
     _name = "resource.calendar.attendance"
     _description = "Work Detail"
-
-    _columns = {
-        'name' : fields.char("Name", required=True),
-        'dayofweek': fields.selection([('0','Monday'),('1','Tuesday'),('2','Wednesday'),('3','Thursday'),('4','Friday'),('5','Saturday'),('6','Sunday')], 'Day of Week', required=True, select=True),
-        'date_from' : fields.date('Starting Date'),
-        'date_to': fields.date('End Date'),
-        'hour_from' : fields.float('Work from', required=True, help="Start and End time of working.", select=True),
-        'hour_to' : fields.float("Work to", required=True),
-        'calendar_id' : fields.many2one("resource.calendar", "Resource's Calendar", required=True),
-    }
-
     _order = 'dayofweek, hour_from'
 
-    _defaults = {
-        'dayofweek' : '0'
-    }
+    name = fields.Char(required=True)
+    dayofweek = fields.Selection([('0', 'Monday'), ('1', 'Tuesday'), ('2', 'Wednesday'), ('3', 'Thursday'), (
+        '4', 'Friday'), ('5', 'Saturday'), ('6', 'Sunday')], string='Day of Week', default='0', required=True, select=True)
+    date_from = fields.Date(string='Starting Date')
+    date_to = fields.Date(string='End Date')
+    hour_from = fields.Float(
+        string='Work from', required=True, help="Start and End time of working.", select=True)
+    hour_to = fields.Float(string='Work to', required=True)
+    calendar_id = fields.Many2one(
+        "resource.calendar", string="Resource's Calendar", required=True)
+
 
 def hours_time_string(hours):
     """ convert a number of hours (float) into a string with format '%H:%M' """
     minutes = int(round(hours * 60))
     return "%02d:%02d" % divmod(minutes, 60)
 
-class resource_resource(osv.osv):
+
+class ResourceResource(models.Model):
     _name = "resource.resource"
     _description = "Resource Detail"
-    _columns = {
-        'name': fields.char("Name", required=True),
-        'code': fields.char('Code', size=16, copy=False),
-        'active' : fields.boolean('Active', help="If the active field is set to False, it will allow you to hide the resource record without removing it."),
-        'company_id' : fields.many2one('res.company', 'Company'),
-        'resource_type': fields.selection([('user','Human'),('material','Material')], 'Resource Type', required=True),
-        'user_id' : fields.many2one('res.users', 'User', help='Related user name for the resource to manage its access.'),
-        'time_efficiency' : fields.float('Efficiency Factor', size=8, required=True, help="This field depict the efficiency of the resource to complete tasks. e.g  resource put alone on a phase of 5 days with 5 tasks assigned to him, will show a load of 100% for this phase by default, but if we put a efficiency of 200%, then his load will only be 50%."),
-        'calendar_id' : fields.many2one("resource.calendar", "Working Time", help="Define the schedule of resource"),
-    }
 
-    _defaults = {
-        'resource_type' : 'user',
-        'time_efficiency' : 1,
-        'active' : True,
-        'company_id': lambda self, cr, uid, context: self.pool.get('res.company')._company_default_get(cr, uid, 'resource.resource', context=context)
-    }
+    name = fields.Char(required=True)
+    code = fields.Char(copy=False)
+    active = fields.Boolean(default=True,
+                            help="If the active field is set to False, it will allow you to hide the resource record without removing it.")
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env[
+                                 'res.company']._company_default_get('resource.resource'))
+    resource_type = fields.Selection(
+        [('user', 'Human'), ('material', 'Material')], string='Resource Type', default='user', required=True)
+    user_id = fields.Many2one(
+        'res.users', string='User', help='Related user name for the resource to manage its access.')
+    time_efficiency = fields.Float(
+        string='Efficiency Factor', default=1, size=8, required=True,
+        help="This field depict the efficiency of the resource to complete tasks. e.g  resource put alone on a phase of 5 days with 5 tasks assigned to him, will show a load of 100% for this phase by default, but if we put a efficiency of 200%, then his load will only be 50%.")
+    calendar_id = fields.Many2one(
+        "resource.calendar", string="Working Time", help="Define the schedule of resource")
 
-    def copy(self, cr, uid, id, default=None, context=None):
+    @api.one
+    def copy(self, default=None):
         if default is None:
             default = {}
         if not default.get('name', False):
-            default.update(name=_('%s (copy)') % (self.browse(cr, uid, id, context=context).name))
-        return super(resource_resource, self).copy(cr, uid, id, default, context)
+            default.update(name=_('%s (copy)') %
+                           (self.name))
+        return super(ResourceResource, self).copy(default)
 
-    def generate_resources(self, cr, uid, user_ids, calendar_id, context=None):
+    @api.model
+    def generate_resources(self, user_ids, calendar_id):
         """
         Return a list of  Resource Class objects for the resources allocated to the phase.
 
         NOTE: Used in project/project.py
         """
         resource_objs = {}
-        user_pool = self.pool.get('res.users')
-        for user in user_pool.browse(cr, uid, user_ids, context=context):
+        for user in self.env['res.users'].browse(user_ids):
             resource_objs[user.id] = {
-                 'name' : user.name,
-                 'vacation': [],
-                 'efficiency': 1.0,
+                'name': user.name,
+                'vacation': [],
+                'efficiency': 1.0,
             }
 
-            resource_ids = self.search(cr, uid, [('user_id', '=', user.id)], context=context)
+            resource_ids = self.search([('user_id', '=', user.id)])
             if resource_ids:
-                for resource in self.browse(cr, uid, resource_ids, context=context):
-                    resource_objs[user.id]['efficiency'] = resource.time_efficiency
+                for resource in resource_ids:
+                    resource_objs[user.id][
+                        'efficiency'] = resource.time_efficiency
                     resource_cal = resource.calendar_id.id
                     if resource_cal:
-                        leaves = self.compute_vacation(cr, uid, calendar_id, resource.id, resource_cal, context=context)
+                        leaves = self.compute_vacation(
+                            calendar_id, resource.id, resource_cal)
                         resource_objs[user.id]['vacation'] += list(leaves)
         return resource_objs
 
-    def compute_vacation(self, cr, uid, calendar_id, resource_id=False, resource_calendar=False, context=None):
+    @api.model
+    def compute_vacation(self, calendar_id, resource_id=False, resource_calendar=False):
         """
         Compute the vacation from the working calendar of the resource.
 
@@ -741,57 +740,64 @@ class resource_resource(osv.osv):
 
         NOTE: used in project/project.py, and in generate_resources
         """
-        resource_calendar_leaves_pool = self.pool.get('resource.calendar.leaves')
+        ResourceCalendarLeaves = self.env['resource.calendar.leaves']
         leave_list = []
         if resource_id:
-            leave_ids = resource_calendar_leaves_pool.search(cr, uid, ['|', ('calendar_id', '=', calendar_id),
-                                                                       ('calendar_id', '=', resource_calendar),
-                                                                       ('resource_id', '=', resource_id)
-                                                                      ], context=context)
+            leaves = ResourceCalendarLeaves.search(
+                ['|', ('calendar_id', '=', calendar_id),
+                 ('calendar_id', '=', resource_calendar),
+                 ('resource_id', '=', resource_id)])
         else:
-            leave_ids = resource_calendar_leaves_pool.search(cr, uid, [('calendar_id', '=', calendar_id),
-                                                                      ('resource_id', '=', False)
-                                                                      ], context=context)
-        leaves = resource_calendar_leaves_pool.read(cr, uid, leave_ids, ['date_from', 'date_to'], context=context)
+            leaves = ResourceCalendarLeaves.search(
+                [('calendar_id', '=', calendar_id),
+                 ('resource_id', '=', False)])
         for i in range(len(leaves)):
-            dt_start = datetime.datetime.strptime(leaves[i]['date_from'], '%Y-%m-%d %H:%M:%S')
-            dt_end = datetime.datetime.strptime(leaves[i]['date_to'], '%Y-%m-%d %H:%M:%S')
+            dt_start = datetime.datetime.strptime(
+                leaves[i]['date_from'], '%Y-%m-%d %H:%M:%S')
+            dt_end = datetime.datetime.strptime(
+                leaves[i]['date_to'], '%Y-%m-%d %H:%M:%S')
             no = dt_end - dt_start
-            [leave_list.append((dt_start + datetime.timedelta(days=x)).strftime('%Y-%m-%d')) for x in range(int(no.days + 1))]
+            [leave_list.append((dt_start + datetime.timedelta(days=x)).strftime('%Y-%m-%d'))
+             for x in range(int(no.days + 1))]
             leave_list.sort()
         return leave_list
 
-    def compute_working_calendar(self, cr, uid, calendar_id=False, context=None):
+    @api.model
+    def compute_working_calendar(self, calendar_id=False):
         """
-        Change the format of working calendar from 'Openerp' format to bring it into 'Faces' format.
+        Change the format of working calendar from 'Odoo' format to bring it into 'Faces' format.
         @param calendar_id : working calendar of the project
 
         NOTE: used in project/project.py
         """
         if not calendar_id:
             # Calendar is not specified: working days: 24/7
-            return [('fri', '8:0-12:0','13:0-17:0'), ('thu', '8:0-12:0','13:0-17:0'), ('wed', '8:0-12:0','13:0-17:0'),
-                   ('mon', '8:0-12:0','13:0-17:0'), ('tue', '8:0-12:0','13:0-17:0')]
-        resource_attendance_pool = self.pool.get('resource.calendar.attendance')
+            return [(
+                'fri', '8:0-12:0', '13:0-17:0'), ('thu', '8:0-12:0', '13:0-17:0'), ('wed', '8:0-12:0', '13:0-17:0'),
+                ('mon', '8:0-12:0', '13:0-17:0'), ('tue', '8:0-12:0', '13:0-17:0')]
+        ResourceAttendance = self.env['resource.calendar.attendance']
         time_range = "8:00-8:00"
         non_working = ""
-        week_days = {"0": "mon", "1": "tue", "2": "wed","3": "thu", "4": "fri", "5": "sat", "6": "sun"}
+        week_days = {"0": "mon", "1": "tue", "2": "wed",
+                     "3": "thu", "4": "fri", "5": "sat", "6": "sun"}
         wk_days = {}
         wk_time = {}
         wktime_list = []
         wktime_cal = []
-        week_ids = resource_attendance_pool.search(cr, uid, [('calendar_id', '=', calendar_id)], context=context)
-        weeks = resource_attendance_pool.read(cr, uid, week_ids, ['dayofweek', 'hour_from', 'hour_to'], context=context)
+        weeks = ResourceAttendance.search([('calendar_id', '=', calendar_id)]).read(
+            ['dayofweek', 'hour_from', 'hour_to'])
         # Convert time formats into appropriate format required
-        # and create a list like [('mon', '8:00-12:00'), ('mon', '13:00-18:00')]
+        # and create a list like [('mon', '8:00-12:00'), ('mon',
+        # '13:00-18:00')]
         for week in weeks:
             res_str = ""
             day = None
-            if week_days.get(week['dayofweek'],False):
+            if week_days.get(week['dayofweek'], False):
                 day = week_days[week['dayofweek']]
                 wk_days[week['dayofweek']] = week_days[week['dayofweek']]
             else:
-                raise UserError(_('Make sure the Working time has been configured with proper week days!'))
+                raise UserError(
+                    _('Make sure the Working time has been configured with proper week days!'))
             hour_from_str = hours_time_string(week['hour_from'])
             hour_to_str = hours_time_string(week['hour_to'])
             res_str = hour_from_str + '-' + hour_to_str
@@ -803,7 +809,7 @@ class resource_resource(osv.osv):
             else:
                 wk_time[item[0]] = [item[0]]
                 wk_time[item[0]].append(item[1])
-        for k,v in wk_time.items():
+        for k, v in wk_time.items():
             wktime_cal.append(tuple(v))
         # Add for the non-working days like: [('sat, sun', '8:00-8:00')]
         for k, v in wk_days.items():
@@ -816,37 +822,36 @@ class resource_resource(osv.osv):
         return wktime_cal
 
 
-class resource_calendar_leaves(osv.osv):
+class ResourceCalendarLeaves(models.Model):
     _name = "resource.calendar.leaves"
     _description = "Leave Detail"
-    _columns = {
-        'name' : fields.char("Name"),
-        'company_id' : fields.related('calendar_id','company_id',type='many2one',relation='res.company',string="Company", store=True, readonly=True),
-        'calendar_id' : fields.many2one("resource.calendar", "Working Time"),
-        'date_from' : fields.datetime('Start Date', required=True),
-        'date_to' : fields.datetime('End Date', required=True),
-        'resource_id' : fields.many2one("resource.resource", "Resource", help="If empty, this is a generic holiday for the company. If a resource is set, the holiday/leave is only for this resource"),
-    }
 
-    def check_dates(self, cr, uid, ids, context=None):
-        for leave in self.browse(cr, uid, ids, context=context):
+    name = fields.Char()
+    company_id = fields.Many2one(
+        string="Company", related='calendar_id.company_id', store=True, readonly=True)
+    calendar_id = fields.Many2one("resource.calendar", string="Working Time")
+    date_from = fields.Datetime(string='Start Date', required=True)
+    date_to = fields.Datetime(string='End Date', required=True)
+    resource_id = fields.Many2one("resource.resource", string="Resource",
+                                  help="If empty, this is a generic holiday for the company. If a resource is set, the holiday/leave is only for this resource")
+
+    @api.multi
+    @api.constrains('date_from', 'date_to')
+    def check_dates(self):
+        for leave in self:
             if leave.date_from and leave.date_to and leave.date_from > leave.date_to:
-                return False
-        return True
+                raise UserError(
+                    _('Error! leave start-date must be lower then leave end-date.'))
 
-    _constraints = [
-        (check_dates, 'Error! leave start-date must be lower then leave end-date.', ['date_from', 'date_to'])
-    ]
-
-    def onchange_resource(self, cr, uid, ids, resource, context=None):
+    @api.onchange('resource_id')
+    def onchange_resource(self):
         result = {}
-        if resource:
-            resource_pool = self.pool.get('resource.resource')
-            result['calendar_id'] = resource_pool.browse(cr, uid, resource, context=context).calendar_id.id
-            return {'value': result}
-        return {'value': {'calendar_id': []}}
+        if self.resource_id:
+            self.calendar_id = self.env['resource.resource'].browse(
+                self.resource_id).calendar_id.id
+
 
 def seconds(td):
     assert isinstance(td, datetime.timedelta)
 
-    return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10.**6
+    return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10. ** 6

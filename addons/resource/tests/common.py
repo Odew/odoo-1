@@ -1,24 +1,4 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Business Applications
-#    Copyright (c) 2013-TODAY OpenERP S.A. <http://www.openerp.com>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
-
 from datetime import datetime
 
 from openerp.tests import common
@@ -33,10 +13,10 @@ class TestResourceCommon(common.TransactionCase):
             self.context = {}
 
         # Usefull models
-        self.resource_resource = self.registry('resource.resource')
-        self.resource_calendar = self.registry('resource.calendar')
-        self.resource_attendance = self.registry('resource.calendar.attendance')
-        self.resource_leaves = self.registry('resource.calendar.leaves')
+        self.ResourceResource = self.env['resource.resource']
+        self.ResourceCalendar = self.env['resource.calendar']
+        self.ResourceAttendance = self.env['resource.calendar.attendance']
+        self.ResourceLeaves = self.env['resource.calendar.leaves']
 
         # Some demo data
         self.date1 = datetime.strptime('2013-02-12 09:08:07', '%Y-%m-%d %H:%M:%S')  # weekday() returns 1, isoweekday() returns 2
@@ -53,71 +33,63 @@ class TestResourceCommon(common.TransactionCase):
 
         # Resource data
         # Calendar working days: 1 (8-16 -> 8hours), 4 (8-13, 16-23 -> 12hours)
-        self.calendar_id = self.resource_calendar.create(
-            cr, uid, {
-                'name': 'TestCalendar',
-            }
-        )
-        self.att1_id = self.resource_attendance.create(
-            cr, uid, {
+        self.calendar = self.ResourceCalendar.create({'name': 'TestCalendar'})
+        self.att1_id = self.ResourceAttendance.create({
                 'name': 'Att1',
                 'dayofweek': '1',
                 'hour_from': 8,
                 'hour_to': 16,
-                'calendar_id': self.calendar_id,
+                'calendar_id': self.calendar.id,
             }
         )
-        self.att2_id = self.resource_attendance.create(
-            cr, uid, {
+        self.att2_id = self.ResourceAttendance.create({
                 'name': 'Att2',
                 'dayofweek': '4',
                 'hour_from': 8,
                 'hour_to': 13,
-                'calendar_id': self.calendar_id,
+                'calendar_id': self.calendar.id,
             }
         )
-        self.att3_id = self.resource_attendance.create(
-            cr, uid, {
+        self.att3_id = self.ResourceAttendance.create({
                 'name': 'Att3',
                 'dayofweek': '4',
                 'hour_from': 16,
                 'hour_to': 23,
-                'calendar_id': self.calendar_id,
+                'calendar_id': self.calendar.id,
             }
         )
-        self.resource1_id = self.resource_resource.create(
-            cr, uid, {
+        self.resource1 = self.ResourceResource.create({
                 'name': 'TestResource1',
                 'resource_type': 'user',
                 'time_efficiency': 150.0,
-                'calendar_id': self.calendar_id,
+                'calendar_id': self.calendar.id,
             }
         )
-        self.leave1_id = self.resource_leaves.create(
-            cr, uid, {
+        self.leave1_id = self.ResourceLeaves.create(
+            {
                 'name': 'GenericLeave',
-                'calendar_id': self.calendar_id,
+                'calendar_id': self.calendar.id,
                 'date_from': self.leave1_start,
                 'date_to': self.leave1_end,
             }
         )
-        self.leave2_id = self.resource_leaves.create(
-            cr, uid, {
+        self.leave2_id = self.ResourceLeaves.create(
+            {
                 'name': 'ResourceLeave',
-                'calendar_id': self.calendar_id,
-                'resource_id': self.resource1_id,
+                'calendar_id': self.calendar.id,
+                'resource_id': self.resource1.id,
                 'date_from': self.leave2_start,
                 'date_to': self.leave2_end,
             }
         )
-        self.leave3_id = self.resource_leaves.create(
-            cr, uid, {
+        self.leave3_id = self.ResourceLeaves.create(
+            {
                 'name': 'ResourceLeave2',
-                'calendar_id': self.calendar_id,
-                'resource_id': self.resource1_id,
+                'calendar_id': self.calendar.id,
+                'resource_id': self.resource1.id,
                 'date_from': self.leave3_start,
                 'date_to': self.leave3_end,
             }
         )
         # Some browse data
-        self.calendar = self.resource_calendar.browse(cr, uid, self.calendar_id)
+        # self.calendar = self.ResourceCalendar.browse(self.calendar_id)
