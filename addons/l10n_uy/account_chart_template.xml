@@ -305,7 +305,7 @@
             <field name="code">11631</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Prevision para Deudores Incobrables</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -313,7 +313,7 @@
             <field name="code">11632</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Ingresos percibidos por adelantado</field>
-            <field name="user_type" ref="type_income"/>
+            <field name="user_type" ref="account.data_account_type_revenue"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -321,7 +321,7 @@
             <field name="code">11633</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Ingresos diferidos</field>
-            <field name="user_type" ref="type_income"/>
+            <field name="user_type" ref="account.data_account_type_revenue"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -329,7 +329,7 @@
             <field name="code">11701</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Mercaderia de Reventa</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -337,7 +337,7 @@
             <field name="code">11702</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Productos Terminados</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -345,7 +345,7 @@
             <field name="code">11703</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Productos en Proceso</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -353,7 +353,7 @@
             <field name="code">11704</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Materias Primas</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -361,7 +361,7 @@
             <field name="code">11705</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Materiales y Suministros</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -369,7 +369,7 @@
             <field name="code">11706</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Importaciones en tramite</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -377,7 +377,7 @@
             <field name="code">11711</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Prevision p/desvalorizaciones</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -385,7 +385,7 @@
             <field name="code">12101</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Créditos a Largo Plazo</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -394,7 +394,7 @@
             <field name="code">12201</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Bienes de cambio no corrientes</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -402,7 +402,7 @@
             <field name="code">12301</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Depositos Bancarios</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -410,7 +410,7 @@
             <field name="code">12302</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Inmuebles</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -418,7 +418,7 @@
             <field name="code">12303</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Valores orig. y revaluados s/anexo</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -426,7 +426,7 @@
             <field name="code">12304</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Menos: Amort. Acum.</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -434,7 +434,7 @@
             <field name="code">12305</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Titulos y Acciones</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -442,7 +442,7 @@
             <field name="code">12311</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Prevision para Desvalorizaciones</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -450,7 +450,7 @@
             <field name="code">12312</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Intereses percibidos por adelantado</field>
-            <field name="user_type" ref="type_income"/>
+            <field name="user_type" ref="account.data_account_type_revenue"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -458,7 +458,7 @@
             <field name="code">12401</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Muebles y Útiles</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -466,7 +466,7 @@
             <field name="code">12402</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Inmuebles</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -474,7 +474,7 @@
             <field name="code">12403</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Maquinas y Herramientas</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -482,7 +482,7 @@
             <field name="code">12404</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Vehículos</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -490,7 +490,7 @@
             <field name="code">12420</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Amort.Ac.Mueb.y Utiles</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -498,7 +498,7 @@
             <field name="code">12421</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Amort.Ac.Inmuebles</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -506,7 +506,7 @@
             <field name="code">12422</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Amort.Ac.Maq.y Herram.</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -514,7 +514,7 @@
             <field name="code">12423</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Amort.Ac.Vehiculos</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -522,7 +522,7 @@
             <field name="code">12501</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Patentes, marcas y licencias</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -530,7 +530,7 @@
             <field name="code">12502</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Gastos de investigacion</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -538,7 +538,7 @@
             <field name="code">12520</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Amortizaciones Acumuladas</field>
-            <field name="user_type" ref="type_asset"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -594,7 +594,7 @@
             <field name="code">21201</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Prestamos Bancarios</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -602,7 +602,7 @@
             <field name="code">21202</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Obligaciones</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -610,7 +610,7 @@
             <field name="code">21203</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Documentos a pagar MN a pagar ds/Financieras</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -618,7 +618,7 @@
             <field name="code">21204</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Documentos a pagar ME a pagar ds/Financieras</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -626,7 +626,7 @@
             <field name="code">21220</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Ints. a vencer ds/Financieras</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -634,7 +634,7 @@
             <field name="code">21301</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Cobros Anticipados</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -642,7 +642,7 @@
             <field name="code">21302</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Dividendos a Pagar</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -650,7 +650,7 @@
             <field name="code">21303</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Casa Matriz, Empresas Controlantes,</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -658,7 +658,7 @@
             <field name="code">21304</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Controladas/Vinculadas</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -666,7 +666,7 @@
             <field name="code">21305</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Sueldos y Jornales a pagar</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -674,7 +674,7 @@
             <field name="code">21306</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Acreedores por Cargas Sociales</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -682,7 +682,7 @@
             <field name="code">21307</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Acreedores fiscales</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -690,7 +690,7 @@
             <field name="code">21308</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Saldos Acreedores Cuentas Directores</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -698,7 +698,7 @@
             <field name="code">21320</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Otras deudas</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -826,7 +826,7 @@
             <field name="code">21801</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Responsabilidad frente a terceros</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -834,7 +834,7 @@
             <field name="code">22101</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Deudas Comerciales</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -842,7 +842,7 @@
             <field name="code">22201</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Deudas Financieras</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -850,7 +850,7 @@
             <field name="code">22301</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Deudas Diversas</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -858,7 +858,7 @@
             <field name="code">22401</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Previsiones No Corrientes</field>
-            <field name="user_type" ref="type_liability"/>
+            <field name="user_type" ref="account.data_account_type_current_liabilities"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -938,7 +938,7 @@
             <field name="code">4100</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Ingresos Operativos (def)</field>
-            <field name="user_type" ref="type_income"/>
+            <field name="user_type" ref="account.data_account_type_revenue"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -946,7 +946,7 @@
             <field name="code">4101</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Ventas Exentas</field>
-            <field name="user_type" ref="type_income"/>
+            <field name="user_type" ref="account.data_account_type_revenue"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -954,7 +954,7 @@
             <field name="code">4102</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Ventas Tasa Básica</field>
-            <field name="user_type" ref="type_income"/>
+            <field name="user_type" ref="account.data_account_type_revenue"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -962,7 +962,7 @@
             <field name="code">4103</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Ventas Tasa Mínima</field>
-            <field name="user_type" ref="type_income"/>
+            <field name="user_type" ref="account.data_account_type_revenue"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -970,7 +970,7 @@
             <field name="code">4104</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Ventas por Exportaciones</field>
-            <field name="user_type" ref="type_income"/>
+            <field name="user_type" ref="account.data_account_type_revenue"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -978,7 +978,7 @@
             <field name="code">4201</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Ventas extraordinarias</field>
-            <field name="user_type" ref="type_income"/>
+            <field name="user_type" ref="account.data_account_type_revenue"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -986,7 +986,7 @@
             <field name="code">4301</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Intereses ganados</field>
-            <field name="user_type" ref="type_income"/>
+            <field name="user_type" ref="account.data_account_type_revenue"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -994,7 +994,7 @@
             <field name="code">4302</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Diferencias de Cambio ganadas</field>
-            <field name="user_type" ref="type_income"/>
+            <field name="user_type" ref="account.data_account_type_revenue"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1002,7 +1002,7 @@
             <field name="code">4303</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Descuentos Obtenidos</field>
-            <field name="user_type" ref="type_income"/>
+            <field name="user_type" ref="account.data_account_type_revenue"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1010,7 +1010,7 @@
             <field name="code">5100</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Gastos Varios (def)</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1018,7 +1018,7 @@
             <field name="code">5101</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Sueldos y Jornales</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1026,7 +1026,7 @@
             <field name="code">5102</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Cargas Sociales</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1034,7 +1034,7 @@
             <field name="code">5103</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Seguros</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1042,7 +1042,7 @@
             <field name="code">5104</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Papelería</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1050,7 +1050,7 @@
             <field name="code">5105</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Combustible</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1058,7 +1058,7 @@
             <field name="code">5106</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Fletes</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1066,7 +1066,7 @@
             <field name="code">5107</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Mantenimiento Vehículos</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1074,7 +1074,7 @@
             <field name="code">5108</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Honorarios Profesionales</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1082,7 +1082,7 @@
             <field name="code">5109</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Servicios Contratados</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1090,7 +1090,7 @@
             <field name="code">5110</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Energía Eléctrica y Aguas Corrientes</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1098,7 +1098,7 @@
             <field name="code">5111</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Comunicaciones y Servicios Telefónicos</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1106,7 +1106,7 @@
             <field name="code">5112</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Alquileres</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1114,7 +1114,7 @@
             <field name="code">5114</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Publicidad</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1122,7 +1122,7 @@
             <field name="code">5115</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Representación</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
     
@@ -1147,21 +1147,21 @@
       <field name="name">Contribuciones</field>
       <field name="code">5203</field>
       <field name="reconcile" eval="False"/>
-      <field ref="type_asset" name="user_type"/>
+      <field ref="account.data_account_type_current_assets" name="user_type"/>
       <field name="chart_template_id" ref="uy_chart_template"/>
     </record>
     <record model="account.account.template" id="uy_code_5204">
       <field name="name">Retenciones</field>
       <field name="code">5204</field>
       <field name="reconcile" eval="False"/>
-      <field ref="type_asset" name="user_type"/>
+      <field ref="account.data_account_type_current_assets" name="user_type"/>
       <field name="chart_template_id" ref="uy_chart_template"/>
     </record>
     <record model="account.account.template" id="uy_code_5205">
       <field name="name">Otros</field>
       <field name="code">5205</field>
       <field name="reconcile" eval="False"/>
-      <field ref="type_asset" name="user_type"/>
+      <field ref="account.data_account_type_current_assets" name="user_type"/>
       <field name="chart_template_id" ref="uy_chart_template"/>
     </record>
 
@@ -1169,7 +1169,7 @@
             <field name="code">5301</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Intereses y Gastos Bancarios</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1177,7 +1177,7 @@
             <field name="code">5302</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Diferencias de Cambio perdidas</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1185,7 +1185,7 @@
             <field name="code">5303</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Descuentos Concedidos</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1193,7 +1193,7 @@
             <field name="code">5304</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Multas y Recargos Fiscales</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1201,7 +1201,7 @@
             <field name="code">5400</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Costos de lo vendido</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1209,7 +1209,7 @@
             <field name="code">5401</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Costo de Mercaderías</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1217,7 +1217,7 @@
             <field name="code">5402</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Costo de Venta de Bienes de Uso</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
@@ -1225,7 +1225,7 @@
             <field name="code">5500</field>
             <field name="reconcile" eval="True"/>
             <field name="name">Amortizaciones</field>
-            <field name="user_type" ref="type_expense"/>
+            <field name="user_type" ref="account.data_account_type_expenses"/>
             <field name="chart_template_id" ref="uy_chart_template"/>
         </record>
 
