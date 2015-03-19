@@ -23,7 +23,7 @@
 # this is important for the openerp.api.guess() that relies on signatures
 from collections import defaultdict
 from decorator import decorator
-from inspect import getargspec
+from inspect import formatargspec, getargspec
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -47,23 +47,50 @@ STAT = defaultdict(ormcache_counter)
 
 
 class ormcache(object):
-    """ LRU cache decorator for orm methods. """
+    """ LRU cache decorator for model methods.
+    The parameters are strings that represent expressions referring to the
+    signature of the decorated method, and are used to compute a cache key::
 
-    def __init__(self, skiparg=2, size=8192, multi=None, timeout=None):
-        self.skiparg = skiparg
+        @ormcache('model_name', 'mode')
+        def _compute_domain(self, cr, uid, model_name, mode="read"):
+            ...
+
+    For the sake of backward compatibility, the decorator supports the named
+    parameter `skiparg`::
+
+        @ormcache(skiparg=3)
+        def _compute_domain(self, cr, uid, model_name, mode="read"):
+            ...
+    """
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.skiparg = kwargs.get('skiparg')
 
     def __call__(self, method):
         self.method = method
+        self.determine_key()
         lookup = decorator(self.lookup, method)
         lookup.clear_cache = self.clear
         return lookup
+
+    def determine_key(self):
+        """ Determine the function that computes a cache key from arguments. """
+        if self.skiparg is None:
+            # build a string that represents function code and evaluate it
+            args = formatargspec(*getargspec(self.method))[1:-1]
+            expr = " ".join("%s," % arg for arg in self.args)
+            code = "lambda %s: (%s)" % (args, expr)
+            self.key = eval(code)
+        else:
+            # backward-compatible function that uses self.skiparg
+            self.key = lambda *args, **kwargs: args[self.skiparg:]
 
     def lru(self, model):
         return model.pool.cache, (model.pool.db_name, model._name, self.method)
 
     def lookup(self, method, *args, **kwargs):
         d, key0 = self.lru(args[0])
-        key = key0 + args[self.skiparg:]
+        key = key0 + self.key(*args, **kwargs)
         try:
             r = d[key]
             STAT[key0].hit += 1
@@ -89,52 +116,54 @@ class ormcache(object):
 
 class ormcache_context(ormcache):
     def __init__(self, skiparg=2, size=8192, accepted_keys=()):
-        super(ormcache_context,self).__init__(skiparg,size)
-        self.accepted_keys = accepted_keys
-
-    def __call__(self, method):
-        # remember which argument is context
-        args = getargspec(method)[0]
-        self.context_pos = args.index('context')
-        return super(ormcache_context, self).__call__(method)
-
-    def lookup(self, method, *args, **kwargs):
-        d, key0 = self.lru(args[0])
-
-        # Note. The decorator() wrapper (used in __call__ above) will resolve
-        # arguments, and pass them positionally to lookup(). This is why context
-        # is not passed through kwargs!
-        if self.context_pos < len(args):
-            context = args[self.context_pos]
-        else:
-            context = kwargs.get('context') or {}
-        ckey = [(k, context[k]) for k in self.accepted_keys if k in context]
-
-        # Beware: do not take the context from args!
-        key = key0 + args[self.skiparg:self.context_pos] + tuple(ckey)
-        try:
-            r = d[key]
-            STAT[key0].hit += 1
-            return r
-        except KeyError:
-            STAT[key0].miss += 1
-            value = d[key] = self.method(*args, **kwargs)
-            return value
-        except TypeError:
-            STAT[key0].err += 1
-            return self.method(*args, **kwargs)
+        raise NotImplementedError("ormcache_context() is no longer available; it has been superseded by ormcache()")
 
 
 class ormcache_multi(ormcache):
-    def __init__(self, skiparg=2, size=8192, multi=3):
-        assert skiparg <= multi
-        super(ormcache_multi, self).__init__(skiparg, size)
-        self.multi = multi
+    def __init__(self, *args, **kwargs):
+        super(ormcache_multi, self).__init__(*args, **kwargs)
+        self.multi = kwargs.get('multi')
+        assert self.multi is not None, "Expected keyword argument multi=..."
+
+    def determine_key(self):
+        """ Determine the function that computes a cache key from arguments. """
+        spec = getargspec(self.method)
+
+        if self.skiparg is None:
+            # build a string that represents function code and evaluate it
+            args = formatargspec(*spec)[1:-1]
+            expr = " ".join("%s," % arg for arg in self.args)
+            code = "lambda %s: (%s)" % (args, expr)
+            self.key = eval(code)
+            # key_multi computes the extra element added to the key
+            assert isinstance(self.multi, basestring)
+            code_multi = "lambda %s: %s" % (args, self.multi)
+            self.key_multi = eval(code_multi)
+            multi_name = self.multi
+            multi_pos = spec.args.index(multi_name)
+        else:
+            # backward-compatible functions that use self.skiparg and self.multi
+            assert isinstance(self.multi, int)
+            self.key = lambda *args, **kwargs: args[self.skiparg:self.multi] + args[self.multi+1:]
+            self.key_multi = lambda *args, **kwargs: args[self.multi]
+            multi_pos = self.multi
+            multi_name = spec.args[multi_pos]
+
+        # args_multi injects argument multi inside existing args and kwargs
+        def args_multi(args, kwargs, multi):
+            if len(args) > multi_pos:
+                args = list(args)
+                args[multi_pos] = multi
+            else:
+                assert multi_name in kwargs
+                kwargs[multi_name] = multi
+            return args, kwargs
+        self.args_multi = args_multi
 
     def lookup(self, method, *args, **kwargs):
         d, key0 = self.lru(args[0])
-        base_key = key0 + args[self.skiparg:self.multi] + args[self.multi+1:]
-        ids = args[self.multi]
+        base_key = key0 + self.key(*args, **kwargs)
+        ids = self.key_multi(*args, **kwargs)
         result = {}
         missed = []
 
@@ -150,8 +179,7 @@ class ormcache_multi(ormcache):
 
         if missed:
             # call the method for the ids that were not in the cache
-            args = list(args)
-            args[self.multi] = missed
+            args, kwargs = self.args_multi(args, kwargs, missed)
             result.update(method(*args, **kwargs))
 
             # store those new results back in the cache

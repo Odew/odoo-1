@@ -355,7 +355,7 @@ class ir_ui_menu(osv.osv):
         return self.search(cr, uid, menu_domain, context=context)
 
     @api.cr_uid_context
-    @tools.ormcache_context(accepted_keys=('lang',))
+    @tools.ormcache("uid", "(context or {}).get('lang')")
     def load_menus_root(self, cr, uid, context=None):
         fields = ['name', 'sequence', 'parent_id', 'action']
         menu_root_ids = self.get_user_roots(cr, uid, context=context)
@@ -370,7 +370,7 @@ class ir_ui_menu(osv.osv):
 
 
     @api.cr_uid_context
-    @tools.ormcache_context(accepted_keys=('lang',))
+    @tools.ormcache("uid", "(context or {}).get('lang')")
     def load_menus(self, cr, uid, context=None):
         """ Loads all menu items (all applications and their sub-menus).
 
