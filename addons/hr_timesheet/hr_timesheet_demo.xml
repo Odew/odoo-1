@@ -35,6 +35,7 @@
             <field name="product_uom_id" ref="product.product_uom_hour"/>
             <field name="account_id" ref="analytic.analytic_administratif"></field>
             <field eval="-60.00" name="amount"/>
+            <field name="general_account_id" ref="account.a_expense"/>
             <field name="journal_id" ref="analytic_journal"/>
         </record>
 
@@ -47,6 +48,7 @@
             <field name="product_uom_id" ref="product.product_uom_hour"/>
             <field name="account_id" ref="analytic.analytic_administratif"></field>
             <field eval="-30.00" name="amount"/>
+            <field name="general_account_id" ref="account.a_expense"/>
             <field name="journal_id" ref="analytic_journal"/>
         </record>
 
@@ -59,6 +61,7 @@
             <field name="product_uom_id" ref="product.product_uom_hour"/>
             <field name="account_id" ref="analytic.analytic_administratif"></field>
             <field eval="-90.00" name="amount"/>
+            <field name="general_account_id" ref="account.a_expense"/>
             <field name="journal_id" ref="analytic_journal"/>
         </record>
 
@@ -71,6 +74,7 @@
             <field name="product_uom_id" ref="product.product_uom_hour"/>
             <field name="account_id" ref="analytic.analytic_administratif"></field>
             <field eval="-30.00" name="amount"/>
+            <field name="general_account_id" ref="account.a_expense"/>
             <field name="journal_id" ref="analytic_journal"/>
         </record>
 
@@ -83,6 +87,7 @@
             <field name="product_uom_id" ref="product.product_uom_hour"/>
             <field name="account_id" ref="analytic.analytic_administratif"></field>
             <field eval="-30.00" name="amount"/>
+            <field name="general_account_id" ref="account.a_expense"/>
             <field name="journal_id" ref="analytic_journal"/>
         </record>
         

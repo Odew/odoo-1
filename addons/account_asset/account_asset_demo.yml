@@ -2,10 +2,10 @@
     Creating demo data that require looking for accounts
 -
     !python {model: ir.model.data} : |
-        expenses_journal_id = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'TEXJ')])
+        expenses_journal_id = self.pool.get('account.journal').search(cr, uid, [('type', '=', 'purchase')])
         expense_account_id = self.pool.get('account.account').search(cr, uid, [('user_type', '=', ref('account.data_account_type_expenses'))])
         xfa_account_id = self.pool.get('account.account').search(cr, uid, [('user_type', '=', ref('account.data_account_type_fixed_assets'))])
-        if xfa_account_id and expense_account_id:
+        if xfa_account_id and expense_account_id and expenses_journal_id:
             vals = {
                 'journal_id': expenses_journal_id[0],
                 'name': 'Hardware - 3 Years',
