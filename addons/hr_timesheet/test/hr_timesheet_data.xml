@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+      
+      <record id="product.product_product_consultant_test" model="product.product">
+            <field name="sale_ok">True</field>
+            <field name="list_price">75.0</field>
+            <field name="standard_price">30.0</field>
+            <field name="uom_id" ref="product.product_uom_hour"/>
+            <field name="uom_po_id" ref="product.product_uom_hour"/>
+            <field name="name">Service - Test</field>
+            <field name="categ_id" ref="product.product_category_all"/>
+            <field name="type">service</field>
+            <field name="image" type="base64" file="hr_timesheet/static/img/product_product_consultant-image.jpg"/>
+      </record>
+
+      <record id="working_hours_coding_test" model="hr.analytic.timesheet">
+            <field name="name">Coding and module testing</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field eval="time.strftime('%Y-%m-%d')" name="date"/>
+            <field eval="03.00" name="unit_amount"/>
+            <field name="product_id" ref="product.product_product_consultant_test"/>
+            <field name="product_uom_id" ref="product.product_uom_hour"/>
+            <field name="account_id" ref="analytic.analytic_administratif"></field>
+            <field eval="-90.00" name="amount"/>
+            <field name="general_account_id" ref="a_expense"/>
+            <field name="journal_id" ref="analytic_journal"/>
+        </record>
+
+</data>
+</openerp>
