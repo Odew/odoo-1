@@ -35,6 +35,9 @@ class TestReconciliation(TransactionCase):
         self.account_usd.write({'currency_id': self.currency_usd_id})
         self.bank_journal_usd.write({'currency': self.currency_usd_id})
 
+        self.diff_income_account = self._uid.company_id.income_currency_exchange_account_id
+        self.diff_expense_account = self._uid.company_id.expense_currency_exchange_account_id
+
     def create_invoice(self, type='out_invoice', currency_id=None):
         #we create an invoice in given currency
         invoice = self.account_invoice_model.create({'partner_id': self.partner_agrolait_id,
@@ -106,24 +109,28 @@ class TestReconciliation(TransactionCase):
                             self.assertAlmostEquals(currency_diff_line.debit, aml_dict[move_line.account_id.id].get('currency_diff'))
                         else:
                             self.assertAlmostEquals(currency_diff_line.credit, aml_dict[move_line.account_id.id].get('currency_diff'))
-                            self.assertEquals(currency_diff_line.account_id.id, self.account_rsa.id)
+                            import pdb; pdb.set_trace()
+                            self.assertIn(currency_diff_line.account_id.id, [self.diff_expense_account.id, self.diff_income_account.id], 'The difference accounts should be used correctly. ')
+                            #self.assertEquals(currency_diff_line.account_id.id, self.account_rsa.id)
                     else:
                         if currency_diff_line.account_id.id == move_line.account_id.id:
                             self.assertAlmostEquals(currency_diff_line.credit, abs(aml_dict[move_line.account_id.id].get('currency_diff')))
                         else:
                             self.assertAlmostEquals(currency_diff_line.debit, abs(aml_dict[move_line.account_id.id].get('currency_diff')))
-                            self.assertEquals(currency_diff_line.account_id.id, self.account_rsa.id)
+                            import pdb; pdb.set_trace()
+                            self.assertIn(currency_diff_line.account_id.id, [self.diff_expense_account.id, self.diff_income_account.id], 'The difference accounts should be used correctly. ')
+                            #self.assertEquals(currency_diff_line.account_id.id, self.account_rsa.id)
 
     def make_customer_and_supplier_flows(self, invoice_currency_id, bank_journal, amount, amount_currency, transaction_currency_id):
         #we create an invoice in given invoice_currency
         invoice_record = self.create_invoice(type='out_invoice', currency_id=invoice_currency_id)
-        #we encode a payment on it, on the given bank_journal with amount, amount_currency and trasaction_currency given
+        #we encode a payment on it, on the given bank_journal with amount, amount_currency and transaction_currency given
         bank_stmt = self.make_payment(invoice_record, bank_journal, amount=amount, amount_currency=amount_currency, currency_id=transaction_currency_id)
         customer_move_lines = bank_stmt.move_line_ids
 
         #we create a supplier bill in given invoice_currency
         invoice_record = self.create_invoice(type='in_invoice', currency_id=invoice_currency_id)
-        #we encode a payment on it, on the given bank_journal with amount, amount_currency and trasaction_currency given
+        #we encode a payment on it, on the given bank_journal with amount, amount_currency and transaction_currency given
         bank_stmt = self.make_payment(invoice_record, bank_journal, amount=-amount, amount_currency=-amount_currency, currency_id=transaction_currency_id)
         supplier_move_lines = bank_stmt.move_line_ids
         return customer_move_lines, supplier_move_lines

@@ -18,9 +18,9 @@ class ResCompany(models.Model):
 
     currency_exchange_journal_id = fields.Many2one('account.journal', string="Currency Adjustments Journal", domain=[('type', '=', 'general')])
     income_currency_exchange_account_id = fields.Many2one('account.account', related='currency_exchange_journal_id.default_credit_account_id',
-        string="Gain Exchange Rate Account", domain=[('internal_type', '=', 'other'), ('deprecated', '=', False)])
+        string="Gain Exchange Rate Account", domain=[('internal_type', '=', 'other'), ('deprecated', '=', False), ('company_id', '=', id)])
     expense_currency_exchange_account_id = fields.Many2one('account.account', related='currency_exchange_journal_id.default_debit_account_id',
-        string="Loss Exchange Rate Account", domain=[('internal_type', '=', 'other'), ('deprecated', '=', False)])
+        string="Loss Exchange Rate Account", domain=[('internal_type', '=', 'other'), ('deprecated', '=', False), ('company_id', '=', id)])
     anglo_saxon_accounting = fields.Boolean(string="Use anglo-saxon accounting")
 
 
