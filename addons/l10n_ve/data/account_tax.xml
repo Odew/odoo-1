@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data noupdate="1">
-	<record id="tax0all" model="account.tax.template">
+	<record id="tax0sale" model="account.tax.template">
 		<field name="chart_template_id" ref="ve_chart_template_amd"/>
-		<field name="name">Exento</field>
+		<field name="name">Exento (sale)</field>
 		<field name="amount">0</field>
 		<field name="ammount_type">percent</field>
 		<field name="type_tax_use">sale</field>
+		<field name="refund_account_id" ref="account_activa_account_2172003"/>
+		<field name="account_id" ref="account_activa_account_2172003"/>
+	</record>
+	
+	<record id="tax0purchase" model="account.tax.template">
+		<field name="chart_template_id" ref="ve_chart_template_amd"/>
+		<field name="name">Exento (purchase)</field>
+		<field name="amount">0</field>
+		<field name="ammount_type">percent</field>
+		<field name="type_tax_use">purchase</field>
 		<field name="refund_account_id" ref="account_activa_account_2172003"/>
 		<field name="account_id" ref="account_activa_account_2172003"/>
 	</record>
