@@ -34,9 +34,8 @@ class TestReconciliation(TransactionCase):
         self.account_usd = self.bank_journal_usd.default_debit_account_id
         self.account_usd.write({'currency_id': self.currency_usd_id})
         self.bank_journal_usd.write({'currency': self.currency_usd_id})
-
-        self.diff_income_account = self._uid.company_id.income_currency_exchange_account_id
-        self.diff_expense_account = self._uid.company_id.expense_currency_exchange_account_id
+        self.diff_income_account = self.env['res.users'].browse(self.env.uid).company_id.income_currency_exchange_account_id
+        self.diff_expense_account = self.env['res.users'].browse(self.env.uid).company_id.expense_currency_exchange_account_id
 
     def create_invoice(self, type='out_invoice', currency_id=None):
         #we create an invoice in given currency
@@ -109,7 +108,6 @@ class TestReconciliation(TransactionCase):
                             self.assertAlmostEquals(currency_diff_line.debit, aml_dict[move_line.account_id.id].get('currency_diff'))
                         else:
                             self.assertAlmostEquals(currency_diff_line.credit, aml_dict[move_line.account_id.id].get('currency_diff'))
-                            import pdb; pdb.set_trace()
                             self.assertIn(currency_diff_line.account_id.id, [self.diff_expense_account.id, self.diff_income_account.id], 'The difference accounts should be used correctly. ')
                             #self.assertEquals(currency_diff_line.account_id.id, self.account_rsa.id)
                     else:
@@ -117,7 +115,6 @@ class TestReconciliation(TransactionCase):
                             self.assertAlmostEquals(currency_diff_line.credit, abs(aml_dict[move_line.account_id.id].get('currency_diff')))
                         else:
                             self.assertAlmostEquals(currency_diff_line.debit, abs(aml_dict[move_line.account_id.id].get('currency_diff')))
-                            import pdb; pdb.set_trace()
                             self.assertIn(currency_diff_line.account_id.id, [self.diff_expense_account.id, self.diff_income_account.id], 'The difference accounts should be used correctly. ')
                             #self.assertEquals(currency_diff_line.account_id.id, self.account_rsa.id)
 
