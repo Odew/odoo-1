@@ -29,7 +29,7 @@ class hr_department(models.Model):
         self.ensure_one()
         action_hr_evaluation = self.env.ref('hr_evaluation.hr_appraisal_action_from_department').read()[0]
         appraisal_process = self.evaluation_ids.filtered(self._to_approve_appraisal_filter)
-        action_hr_evaluation['name'] = 'Appraisal to Process'
+        action_hr_evaluation['display_name'] = 'Appraisal to Process'
         action_hr_evaluation['domain'] = str([('id', 'in', appraisal_process.ids)])
         return action_hr_evaluation
 
