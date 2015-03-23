@@ -34,8 +34,6 @@
   <div id="theme_customize_modal" class="modal fade">
       <div class="modal-dialog">
           <div class="modal-content">
-              <input id="less" type="checkbox" data-xmlid="website.option_bootstrap_less" style="display: none;"/>
-
               <div class="loading_backdrop"></div>
               <div class="modal-header text-center">
                   <button type="button" class="close">×</button>
@@ -154,17 +152,9 @@
 
 <template id="website.theme" name="Theme">
     <!-- Boostrap Fallback if server can't compute less files -->
-    <link id="bootstrap_css" rel='stylesheet' href='/web/static/lib/bootstrap/css/bootstrap.css'/>
+    <link id="bootstrap_css" rel="stylesheet" href='/website/static/src/less/import_bootstrap.less'/>
+    <link rel="stylesheet" href='/website/static/src/less/colors.less'/>
     <link rel="stylesheet" href='/website/static/src/css/website.css'/>
-</template>
-
-<!-- Bootstrap Less File layout -->
-
-<template id="option_bootstrap_less" name="option_bootstrap_less" inherit_id="website.theme" active="False" customize_show="False">
-    <xpath expr="//link[@id='bootstrap_css']" position="replace">
-        <link id="bootstrap_css" rel="stylesheet" href='/website/static/src/less/import_bootstrap.less'/>
-        <link rel="stylesheet" href='/website/static/src/less/colors.less'/>
-    </xpath>
 </template>
 
 <!-- Option layout -->
@@ -173,6 +163,15 @@
     <xpath expr="//link[last()]" position="after">
         <link href="/website/static/src/less/option_layout_boxed.less" rel="stylesheet" type="text/less"/>
     </xpath>
+</template>
+
+<!-- Bootstrap Less File layout -->    
+   
+<template id="option_bootstrap_less" name="option_bootstrap_less" inherit_id="website.theme" active="False" customize_show="False">    
+    <xpath expr="//link[@id='bootstrap_css']" position="replace">    
+        <link id="bootstrap_css" rel="stylesheet" href='/website/static/src/less/import_bootstrap.less'/>    
+        <link rel="stylesheet" href='/website/static/src/less/colors.less'/>   
+    </xpath>   
 </template>
 
 <!-- Option color -->
