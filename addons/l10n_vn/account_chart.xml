@@ -4,18 +4,6 @@
 
     <!-- Account types -->
 
-    <record id="account_type_current_asset_rec" model="account.account.type">
-        <field name="name">1. TÀI SẢN NGẮN HẠN - REC</field>
-    </record>
-
-    <record id="account_type_expense" model="account.account.type">
-        <field name="name">6. CHI PHÍ SẢN XUẤT, KINH DOANH</field>
-    </record>
-
-    <record id="account_type_other_expense" model="account.account.type">
-        <field name="name">8. CHI PHÍ KHÁC</field>
-    </record>
-
     <record id="account_type_evaluation" model="account.account.type">
         <field name="name">9. XÁC ĐỊNH KẾT QUẢ KINH DOANH</field>
     </record>
@@ -189,7 +177,7 @@
     <record id="chart131" model="account.account.template">
         <field name="code">131</field>
         <field name="reconcile" eval="True" />
-        <field name="user_type" ref="account_type_current_asset_rec" />
+        <field name="user_type" ref="account.data_account_type_current_assets" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Phải thu của khách hàng</field>
     </record>
@@ -1308,28 +1296,28 @@
     <record id="chart6" model="account.account.template">
         <field name="code">6</field>
         <field name="name">CHI PHÍ SẢN XUẤT, KINH DOANH</field>
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
     </record>
 
     <record id="chart611" model="account.account.template">
         <field name="code">611</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Mua hàng</field>
     </record>
     <record id="chart6111" model="account.account.template">
         <field name="code">6111</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Mua nguyên liệu, vật liệu</field>
     </record>
     <record id="chart6112" model="account.account.template">
         <field name="code">6112</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Mua hàng hóa</field>
     </record>
@@ -1337,7 +1325,7 @@
     <record id="chart621" model="account.account.template">
         <field name="code">621</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí nguyên liệu, vật liệu trực tiếp</field>
     </record>
@@ -1345,7 +1333,7 @@
     <record id="chart622" model="account.account.template">
         <field name="code">622</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí nhân công trực tiếp</field>
     </record>
@@ -1353,49 +1341,49 @@
     <record id="chart623" model="account.account.template">
         <field name="code">623</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí sử dụng máy thi công</field>
     </record>
     <record id="chart6231" model="account.account.template">
         <field name="code">6231</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí nhân công</field>
     </record>
     <record id="chart6232" model="account.account.template">
         <field name="code">6232</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí vật liệu</field>
     </record>
     <record id="chart6233" model="account.account.template">
         <field name="code">6233</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí dụng cụ sản xuất</field>
     </record>
     <record id="chart6234" model="account.account.template">
         <field name="code">6234</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí khấu hao máy thi công</field>
     </record>
     <record id="chart6237" model="account.account.template">
         <field name="code">6237</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí dịch vụ mua ngoài</field>
     </record>
     <record id="chart6238" model="account.account.template">
         <field name="code">6238</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí bằng tiền khác</field>
     </record>
@@ -1403,49 +1391,49 @@
     <record id="chart627" model="account.account.template">
         <field name="code">627</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí sản xuất chung</field>
     </record>
     <record id="chart6271" model="account.account.template">
         <field name="code">6271</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí nhân viên phân xưởng</field>
     </record>
     <record id="chart6272" model="account.account.template">
         <field name="code">6272</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí vật liệu</field>
     </record>
     <record id="chart6273" model="account.account.template">
         <field name="code">6273</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí dụng cụ sản xuất</field>
     </record>
     <record id="chart6274" model="account.account.template">
         <field name="code">6274</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí khấu hao TSCĐ</field>
     </record>
     <record id="chart6277" model="account.account.template">
         <field name="code">6277</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí dịch vụ mua ngoài</field>
     </record>
     <record id="chart6278" model="account.account.template">
         <field name="code">6278</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí bằng tiền khác</field>
     </record>
@@ -1453,7 +1441,7 @@
     <record id="chart631" model="account.account.template">
         <field name="code">631</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Giá thành sản xuất</field>
     </record>
@@ -1461,7 +1449,7 @@
     <record id="chart632" model="account.account.template">
         <field name="code">632</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Giá vốn hàng bán</field>
     </record>
@@ -1469,7 +1457,7 @@
     <record id="chart635" model="account.account.template">
         <field name="code">635</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí tài chính</field>
     </record>
@@ -1477,56 +1465,56 @@
     <record id="chart641" model="account.account.template">
         <field name="code">641</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí bán hàng</field>
     </record>
     <record id="chart6411" model="account.account.template">
         <field name="code">6411</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí nhân viên</field>
     </record>
     <record id="chart6412" model="account.account.template">
         <field name="code">6412</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí vật liệu, bao bì</field>
     </record>
     <record id="chart6413" model="account.account.template">
         <field name="code">6413</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí dụng cụ, đồ dùng</field>
     </record>
     <record id="chart6414" model="account.account.template">
         <field name="code">6414</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí khấu hao TSCĐ</field>
     </record>
     <record id="chart6415" model="account.account.template">
         <field name="code">6415</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí bảo hành</field>
     </record>
     <record id="chart6417" model="account.account.template">
         <field name="code">6417</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí dịch vụ mua ngoài</field>
     </record>
     <record id="chart6418" model="account.account.template">
         <field name="code">6418</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí bằng tiền khác</field>
     </record>
@@ -1534,63 +1522,63 @@
     <record id="chart642" model="account.account.template">
         <field name="code">642</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí quản lý doanh nghiệp</field>
     </record>
     <record id="chart6421" model="account.account.template">
         <field name="code">6421</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí nhân viên quản lý</field>
     </record>
     <record id="chart6422" model="account.account.template">
         <field name="code">6422</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí vật liệu quản lý</field>
     </record>
     <record id="chart6423" model="account.account.template">
         <field name="code">6423</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí đồ dùng văn phòng</field>
     </record>
     <record id="chart6424" model="account.account.template">
         <field name="code">6424</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí khấu hao tài sản cố định</field>
     </record>
     <record id="chart6425" model="account.account.template">
         <field name="code">6425</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Thuế, phí và lệ phí</field>
     </record>
     <record id="chart6426" model="account.account.template">
         <field name="code">6426</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí dự phòng</field>
     </record>
     <record id="chart6427" model="account.account.template">
         <field name="code">6427</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí dịch vụ mua ngoài</field>
     </record>
     <record id="chart6428" model="account.account.template">
         <field name="code">6428</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí bằng tiền khác</field>
     </record>
@@ -1615,14 +1603,14 @@
     <record id="chart8" model="account.account.template">
         <field name="code">8</field>
         <field name="name">CHI PHÍ KHÁC</field>
-        <field name="user_type" ref="account_type_other_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
     </record>
 
     <record id="chart811" model="account.account.template">
         <field name="code">811</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_other_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí khác</field>
     </record>
@@ -1630,21 +1618,21 @@
     <record id="chart821" model="account.account.template">
         <field name="code">821</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_other_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí thuế thu nhập doanh nghiệp</field>
     </record>
     <record id="chart8211" model="account.account.template">
         <field name="code">8211</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_other_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí thuế TNDN hiện hành</field>
     </record>
     <record id="chart8212" model="account.account.template">
         <field name="code">8212</field>
         <field name="reconcile" eval="False" />
-        <field name="user_type" ref="account_type_other_expense" />
+        <field name="user_type" ref="account.data_account_type_expenses" />
         <field name="chart_template_id" ref="vn_template"/>
         <field name="name">Chi phí thuế TNDN hoãn lại</field>
     </record>
