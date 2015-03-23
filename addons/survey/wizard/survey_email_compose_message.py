@@ -147,8 +147,8 @@ class survey_mail_compose_message(osv.TransientModel):
 
             # post the message
             values = {
-                'model': None,
-                'res_id': None,
+                'model': wizard.model or None,
+                'res_id': wizard.res_id or None,
                 'subject': wizard.subject,
                 'body': wizard.body.replace("__URL__", url),
                 'body_html': wizard.body.replace("__URL__", url),
@@ -180,7 +180,9 @@ class survey_mail_compose_message(osv.TransientModel):
                     'state': 'new',
                     'token': token,
                     'partner_id': partner_id,
-                    'email': email})
+                    'email': email,
+                    'survey_model': wizard.model,
+                    'survey_res_id': wizard.res_id})
                 return token
 
         for wizard in self.browse(cr, uid, ids, context=context):
