@@ -3,24 +3,8 @@
     <data noupdate="1">
 
 
-    <record model="account.account.type" id="user_type_income" >
-        <field name="name">Receitas</field>
-    </record>
-
     <record model="account.account.type" id="user_type_tax">
         <field name="name">Impostos</field>
-    </record>
-
-    <record model="account.account.type" id="user_type_cash">
-        <field name="name">Caixa</field>
-    </record>
-
-    <record model="account.account.type" id="user_type_asset">
-        <field name="name">Activo</field>
-    </record>
-
-    <record model="account.account.type" id="user_type_liability">
-        <field name="name">Capital e Resultados</field>
     </record>
 
     </data>
