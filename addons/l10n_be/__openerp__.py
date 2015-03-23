@@ -84,7 +84,7 @@ Wizards provided by this module:
         '../account/demo/account_demo.xml',
         '../account/demo/account_bank_statement.xml',
         '../account/demo/account_invoice_demo.xml',
-        #'../account/demo/account_invoice_demo.yml',
+        '../account/demo/account_invoice_demo.yml',
     ],
     'test': [
         #'../account/test/account_bank_statement.yml',
