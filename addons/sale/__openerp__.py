@@ -81,6 +81,7 @@ The Dashboard for the Sales Manager will include
     ],
     'demo': ['sale_demo.xml'],
     'test': [
+        '../account/test/account_minimal_test.xml',
         'test/create_sale_users.yml',
         'test/sale_order_demo.yml',
         'test/manual_order_policy.yml',

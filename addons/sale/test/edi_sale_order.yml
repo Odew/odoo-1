@@ -30,7 +30,7 @@
     sale_order = self.pool.get('sale.order')
     so = sale_order.browse(cr, uid, ref("sale_order_edi_1"))
     edi_doc = self.generate_edi(cr, uid, [so])
-    assert isinstance(json.loads(edi_doc)[0], dict), 'EDI doc should be a JSON dict' 
+    assert isinstance(json.loads(edi_doc)[0], dict), 'EDI doc should be a JSON dict'
 -
   "Then I import a sample EDI document of a purchase order (v7.0)"
 -
