@@ -2,17 +2,5 @@
 <openerp>
     <data noupdate="1">
 
-        <record model="account.account.type" id="cuenta_activo">
-          <field name="name">Activo</field>
-        </record>
-
-        <record model="account.account.type" id="cuenta_pasivo">
-          <field name="name">Pasivo</field>
-        </record>
-
-        <record model="account.account.type" id="cuenta_capital">
-          <field name="name">Capital</field>
-        </record>
-
     </data>
 </openerp>
