@@ -842,7 +842,7 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
         this.display_aggregates(aggregates);
     },
     display_aggregates: function (aggregation) {
-        var $footer_cells = this.$el.find('.oe_list_footer');
+        var $footer_cells = this.$('tfoot td');
         _(this.aggregate_columns).each(function (column) {
             if (!column['function']) {
                 return;
