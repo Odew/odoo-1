@@ -63,6 +63,31 @@ class sale_quote(http.Controller):
             'days_valid': max(days, 0),
             'action': action
         }
+        # dbo note: code from website_sale
+        if 'recurring_invoice' in request.registry.get('product.product')._fields:
+            recurring_product = [line.product_id.recurring_invoice for line in order.sudo().order_line]
+            tx_type = 'form_save' if True in recurring_product else 'form'
+        else:
+            tx_type = 'form'
+
+        if order.require_payment:
+            payment_obj = request.registry.get('payment.acquirer')
+            acquirer_ids = payment_obj.search(request.cr, SUPERUSER_ID, [('website_published', '=', True), ('company_id', '=', order.company_id.id)], context=request.context)
+            values['acquirers'] = list(payment_obj.browse(request.cr, request.uid, acquirer_ids, context=request.context))
+            render_ctx = dict(request.context, submit_class='btn btn-primary', submit_txt=_('Pay & Confirm'))
+            for acquirer in values['acquirers']:
+                acquirer.button = payment_obj.render(
+                    request.cr, SUPERUSER_ID, acquirer.id,
+                    order.name,
+                    order.amount_total,
+                    order.pricelist_id.currency_id.id,
+                    partner_id=order.partner_id.id,
+                    tx_values={
+                        'return_url': '/quote/' + str(order_id),
+                        'type': tx_type,
+                        'alias_usage': _('If we store your payment information on our server, subscription payments will be made automatically.')
+                    },
+                    context=render_ctx)
         return request.website.render('website_quote.so_quotation', values)
 
     @http.route(['/quote/accept'], type='json', auth="public", website=True)
@@ -70,6 +95,8 @@ class sale_quote(http.Controller):
         order_obj = request.registry.get('sale.order')
         order = order_obj.browse(request.cr, SUPERUSER_ID, order_id)
         if token != order.access_token:
+            return request.website.render('website.404')
+        if order.require_payment:
             return request.website.render('website.404')
         attachments=sign and [('signature.png', sign.decode('base64'))] or []
         order_obj.action_button_confirm(request.cr, SUPERUSER_ID, [order_id], context=request.context)
@@ -175,3 +202,55 @@ class sale_quote(http.Controller):
         line = request.registry.get('sale.order.line').create(request.cr, SUPERUSER_ID, vals, context=request.context)
         option_obj.write(request.cr, SUPERUSER_ID, [option.id], {'line_id': line}, context=request.context)
         return werkzeug.utils.redirect("/quote/%s/%s#pricing" % (order.id, token))
+
+    # note dbo: website_sale code
+    @http.route(['/quote/<int:order_id>/transaction/<int:acquirer_id>'], type='json', auth="public", website=True)
+    def payment_transaction(self, acquirer_id, order_id):
+        """ Json method that creates a payment.transaction, used to create a
+        transaction when the user clicks on 'pay now' button. After having
+        created the transaction, the event continues and the user is redirected
+        to the acquirer website.
+
+        :param int acquirer_id: id of a payment.acquirer record. If not set the
+                                user is redirected to the checkout page
+        """
+        cr, uid, context = request.cr, request.uid, request.context
+        transaction_obj = request.registry.get('payment.transaction')
+        order = request.registry.get('sale.order').browse(cr, SUPERUSER_ID, order_id, context=context)
+        if 'recurring_invoice' in request.registry.get('product.product')._fields:
+            recurring_product = [line.product_id.recurring_invoice for line in order.sudo().order_line]
+            tx_type = 'form_save' if True in recurring_product else 'form'
+        else:
+            tx_type = 'form'
+
+        if not order or not order.order_line or acquirer_id is None:
+            return request.redirect("/quote/" + str(order_id))
+
+        # find an already existing transaction
+        tx_id = transaction_obj.search(cr, uid, [('reference', '=', order.name)], context=context)
+        tx = transaction_obj.browse(cr, uid, tx_id, context=context)
+        if tx:
+            if tx.state == 'draft':  # button cliked but no more info -> rewrite on tx or create a new one ?
+                tx.write({
+                    'acquirer_id': acquirer_id,
+                })
+            tx_id = tx.id
+        else:
+            tx_id = transaction_obj.create(cr, SUPERUSER_ID, {
+                'acquirer_id': acquirer_id,
+                'type': tx_type,
+                'amount': order.amount_total,
+                'currency_id': order.pricelist_id.currency_id.id,
+                'partner_id': order.partner_id.id,
+                'partner_country_id': order.partner_id.country_id.id,
+                'reference': order.name,
+                'sale_order_id': order.id,
+            }, context=context)
+            request.session['sale_transaction_id'] = tx_id
+            tx = transaction_obj.browse(cr, SUPERUSER_ID, tx_id, context=context)
+
+        # confirm the quotation
+        if tx.acquirer_id.auto_confirm == 'at_pay_now':
+            request.registry['sale.order'].action_button_confirm(cr, SUPERUSER_ID, [order.id], context=request.context)
+
+        return tx_id
