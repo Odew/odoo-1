@@ -268,9 +268,9 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
 
         // Head hook
         // Selecting records
-        this.$el.find('.oe_list_record_selector').click(function(){
-            self.$el.find('.oe_list_record_selector input').prop('checked',
-                self.$el.find('.oe_list_record_selector').prop('checked')  || false);
+        this.$el.find('.o-list-record-selector').click(function(){
+            self.$el.find('.o-list-record-selector input').prop('checked',
+                self.$el.find('.o-list-record-selector').prop('checked')  || false);
             var selection = self.groups.get_selection();
             $(self.groups).trigger(
                 'selected', [selection.ids, selection.records]);
@@ -537,7 +537,7 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
      */
     reload_content: synchronized(function () {
         var self = this;
-        self.$el.find('.oe_list_record_selector').prop('checked', false);
+        self.$el.find('.o-list-record-selector').prop('checked', false);
         this.records.reset();
         var reloaded = $.Deferred();
         reloaded.then(function () {
@@ -669,7 +669,7 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
     do_select: function (ids, records, deselected) {
         // uncheck header hook if at least one row has been deselected
         if (deselected) {
-            this.$('.oe_list_record_selector').prop('checked', false);
+            this.$('.o-list-record-selector').prop('checked', false);
         }
 
         if (!ids.length) {
@@ -863,7 +863,7 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
      */
     get_active_domain: function () {
         var self = this;
-        if (this.$('.oe_list_record_selector').prop('checked')) {
+        if (this.$('.o-list-record-selector').prop('checked')) {
             var search_view = this.getParent().searchview;
             var search_data = search_view.build_search_data();
             return pyeval.eval_domains_and_contexts({
@@ -1041,7 +1041,7 @@ ListView.List = Class.extend( /** @lends instance.web.ListView.List# */{
                  */
                 e.preventDefault();
             })
-            .delegate('td.oe_list_record_selector', 'click', function (e) {
+            .delegate('td.o-list-record-selector', 'click', function (e) {
                 e.stopPropagation();
                 var selection = self.get_selection();
                 var checked = $(e.currentTarget).find('input').prop('checked');
@@ -1181,7 +1181,7 @@ ListView.List = Class.extend( /** @lends instance.web.ListView.List# */{
         }
         var cells = [];
         if (this.options.selectable) {
-            cells.push('<th class="oe_list_record_selector"></td>');
+            cells.push('<th class="o-list-record-selector"></td>');
         }
         _(this.columns).each(function(column) {
             if (column.invisible === '1') {
@@ -1210,7 +1210,7 @@ ListView.List = Class.extend( /** @lends instance.web.ListView.List# */{
             return result;
         }
         var records = this.records;
-        this.$current.find('th.oe_list_record_selector input:checked')
+        this.$current.find('th.o-list-record-selector input:checked')
                 .closest('tr').each(function () {
             var record = records.get($(this).data('id'));
             result.ids.push(record.get('id'));

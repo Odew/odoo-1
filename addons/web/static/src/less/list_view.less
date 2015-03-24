@@ -1,34 +1,24 @@
 @odoo-list-grey: #c6c6c6;
-@odoo-main-text-color: #666666;
 
 @table-bg-accent: #eef0f0;
+
 
 table.o-list-view {
 
     cursor: pointer;
 
-    .o-list-header {
+    thead {
         background-color: @odoo-list-grey;
         color: @odoo-main-text-color;
     }
 
-    tbody td {
-        color: @odoo-main-text-color;
-    }
 
     tfoot {
         background-color: @odoo-brand-primary;
         color: white;
     }
 
-    .btn.active, .btn:active {
-        background-color: @odoo-brand-primary;
-
-    }
-    input {
-        background: red !important;
-        border: red !important;
-        color: red !important;
-
+    .o-list-record-selector input {
+        margin-left: 3px;
     }
 }
