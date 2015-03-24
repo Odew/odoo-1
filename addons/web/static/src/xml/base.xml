@@ -718,7 +718,7 @@
             </th>
             <t t-foreach="columns" t-as="column">
                 <th t-if="!column.meta and column.invisible !== '1'" t-att-data-id="column.id"
-                    t-attf-class="#{((options.sortable and column.tag !== 'button') ? 'oe_sortable' : null)}"><div>
+                    t-attf-class="#{((options.sortable and column.tag !== 'button') ? 'o-sortable' : null)}"><div>
                     <t t-if="column.tag !== 'button'"><t t-esc="column.string"/></t>
                 </div></th>
             </t>

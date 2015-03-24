@@ -12,6 +12,16 @@ table.o-list-view {
         color: @odoo-main-text-color;
     }
 
+    .o-sortable div:after {
+        font-family: FontAwesome;
+        margin-left: 5px;
+    }
+    .o-sort-up div:after {
+        content: "\f0d7";
+    }
+    .o-sort-down div:after {
+        content: "\f0d8";
+    }
 
     tfoot {
         background-color: @odoo-brand-primary;

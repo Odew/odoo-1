@@ -43,7 +43,7 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
     },
     view_type: 'tree',
     events: {
-        'click thead th.oe_sortable[data-id]': 'sort_by_column'
+        'click thead th.o-sortable[data-id]': 'sort_by_column'
     },
     /**
      * Core class for list-type displays.
@@ -285,9 +285,9 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
 
         if(this.dataset._sort.length){
             if(this.dataset._sort[0].indexOf('-') == -1){
-                this.$el.find('th[data-id=' + this.dataset._sort[0] + ']').addClass("sortdown");
+                this.$el.find('th[data-id=' + this.dataset._sort[0] + ']').addClass("o-sort-down");
             }else {
-                this.$el.find('th[data-id=' + this.dataset._sort[0].split('-')[1] + ']').addClass("sortup");
+                this.$el.find('th[data-id=' + this.dataset._sort[0].split('-')[1] + ']').addClass("o-sort-up");
             }
         }
         this.trigger('list_view_loaded', data, this.grouped);
@@ -416,12 +416,12 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
             return false;
         }
         this.dataset.sort(col_name);
-        if($column.hasClass("sortdown") || $column.hasClass("sortup"))  {
-            $column.toggleClass("sortup sortdown");
+        if($column.hasClass("o-sort-down") || $column.hasClass("o-sort-up"))  {
+            $column.toggleClass("o-sort-up o-sort-down");
         } else {
-            $column.addClass("sortdown");
+            $column.addClass("o-sort-down");
         }
-        $column.siblings('.oe_sortable').removeClass("sortup sortdown");
+        $column.siblings('.o-sortable').removeClass("o-sort-up o-sort-down");
 
         this.reload_content();
     },
@@ -537,13 +537,13 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
      */
     reload_content: synchronized(function () {
         var self = this;
-        self.$el.find('.o-list-record-selector').prop('checked', false);
+        this.$('.o-list-record-selector').prop('checked', false);
         this.records.reset();
         var reloaded = $.Deferred();
         reloaded.then(function () {
             self.configure_pager(self.dataset);
         });
-        this.$el.find('.o-list-view').append(
+        this.$('.o-list-view').append(
             this.groups.render(function () {
                 if (self.dataset.index === null) {
                     if (self.records.length) {
