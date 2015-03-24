@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-import base64
 
-from openerp import SUPERUSER_ID
-from openerp import http
-from openerp.tools.translate import _
+from openerp import SUPERUSER_ID, http, _
 from openerp.http import request
 
 from openerp.addons.website.models.website import slug
 
-class website_hr_recruitment(http.Controller):
+class WebsiteHrRecruitment(http.Controller):
     @http.route([
         '/jobs',
         '/jobs/country/<model("res.country"):country>',
@@ -23,34 +20,31 @@ class website_hr_recruitment(http.Controller):
         env = request.env(context=dict(request.env.context, show_address=True, no_tag_br=True))
 
         Country = env['res.country']
-        Jobs = env['hr.job']
+        HrJob = env['hr.job']
 
-        # List jobs available to current UID
-        job_ids = Jobs.search([], order="website_published desc,no_of_recruitment desc").ids
-        # Browse jobs as superuser, because address is restricted
-        jobs = Jobs.sudo().browse(job_ids)
+        # List jobs available to current UID and use sudo() because address is restricted
+        jobs = HrJob.search([], order="website_published desc, no_of_recruitment desc").sudo()
 
         # Deduce departments and offices of those jobs
-        departments = set(j.department_id for j in jobs if j.department_id)
-        offices = set(j.address_id for j in jobs if j.address_id)
-        countries = set(o.country_id for o in offices if o.country_id)
+        departments = set(job.department_id for job in jobs if job.department_id)
+        offices = set(job.address_id for job in jobs if job.address_id)
+        countries = set(office.country_id for office in offices if office.country_id)
 
         # Default search by user country
         if not (country or department or office_id or kwargs.get('all_countries')):
             country_code = request.session['geoip'].get('country_code')
             if country_code:
-                countries_ = Country.search([('code', '=', country_code)])
-                country = countries_[0] if countries_ else None
-                if not any(j for j in jobs if j.address_id and j.address_id.country_id == country):
+                country = Country.search([('code', '=', country_code)], limit=1)
+                if not any(job for job in jobs if job.address_id and job.address_id.country_id == country):
                     country = False
 
         # Filter the matching one
         if country and not kwargs.get('all_countries'):
-            jobs = (j for j in jobs if j.address_id is None or j.address_id.country_id and j.address_id.country_id.id == country.id)
+            jobs = (job for job in jobs if job.address_id is None or job.address_id.country_id == country)
         if department:
-            jobs = (j for j in jobs if j.department_id and j.department_id.id == department.id)
+            jobs = (job for job in jobs if job.department_id == department)
         if office_id:
-            jobs = (j for j in jobs if j.address_id and j.address_id.id == office_id)
+            jobs = (job for job in jobs if job.address_id and job.address_id.id == office_id)
 
         # Render page
         return request.website.render("website_hr_recruitment.index", {
@@ -74,7 +68,6 @@ class website_hr_recruitment(http.Controller):
     def jobs_detail(self, job, **kwargs):
         return request.render("website_hr_recruitment.detail", {
             'job': job,
-            'main_object': job,
         })
 
     @http.route('/jobs/apply/<model("hr.job"):job>', type='http', auth="public", website=True)
