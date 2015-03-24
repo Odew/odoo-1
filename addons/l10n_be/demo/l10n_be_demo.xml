@@ -4,5 +4,30 @@
         <record id="a1000" model="account.account.template">
             <field name="tag_ids" eval="[(6,0,[ref('account.demo_capital_account')])]" />
         </record>
+
+                <!-- Could maybe removed with api change -->
+        <record id="account.credit_account" model="account.account">
+            <field name="name">Bank Account</field>
+            <field name="user_type" ref="account.data_account_type_liquidity"/>
+            <field name="code">Testbank</field>
+        </record>
+
+
+
+        <record id="account.bank_journal" model="account.journal">
+            <field name="name">Bank Journal</field>
+            <field name="code">TBNK</field>
+            <field name="type">bank</field>
+            <field name="default_credit_account_id" ref="account.credit_account"/>
+            <field name="default_debit_account_id" ref="account.credit_account"/>
+        </record>
+
+        <record id="account.demo_bank_account" model="res.partner.bank">
+            <field name="state">bank</field>
+            <field name="acc_number">BE33737018595246</field>
+            <field name="bank_bic">KREDBEBB</field>
+            <field name="partner_id" ref="base.main_partner"/>
+            <field name="journal_id" ref="account.bank_journal"/>
+        </record>
     </data>
 </openerp>

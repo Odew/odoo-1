@@ -202,6 +202,7 @@ class AccountMoveLine(models.Model):
         for line in self:
             if line.account_id.currency_id:
                 if not line.currency_id or not line.currency_id.id == line.account_id.currency_id.id:
+                    import pdb; pdb.set_trace()
                     raise UserError(_('The selected account of your Journal Entry forces to provide a secondary currency. You should remove the secondary currency on the account or select a multi-currency view on the journal.'))
 
     @api.multi

@@ -78,12 +78,14 @@ class TestBankStatementReconciliation(TransactionCase):
 
     def create_statement_line(self, st_line_amount):
         journal = self.bs_model.with_context(journal_type='bank')._default_journal()
+        #journal = self.env.ref('l10n_be.bank_journal')
         bank_stmt = self.bs_model.create({'journal_id': journal.id})
 
         bank_stmt_line = self.bsl_model.create({
             'name': '_',
             'statement_id': bank_stmt.id,
             'partner_id': self.partner_agrolait.id,
-            'amount': st_line_amount, })
+            'amount': st_line_amount,
+            })
 
         return bank_stmt_line

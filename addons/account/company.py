@@ -41,7 +41,7 @@ Best Regards,''')
         if currency_id is None:
             currency_id = self.currency_id.id
 
-        vals_account = {'currency_id': currency_id, 'acc_name': account_number, 'account_type': 'bank', 'currency_id': currency_id}
+        vals_account = {'currency_id': currency_id, 'acc_name': account_number, 'account_type': 'bank'}
         vals_account = MultiChartsAccounts._prepare_bank_account(self, vals_account)
         account_id = self.env['account.account'].create(vals_account).id
 

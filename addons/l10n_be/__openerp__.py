@@ -80,9 +80,10 @@ Wizards provided by this module:
         'report_vat_statement.xml',
     ],
     'demo': [
+        'demo/l10n_be_demo.xml',
         '../account/demo/account_bank_statement.xml',
         '../account/demo/account_invoice_demo.xml',
-        '../account/demo/account_invoice_demo.yml',
+        #'../account/demo/account_invoice_demo.yml',
     ],
     'test': [
         #'../account/test/account_bank_statement.yml',

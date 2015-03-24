@@ -57,6 +57,5 @@
         <record id="base.res_partner_1" model="res.partner">
             <field name="property_supplier_payment_term" ref="account_payment_term"/>
         </record>
-
     </data>
 </openerp>
