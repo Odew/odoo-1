@@ -309,8 +309,6 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
             $node = $node || this.options.$buttons;
             if ($node) {
                 this.$buttons.appendTo($node);
-            } else {
-                this.$('.oe_list_buttons').replaceWith(this.$buttons);
             }
         }
     },
@@ -545,7 +543,7 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
         reloaded.then(function () {
             self.configure_pager(self.dataset);
         });
-        this.$el.find('.oe_list_content').append(
+        this.$el.find('.o-list-view').append(
             this.groups.render(function () {
                 if (self.dataset.index === null) {
                     if (self.records.length) {
@@ -1043,7 +1041,7 @@ ListView.List = Class.extend( /** @lends instance.web.ListView.List# */{
                  */
                 e.preventDefault();
             })
-            .delegate('th.oe_list_record_selector', 'click', function (e) {
+            .delegate('td.oe_list_record_selector', 'click', function (e) {
                 e.stopPropagation();
                 var selection = self.get_selection();
                 var checked = $(e.currentTarget).find('input').prop('checked');

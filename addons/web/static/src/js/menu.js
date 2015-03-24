@@ -21,7 +21,6 @@ var Menu = Widget.extend({
         core.bus.on('do_reload_needaction', this, this.fetch_needactions);
     },
     setElement: function($primary_menu, $secondary_menu, $menu_toggler, $menu_brand) {
-        debugger
         this.$primary_menu = $primary_menu;
         this.$secondary_menu = $secondary_menu;
         this.$menu_toggler = $menu_toggler;

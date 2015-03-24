@@ -491,8 +491,8 @@
             </div>
             <div class="row">
                 <div class="col-md-6 oe-button-column">
-                    <div class="oe-cp-buttons"></div>
-                    <div class="oe-cp-sidebar"></div>
+                    <div class="oe-cp-buttons pull-left"></div>
+                    <div class="oe-cp-sidebar pull-right"></div>
                 </div>
                 <div class="col-md-6">
                     <div class="oe-search-options btn-group pull-left"/>
@@ -704,17 +704,10 @@
     </td>
 </tr>
 
-<table t-name="ListView" class="oe_list_content">
+<table t-name="ListView" class="o-list-view table table-condensed table-striped">
     <t t-set="columns_count" t-value="visible_columns.length + (options.selectable ? 1 : 0) + (options.deletable ? 1 : 0)"/>
     <thead>
-        <tr t-if="(!!options.action_buttons and !options.$buttons) or (!!options.pager and !options.$pager)">
-            <th t-att-colspan="columns_count">
-                <div class="oe_list_buttons"/>
-                <div class="oe_list_sidebar"/>
-                <div class="oe_list_pager"/>
-            </th>
-        </tr>
-        <tr t-if="options.header" class="oe_list_header_columns">
+        <tr t-if="options.header" class="o-list-header">
             <t t-foreach="columns" t-as="column">
                 <th t-if="column.meta">
                     <t t-esc="column.string"/>
@@ -742,6 +735,7 @@
         </tr>
     </tfoot>
 </table>
+
 <t t-name="ListView.buttons">
     <t t-if="!widget.no_leaf and widget.options.action_buttons !== false and widget.options.addable and widget.is_action_enabled('create')">
     <div class="oe_list_buttons">
@@ -751,14 +745,17 @@
     </div>
     </t>
 </t>
+
 <t t-name="ListView.pager" t-if="!widget.no_leaf and widget.options.pager !== false" t-call="ViewPager">
     <span class="oe_list_pager_state"></span>
 </t>
+
 <t t-name="ListView.rows" t-foreach="records.length" t-as="index">
     <t t-call="ListView.row">
         <t t-set="record" t-value="records.at(index)"/>
     </t>
 </t>
+
 <tr t-name="ListView.row"
         t-att-data-id="record.get('id')"
         t-att-style="view.style_for(record)">
@@ -766,11 +763,11 @@
     <t t-foreach="columns" t-as="column">
         <td t-if="column.meta"> </td>
     </t>
-    <th t-if="options.selectable" class="oe_list_record_selector" width="1">
+    <td t-if="options.selectable" class="oe_list_record_selector" width="1">
         <t t-set="checked" t-value="options.select_view_id == record.get('id') ? 'checked' : null"/>
         <input t-if="options.radio" type="radio" name="radiogroup" t-att-checked="checked"/>
         <input t-if="!options.radio" type="checkbox" name="radiogroup" t-att-checked="checked"/>
-    </th>
+    </td>
     <t t-foreach="columns" t-as="column">
         <t t-set="number" t-value="column.type === 'integer' or column.type == 'float'"/>
         <t t-set="modifiers" t-value="column.modifiers_for(asData)"/>
@@ -783,6 +780,7 @@
         <button type="button" name="delete" class="oe_i">d</button>
     </td>
 </tr>
+
 <t t-extend="ListView.buttons">
     <t t-jquery="button.oe_list_add" t-operation="after">
         <button class="btn btn-sm oe_button oe_list_save oe_highlight"
@@ -793,6 +791,7 @@
         </span>
     </t>
 </t>
+
 <button t-name="ListView.row.text_button" type="button"
         t-att-title="widget.string" t-att-disabled="disabled || undefined"
         t-att-class="disabled ? 'oe_list_button_disabled btn_txt oe_link' : 'btn_txt oe_link'"
