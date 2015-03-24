@@ -10,9 +10,10 @@ $(document).ready(function () {
         console.log('Validating card', this.value, 'is a', card_type, 'and valid:', valid_value);
         if (card_type) {
             $(this).parent('.form-group').children('.card_placeholder').removeClass().addClass('card_placeholder ' + card_type);
+            $(this).parent('.form-group').children('input[name="cc_brand"]').val(card_type)
         }
         else {
-            $(this).parent('.form-group').children('.card_placeholder').removeClass().addClass('card_placeholder');   
+            $(this).parent('.form-group').children('.card_placeholder').removeClass().addClass('card_placeholder');
         }
         if (valid_value) {
             $(this).parent('.form-group').addClass('has-success');
