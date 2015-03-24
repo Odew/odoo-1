@@ -152,28 +152,3 @@ class ResPartnerBank(models.Model):
     def _check_bank(self):
         if self.state == 'iban' and not self.bank_bic:
             raise UserError(_('Please define BIC/Swift code on bank for bank type IBAN Account to make valid payments'))
-
-    @api.multi
-    def get_bban_from_iban(self):
-        '''
-        This function returns the bank account number computed from the iban account number,
-        thanks to the mapping_list dictionary that contains the rules associated to its country.
-        '''
-        res = {}
-        mapping_list = {
-            #TODO add rules for others countries
-            'be': lambda x: x[4:],
-            'fr': lambda x: x[14:],
-            'ch': lambda x: x[9:],
-            'gb': lambda x: x[14:],
-        }
-        for record in self:
-            if not record.acc_number:
-                res[record.id] = False
-                continue
-            res[record.id] = False
-            for code, function in mapping_list.items():
-                if record.acc_number.lower().startswith(code):
-                    res[record.id] = function(record.acc_number)
-                    break
-        return res
