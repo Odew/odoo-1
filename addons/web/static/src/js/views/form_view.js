@@ -123,8 +123,7 @@ var FormView = View.extend(common.FieldManagerMixin, {
         this.rendering_engine.set_tags_registry(this.tags_registry);
         this.rendering_engine.set_widgets_registry(this.widgets_registry);
         this.rendering_engine.set_fields_view(data);
-        var $dest = this.$el.hasClass("oe_form_container") ? this.$el : this.$el.find('.oe_form_container');
-        this.rendering_engine.render_to($dest);
+        this.rendering_engine.render_to(this.$el);
 
         this.$el.on('mousedown.formBlur', function () {
             self.__clicked_inside = true;
@@ -157,7 +156,7 @@ var FormView = View.extend(common.FieldManagerMixin, {
      * Set this.$buttons with the produced jQuery element
      * @param {jQuery} [$node] a jQuery node where the rendered buttons should be inserted
      * $node may be undefined, in which case the FormView inserts them into this.options.$buttons
-     * or into a div of its template
+     * if it exists
      */
     render_buttons: function($node) {
         this.$buttons = $(QWeb.render("FormView.buttons", {'widget': this}));
@@ -1239,7 +1238,7 @@ var FormRenderingEngine = FormRenderingEngineInterface.extend({
         this.labels = {};
         this.process(this.$form);
 
-        this.$form.appendTo(this.$target);
+        this.$form.find('.o-form-rendering-placeholder').contents().appendTo(this.$target);
 
         this.to_replace = [];
 
