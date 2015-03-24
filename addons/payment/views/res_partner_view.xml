@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <!-- Add creditcard to res.partner -->
+        <record id="view_partners_form_payment_defaultcreditcard" model="ir.ui.view">
+                <field name="name">view.res.partner.form.payment.defaultcreditcard</field>
+                <field name="model">res.partner</field>
+                <field name="inherit_id" ref="base.view_partner_form"/>
+                <field name="arch" type="xml">
+                    <xpath expr='//group/field[@name="supplier"]' position="after">
+                        <field name="default_payment_method_id" groups="base.group_sale_salesman"/>
+                        <field name="payment_method_ids" groups="base.group_sale_salesman"/>
+                    </xpath>
+                </field>
+        </record>
+    </data>
+</openerp>

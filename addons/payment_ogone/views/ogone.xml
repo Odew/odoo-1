@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="1">
+    <data>
 
         <template id="ogone_acquirer_button">
             <form t-if="acquirer" t-att-action="tx_url" method="post" target="_self">
@@ -19,6 +19,10 @@
                 <input type='hidden' name='OWNERCTY' t-att-value='tx_values["OWNERCTY"]'/>
                 <input type='hidden' name='OWNERTOWN' t-att-value='tx_values["OWNERTOWN"]'/>
                 <input type='hidden' name='OWNERTELNO' t-att-value='tx_values["OWNERTELNO"]'/>
+                <t t-if="type == 'form_save'">
+                    <input type='hidden' name='ALIAS' t-att-value='tx_values["ALIAS"]'/>
+                    <input type='hidden' name='ALIASUSAGE' t-att-value='tx_values["ALIASUSAGE"]'/>
+                </t>
                 <!-- before payment verification -->
                 <input type='hidden' name='SHASIGN' t-att-value='tx_values["SHASIGN"]'/>
                 <!-- look and print -->

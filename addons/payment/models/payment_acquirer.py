@@ -1,5 +1,5 @@
 # -*- coding: utf-'8' "-*-"
-
+import datetime
 import logging
 
 from openerp.osv import osv, fields
@@ -273,6 +273,7 @@ class PaymentAcquirer(osv.Model):
             'partner_values': partner_values,
             'tx_values': tx_values,
             'context': context,
+            'type': tx_values.get('type') or 'form',
         }
 
         # because render accepts view ids but not qweb -> need to use the xml_id
@@ -342,7 +343,7 @@ class PaymentTransaction(osv.Model):
             required=True,
         ),
         'type': fields.selection(
-            [('server2server', 'Server To Server'), ('form', 'Form')],
+            [('server2server', 'Server To Server'), ('form', 'Form'), ('form_save', 'Form with credentials storage')],
             string='Type', required=True),
         'state': fields.selection(
             [('draft', 'Draft'), ('pending', 'Pending'),
@@ -467,62 +468,16 @@ class PaymentTransaction(osv.Model):
     # --------------------------------------------------
     # SERVER2SERVER RELATED METHODS
     # --------------------------------------------------
-
     def s2s_create(self, cr, uid, values, cc_values, context=None):
         tx_id, tx_result = self.s2s_send(cr, uid, values, cc_values, context=context)
         self.s2s_feedback(cr, uid, tx_id, tx_result, context=context)
         return tx_id
 
-    def s2s_send(self, cr, uid, values, cc_values, context=None):
-        """ Create and send server-to-server transaction.
-
-        :param dict values: transaction values
-        :param dict cc_values: credit card values that are not stored into the
-                               payment.transaction object. Acquirers should
-                               handle receiving void or incorrect cc values.
-                               Should contain :
-
-                                - holder_name
-                                - number
-                                - cvc
-                                - expiry_date
-                                - brand
-                                - expiry_date_yy
-                                - expiry_date_mm
-        """
-        tx_id, result = None, None
-
-        if values.get('acquirer_id'):
-            acquirer = self.pool['payment.acquirer'].browse(cr, uid, values.get('acquirer_id'), context=context)
-            custom_method_name = '_%s_s2s_send' % acquirer.provider
-            if hasattr(self, custom_method_name):
-                tx_id, result = getattr(self, custom_method_name)(cr, uid, values, cc_values, context=context)
-
-        if tx_id is None and result is None:
-            tx_id = super(PaymentTransaction, self).create(cr, uid, values, context=context)
-        return (tx_id, result)
-
-    def s2s_feedback(self, cr, uid, tx_id, data, context=None):
-        """ Handle the feedback of a server-to-server transaction. """
-        tx = self.browse(cr, uid, tx_id, context=context)
-        invalid_parameters = None
-
-        invalid_param_method_name = '_%s_s2s_get_invalid_parameters' % tx.acquirer_id.provider
-        if hasattr(self, invalid_param_method_name):
-            invalid_parameters = getattr(self, invalid_param_method_name)(cr, uid, tx, data, context=context)
-
-        if invalid_parameters:
-            _error_message = '%s: incorrect tx data:\n' % (tx.acquirer_id.name)
-            for item in invalid_parameters:
-                _error_message += '\t%s: received %s instead of %s\n' % (item[0], item[1], item[2])
-            _logger.error(_error_message)
-            return False
-
-        feedback_method_name = '_%s_s2s_validate' % tx.acquirer_id.provider
-        if hasattr(self, feedback_method_name):
-            return getattr(self, feedback_method_name)(cr, uid, tx, data, context=context)
-
-        return True
+    def s2s_do_transaction(self, cr, uid, id, context=None):
+        tx = self.browse(cr, uid, id, context=context)
+        custom_method_name = '%s_s2s_do_transaction' % tx.acquirer_id.provider
+        if hasattr(self, custom_method_name):
+            return getattr(self, custom_method_name)(cr, uid, id, context=context)
 
     def s2s_get_tx_status(self, cr, uid, tx_id, context=None):
         """ Get the tx status. """
@@ -533,3 +488,33 @@ class PaymentTransaction(osv.Model):
             return getattr(self, invalid_param_method_name)(cr, uid, tx, context=context)
 
         return True
+
+
+class PaymentMethod(osv.Model):
+    _name = 'payment.method'
+    _order = 'partner_id'
+
+    _columns = {
+        'name': fields.char('Name', help='Name of the payment method'),
+        'partner_id': fields.many2one('res.partner', 'Partner', required=True),
+        'acquirer_id': fields.many2one('payment.acquirer', 'Acquirer Account', required=True),
+        'acquirer_ref': fields.char('Acquirer Ref.', required=True),
+        'active': fields.boolean('Active')
+    }
+
+    _defaults = {
+        'active': True
+    }
+
+
+    def create(self, cr, uid, values, context=None):
+        # call custom create method if defined (i.e. ogone_create for ogone)
+        if values.get('acquirer_id'):
+            acquirer = self.pool['payment.acquirer'].browse(cr, uid, values.get('acquirer_id'), context=context)
+
+            # custom create
+            custom_method_name = '%s_create' % acquirer.provider
+            if hasattr(self, custom_method_name):
+                values.update(getattr(self, custom_method_name)(cr, uid, values, context=context))
+
+        return super(PaymentMethod, self).create(cr, uid, values, context=context)

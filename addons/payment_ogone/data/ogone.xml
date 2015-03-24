@@ -3,7 +3,7 @@
     <data noupdate="1">
 
         <record id="payment_acquirer_ogone" model="payment.acquirer">
-            <field name="name">Credit Card</field>
+            <field name="name">Ogone</field>
             <field name="provider">ogone</field>
             <field name="company_id" ref="base.main_company"/>
             <field name="view_template_id" ref="ogone_acquirer_button"/>
