@@ -5,7 +5,38 @@
             <div class="row screens"></div>
         </div>
     </t>
-    <!-- tac stuff : -->
+    <t t-name="pt_drawer_menu">
+        <div class="pt_drawer_menu_wrapper">
+            <!--Zoen used to create the shady area to the rigth-->
+            <div class="pt_drawer_menu_zone">
+                <div class="pt_drawer_menu container">
+                <!--Picture-->
+                    <div class="row pt_drawer_picture">
+                        <img src="static/src/img/kitten.jpg" alt="profile pic"></img>
+                    </div>
+                    <div class="progress" style="width: 100%"></div>
+                <!--Menu Items-->
+                    <div class="row pt_menu_item pt_activities_link">
+                        <div class="col-xs-1"><span class="fa fa-tasks"></span></div>
+                        <div class="col-xs-8"><a href="#">Activities</a><br/></div>
+                    </div>
+                    <div class="row pt_menu_item pt_day_planner_link">
+                        <div class="col-xs-1"><span class="fa fa-calendar-o"></span></div>
+                        <div class="col-xs-8"><a href="#">Day Plan</a><br/></div>
+                    </div>
+                    <div class="row pt_menu_item pt_settings_link">
+                        <div class="col-xs-1"><span class="fa fa-cog"></span></div>
+                        <div class="col-xs-8"><a href="#">Settings</a><br/></div>
+                    </div>
+                    <div class="row pt_menu_item pt_sync_link">
+                        <div class="col-xs-1"><span class="fa fa-cloud-download"></span></div>
+                        <div class="col-xs-8"><a href="#">Synchronization</a><br/></div>
+                    </div>
+                    <div class="progress" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+    </t>
     <t t-name="activities_screen">
     	<t t-call="header">
     	</t>
@@ -110,7 +141,6 @@
                 </table>
             </div>
             <br/>
-            <a href="javascript:void(0)" class="btn btn-link pt_test_btn pt_btn">Test Sync</a>
     	</div>
     </t>
 
@@ -261,41 +291,45 @@
             </div>    
         </div>
     </t>
+    <t t-name="sync_screen">
+        <t t-call="header"></t>
+        <div class="pt_sync_screen">
+            <!--User is logged case-->
+            <t t-if="widget.session.uid !== null">
+                Welcome, <t t-esc="widget.session.username"/>
+            </t>
+            <!-- User is not logged--> 
+            <t t-if="widget.session.uid === null">
+                Please log in !
+            </t>
+            <span class="pt_bold">Synchronize your activities online</span>
+            <br/><a href="javascript:void(0)" class="btn btn-link pt_test_btn pt_btn">Test Sync</a>
+        </div>
+    </t>
     <t t-name="header">
-    	<!-- <div class="panel-material-grey"> -->
-    		<div class="well o_color">
-    	    	<div class="row">
-    	    		<div class="col-xs-2">
+    	<nav class="navbar navbar-default navbar-fixed-top pt_navbar">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-2 pt_navbar_element">
                         <t t-if="widget.screen_name != 'Edit Activity'">
-        	    			<div class="dropdown">
-        	    				<a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><span class="fa fa-bars"></span></a>
-        	    				<ul class="dropdown-menu">
-        	    					<li><a class="pt_activities_link" href="javascript:void(0)"><div class="icon-preview"><i class="fa fa-tasks"></i>   Activities </div></a></li>
-        	    					<li><a class="pt_day_planner_link" href="javascript:void(0)"><div class="icon-preview"><i class="fa fa-calendar-o"></i>   Day Planner </div></a></li>
-        	    					<li><a class="pt_settings_link" href="javascript:void(0)"><div class="icon-preview"><i class="fa fa-cog"></i>   Settings </div></a></li>
-        	    				</ul>
-        	    			</div>
+                            <a href="#" class="pt_burger_menu_open"><span class="fa fa-bars"></span></a>
                         </t>
                         <t t-if="widget.screen_name == 'Edit Activity'">
                             <a href="javascript:void(0)"><span class="fa fa-arrow-left pt_discard_changes" aria-hidden="true"></span></a>
+                        </t>    
+                    </div>
+                    <div class="col-xs-8 pt_navbar_element"><a href="javascript:void(0)"><t t-esc="widget.screen_name"/></a></div>
+                    <div class="col-xs-2 pt_navbar_element">
+                        <t t-if="widget.screen_name == 'Activities'">
+                            <a href="javascript:void(0)"><span class="fa fa-plus pt_button_plus_activity" aria-hidden="true"></span></a>
                         </t>
-
-    	    		</div>
-    	    		<div class="col-xs-8">
-    	    			<a href="javascript:void(0)"><t t-esc="widget.screen_name"/></a>
-    	    		</div>
-    	    		<div class="col-xs-2">
-    	    			<t t-if="widget.screen_name == 'Activities'">
-    						<a href="javascript:void(0)"><span class="fa fa-plus pt_button_plus_activity" aria-hidden="true"></span></a>
-    					</t>
-                        <!-- <t t-if="widget.screen_name == 'Edit Activity'">
-                            <a href="javascript:void(0)"><span class="glyphicon glyphicon-ok pt_validate_edit_btn" aria-hidden="true"></span></a>
-                        </t> -->
-    					<t t-if="widget.screen_name != 'Activities' and widget.screen_name != 'Edit Activity'">
-    						<a href="javascript:void(0)" class="pt_validate_btn"><span class="fa fa-check" aria-hidden="true"></span></a>
-    					</t>
-	    		</div>
-		    </div>
-    	</div>    		
+                        <t t-if="widget.screen_name != 'Activities' and widget.screen_name != 'Edit Activity'">
+                            <a href="javascript:void(0)" class="pt_validate_btn"><span class="fa fa-check" aria-hidden="true"></span></a>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <t t-call="pt_drawer_menu"></t> 		
     </t>
 </templates>

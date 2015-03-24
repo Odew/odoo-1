@@ -40,11 +40,27 @@ table tr:nth-of-type(even) {
 body {
 	overflow: inherit;
 	background-color: white;
+	padding-top: 60px;
 }
 
 .well.o_color {
 	font-size: 1.5em;
 	background-color: #a24689;
+}
+.pt_navbar{
+	font-size: 1.5em;
+	background-color: #a24689;
+}
+.pt_navbar a{
+	color: white;
+}
+
+div a:focus{
+	outline: none;
+}
+
+.pt_navbar_element{
+	line-height: 50px;
 }
 
 .well a{
@@ -91,16 +107,37 @@ table.pt_day_plan_table tr:hover{
 	background-color: #E0E0E0;	
 }
 
-.o-drawer-menu{
+.pt_drawer_menu_zone{
 	z-index: 9999;
-	left:0;
-	position:absolute;
+	position:fixed;
 	bottom: 0
 	top:40px;
-	width:80%;
-	overflow: auto;
+	width:200%;
+	left:-200%;
+	overflow: hidden;
+	height: 100%;
+	background-color:rgba(0,0,0,0.5);
 }
 
-.o-menu-slided{
-	left:80%;
+.pt_drawer_picture img{
+	max-width:100%;
+	max-height:100%;
+}
+
+.pt_drawer_menu{
+	float: left;
+	width: 33%;
+	height: inherit;
+	background-color: white;
+}
+
+.row.pt_menu_item{
+	font-size: 1.25em;
+}
+.row.pt_menu_item:hover{
+	background-color: rgba(200,200,200,0.14);
+}
+
+.row.pt_drawer_picture{
+	height: 20%
 }

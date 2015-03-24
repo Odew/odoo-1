@@ -3,45 +3,50 @@ openerp.project_timesheet = function(openerp) {
 	//Main widget to instantiate the app
 	openerp.project_timesheet.ProjectTimesheet = openerp.Widget.extend({
 		start: function(){
-			self = this;
+			var self = this;
 
 			// Load session, if there is any :
 			this.session = new openerp.Session();
             this.session.session_reload().then(function(){
-            	// Set demo data in local storage. TO REMOVE LATER
-                var timestamp = (new Date()).getTime();
-            	var test_data = [
-	                {
-	                    "session_user":"admin",
-	                    "session_uid":1,
-	                    "session_server":"http://localhost:8069",
-	                    "data":{
-	                    	"next_aal_id":9,
-	                    	"next_project_id":3,
-	                    	"next_task_id":4,
-                            "module_key" : "Project_timesheet_UI_",
-                            "original_timestamp" : timestamp,
-	                        "settings":{
-	                            "default_project_id":undefined,
-	                            "minimal_duration":0.25,
-	                            "time_unit":0.25
-	                        },
-	                        "projects":[],
-	                        "tasks": [],
-	                        "account_analytic_lines":[],
-	                        "day_plan":[]
-	                    }
-	                },
-	            ];
-                // Comment or uncomment following lines to reset demo data
-                if(localStorage.getItem("pt_data") === null){
-            	   localStorage.setItem("pt_data", JSON.stringify(test_data));
-                }
+                if(self.session.uid !== null){
+                    // Set demo data in local storage. TO REMOVE LATER
+                    var timestamp = (new Date()).getTime();
+                    var test_data = [
+                        {
+                            "session_user":"admin",
+                            "session_uid":1,
+                            "session_server":"http://localhost:8069",
+                            "data":{
+                                "next_aal_id":9,
+                                "next_project_id":3,
+                                "next_task_id":4,
+                                "module_key" : "Project_timesheet_UI_",
+                                "original_timestamp" : timestamp,
+                                "settings":{
+                                    "default_project_id":undefined,
+                                    "minimal_duration":0.25,
+                                    "time_unit":0.25
+                                },
+                                "projects":[],
+                                "tasks": [],
+                                "account_analytic_lines":[],
+                                "day_plan":[]
+                            }
+                        },
+                    ];
+                    // Comment or uncomment following lines to reset demo data
+                    if(localStorage.getItem("pt_data") === null){
+                       localStorage.setItem("pt_data", JSON.stringify(test_data));
+                    }
 
-            	// Load (demo) data from local storage
-            	self.stored_data = JSON.parse(localStorage.getItem("pt_data"));
-             	self.user_local_data = _.findWhere(self.stored_data, {session_user : self.session.username})
-             	self.data = self.user_local_data.data;
+                	// Load (demo) data from local storage
+                	self.stored_data = JSON.parse(localStorage.getItem("pt_data"));
+                 	self.user_local_data = _.findWhere(self.stored_data, {session_user : self.session.username})
+                 	self.data = self.user_local_data.data;
+                }
+                else{
+                    //if default session, load it, else create new one?
+                }
 
              	//Load templates for widgets
             	self.load_template().then(function(){
@@ -71,6 +76,10 @@ openerp.project_timesheet = function(openerp) {
         	this.edit_activity_screen = new openerp.project_timesheet.Edit_activity_screen(this);
         	this.edit_activity_screen.appendTo(this.$el);
         	this.edit_activity_screen.hide();
+
+            this.sync_screen = new openerp.project_timesheet.Sync_screen(this);
+            this.sync_screen.appendTo(this.$el);
+            this.sync_screen.hide();
         },
         update_localStorage: function(){
         	localStorage.setItem("pt_data", JSON.stringify(this.stored_data));
@@ -83,7 +92,14 @@ openerp.project_timesheet = function(openerp) {
             "click .pt_day_planner_link" : "goto_day_planner",
             "click .pt_settings_link" : "goto_settings",
             "click .pt_activities_link" : "goto_activities",
-            "click .pt_validate_btn" : "goto_activities"
+            "click .pt_sync_link" : "goto_sync",
+            "click .pt_validate_btn" : "goto_activities",
+            "click .pt_burger_menu_open" : "show_drawer_menu",
+            "click .pt_burger_menu_close" : "on_close_menu_by_click",
+            "click .pt_drawer_menu_zone" : "on_close_menu_by_click",
+            "touchstart .pt_drawer_menu,.pt_drawer_menu_zone" : "on_menu_touch_start",
+            "touchend .pt_drawer_menu,.pt_drawer_menu_zone" : "on_menu_touch_end",
+            "click div.pt_activities_screen" : "on_screen_touch_start"
         },
 		init: function(parent){
 			this._super(parent);
@@ -111,6 +127,56 @@ openerp.project_timesheet = function(openerp) {
             this.getParent().activities_screen.renderElement();
             this.getParent().activities_screen.show();
         },
+        goto_sync: function(){
+            this.hide();
+            this.getParent().sync_screen.renderElement();
+            this.getParent().sync_screen.show();
+        },
+        show_drawer_menu: function(){
+            this.$(".pt_drawer_menu_zone").css('left', '-100%');
+            this.$(".pt_drawer_menu_zone").animate({left: "0%"}, 100);
+            this.$(".pt_burger_menu_open").toggleClass("pt_burger_menu_open pt_burger_menu_close");
+        },
+        on_close_menu_by_click: function(event){
+            var self = this;
+            var target_classes = event.target.classList;
+            if (!_.contains(target_classes, "pt_drawer_menu")){
+                this.hide_drawer_menu();
+            }
+        },
+        on_menu_touch_start: function(event){
+            event.preventDefault();
+            var touch = event.originalEvent.touches[0];
+            this.initial_touch_X = touch.pageX;
+        },
+        on_menu_touch_end: function(event){
+            event.preventDefault();
+            var touch = event.originalEvent.touches[0];
+            var final_touch_X = touch.pageX;
+            var deltaX = this.initial_touch_X - final_touch_X;
+            if (deltaX > 5){
+                this.hide_drawer_menu();
+            }
+            this.initial_touch_X = undefined;
+        },
+        hide_drawer_menu: function(){
+            var self = this;
+            this.$(".pt_drawer_menu_zone").animate({left: "-100%"}, 150, function(){
+                self.$(".pt_drawer_menu_zone").css('left', '-200%');
+            });
+            this.$(".pt_burger_menu_close").toggleClass("pt_burger_menu_open pt_burger_menu_close");
+        },
+        on_screen_touch_start: function(event){
+            console.log(event);
+            console.log("ok");
+            return
+            event.preventDefault();
+            var touch = event.originalEvent.touches[0];
+            console.log(touch.pageX);
+        },
+
+
+
         // Methods that might be moved later if necessary :
         get_project_name: function(project_id){
         	project = _.findWhere(self.data.projects, {id : project_id});
@@ -241,7 +307,6 @@ openerp.project_timesheet = function(openerp) {
                     "click .pt_activity":"edit_activity",
                     "click .pt_btn_start_activity":"start_activity",
                     "click .pt_btn_stop_activity":"stop_activity",
-                    "click .pt_test_btn":"test_fct",
                     "click .pt_quick_add_time" : "quick_add_time",
                     "click .pt_quick_subtract_time" : "quick_subtract_time",
                     "mouseover .pt_duration" : "on_duration_over",
@@ -420,147 +485,6 @@ openerp.project_timesheet = function(openerp) {
                 this.start_activity();
             }
         },
-        test_fct: function(){
-            this.sync();
-            this.renderElement();    
-        },
-        sync: function(){
-            var self = this;
-            var parent = this.getParent();
-            var data = parent.data;
-            var account_analytic_line_model = new openerp.Model("account.analytic.line");
-            account_analytic_line_model.call("export_data_for_ui" , []).then(function(sv_data){
-                // SV => LS sync
-                sv_aals = sv_data.aals.datas;
-                sv_tasks = sv_data.tasks.datas;
-                sv_projects = sv_data.projects.datas;
-
-                _.each(sv_projects, function(sv_project){
-                    // Check if the project exists in LS.
-                    // If it does we simply update the name, otherwise we copy the project in LS.
-                    ls_project = _.findWhere(data.projects, {id : sv_project[0]})
-                    if (_.isUndefined(ls_project)){
-                        data.projects.push({
-                            id : sv_project[0],
-                            name : sv_project[1]
-                        });
-                    }
-                    else{
-                        ls_project.name = sv_project[1];
-                    }
-                    parent.update_localStorage();
-                });
-
-                _.each(sv_tasks, function(sv_task){
-                    ls_task = _.findWhere(data.tasks, {id : sv_task[0]})
-                    if(_.isUndefined(ls_task)){
-                        data.tasks.push({
-                            id : sv_task[0],
-                            project_id : sv_task[1],
-                            name : sv_task[3]
-                        });
-                    }
-                    else{
-                        ls_task.name = sv_task[3];
-                    }
-                    parent.update_localStorage();
-                });
-
-                _.each(sv_aals, function(sv_aal){
-                    // First, check that the aal is related to a project. If not we don't import it.
-                    if(!_.isUndefined(sv_aal[8])){
-                        ls_aal = _.findWhere(data.account_analytic_lines, {id : sv_aal[0]})
-                        // Create case
-                        if (_.isUndefined(ls_aal)){
-                            data.account_analytic_lines.push({
-                                id : sv_aal[0],
-                                project_id : sv_aal[8],
-                                task_id : sv_aal[1],
-                                desc : sv_aal[3],
-                                date : sv_aal[5],
-                                unit_amount : sv_aal[6],
-                                write_date : sv_aal[7]
-                            });
-                        }
-                        else{
-                            //Update case
-                            if(openerp.str_to_datetime(ls_aal.write_date) < openerp.str_to_datetime(sv_aal[7])){
-                                ls_aal.project_id = sv_aal[8];
-                                ls_aal.task_id = sv_aal[1];
-                                ls_aal.desc = sv_aal[3];
-                                ls_aal.date = sv_aal[5];
-                                ls_aal.unit_amount = sv_aal[6];
-                                ls_aal.write_date = sv_aal[7];
-                            }
-                        }
-                    }
-                    parent.update_localStorage();
-                });
-            })
-            .then(function(){
-                //LS => SV sync
-                var context = new openerp.web.CompoundContext({default_is_timesheet : true});
-                // For the aals that need to be synced, update unit_amount with minimal duration or round with time_unit.
-                // TAC TODO
-                // This feature is currently disabled. It might need to be moved to the backend.
-                // _.each(data.account_analytic_lines, function(aal){
-                //     if(aal.to_sync){
-                //         //
-                //         if (aal.unit_amount < data.settings.minimal_duration){
-                //             aal.unit_amount = data.settings.minimal_duration;
-                //         }
-                //         else if(data.settings.time_unit > 0){
-                //             var round_to = 1 / data.settings.time_unit;
-                //             aal.unit_amount = (Math.ceil(aal.unit_amount * round_to) / round_to).toFixed(2);
-                //         }
-                //     }
-                // });
-                account_analytic_line_model.call("import_ui_data" , [data.account_analytic_lines , data.tasks, data.projects, context]).then(function(sv_response){
-                    console.log(sv_response);
-                    //@TAC TODO : Better error processing system !
-                    if (sv_response.aals_errors.length > 0){
-                        alert("Some activities could no be synchronized !");
-                    }
-                    if (sv_response.project_errors.length > 0){
-                        alert("Some projects could no be synchronized !");
-                    }
-                    if (sv_response.task_errors.length > 0){
-                        alert("Some tasks could no be synchronized !");
-                    }
-                    // The entries that have been removed in the backend must be removed from the LS 
-                    if(sv_response.projects_to_remove.length > 0){
-                        _.each(sv_response.projects_to_remove, function(project_to_remove_id){
-                            p_to_remove = _.findWhere(data.projects, {id : project_to_remove_id});
-                            data.projects.splice(_.indexOf(data.projects, p_to_remove), 1);
-                        });
-                    }
-                    if(sv_response.tasks_to_remove.length > 0){
-                        _.each(sv_response.tasks_to_remove, function(task_to_remove_id){
-                            t_to_remove = _.findWhere(data.tasks, {id : task_to_remove_id});
-                            data.tasks.splice(_.indexOf(data.tasks, t_to_remove), 1);
-                        });
-                    }
-                    if(sv_response.aals_to_remove.length > 0){
-                        _.each(sv_response.aals_to_remove, function(aal_to_remove_id){
-                            aal_to_remove = _.findWhere(data.account_analytic_lines, {id : aal_to_remove_id});
-                            data.account_analytic_lines.splice(_.indexOf(data.account_analytic_lines, aal_to_remove), 1);
-                        });
-                    }
-                    self.renderElement();
-                    // Set to_sync to false for further syncs.
-                    _.each(data.account_analytic_lines, function(aal){
-                        aal.to_sync = false;
-                    });
-                    _.each(data.projects, function(project){
-                        project.to_sync = false;
-                    });
-                    _.each(data.tasks, function(task){
-                        task.to_sync = false;
-                    });
-                    parent.update_localStorage();
-                });
-            });   
-        }
     });
 
     openerp.project_timesheet.Day_planner_screen = openerp.project_timesheet.BasicScreenWidget.extend({
@@ -910,6 +834,162 @@ openerp.project_timesheet = function(openerp) {
             }
             this.reset_activity();
             this.goto_activities();
+        }
+    });
+    
+    openerp.project_timesheet.Sync_screen = openerp.project_timesheet.BasicScreenWidget.extend({
+        template: "sync_screen",
+        init: function(parent) {
+            var self = this;
+            this._super(parent);
+            this.screen_name = "Synchronization";
+            _.extend(self.events,
+                {
+                    "click .pt_test_btn" : "test_fct",
+                }
+            );
+            this.session = this.getParent().session;
+        },
+        test_fct: function(){
+            this.sync();
+            this.renderElement();
+        },
+        sync: function(){
+            var self = this;
+            var parent = this.getParent();
+            var data = parent.data;
+            var account_analytic_line_model = new openerp.Model("account.analytic.line");
+            account_analytic_line_model.call("export_data_for_ui" , []).then(function(sv_data){
+                // SV => LS sync
+                sv_aals = sv_data.aals.datas;
+                sv_tasks = sv_data.tasks.datas;
+                sv_projects = sv_data.projects.datas;
+
+                _.each(sv_projects, function(sv_project){
+                    // Check if the project exists in LS.
+                    // If it does we simply update the name, otherwise we copy the project in LS.
+                    ls_project = _.findWhere(data.projects, {id : sv_project[0]})
+                    if (_.isUndefined(ls_project)){
+                        data.projects.push({
+                            id : sv_project[0],
+                            name : sv_project[1]
+                        });
+                    }
+                    else{
+                        ls_project.name = sv_project[1];
+                    }
+                    parent.update_localStorage();
+                });
+
+                _.each(sv_tasks, function(sv_task){
+                    ls_task = _.findWhere(data.tasks, {id : sv_task[0]})
+                    if(_.isUndefined(ls_task)){
+                        data.tasks.push({
+                            id : sv_task[0],
+                            project_id : sv_task[1],
+                            name : sv_task[3]
+                        });
+                    }
+                    else{
+                        ls_task.name = sv_task[3];
+                    }
+                    parent.update_localStorage();
+                });
+
+                _.each(sv_aals, function(sv_aal){
+                    // First, check that the aal is related to a project. If not we don't import it.
+                    if(!_.isUndefined(sv_aal[8])){
+                        ls_aal = _.findWhere(data.account_analytic_lines, {id : sv_aal[0]})
+                        // Create case
+                        if (_.isUndefined(ls_aal)){
+                            data.account_analytic_lines.push({
+                                id : sv_aal[0],
+                                project_id : sv_aal[8],
+                                task_id : sv_aal[1],
+                                desc : sv_aal[3],
+                                date : sv_aal[5],
+                                unit_amount : sv_aal[6],
+                                write_date : sv_aal[7]
+                            });
+                        }
+                        else{
+                            //Update case
+                            if(openerp.str_to_datetime(ls_aal.write_date) < openerp.str_to_datetime(sv_aal[7])){
+                                ls_aal.project_id = sv_aal[8];
+                                ls_aal.task_id = sv_aal[1];
+                                ls_aal.desc = sv_aal[3];
+                                ls_aal.date = sv_aal[5];
+                                ls_aal.unit_amount = sv_aal[6];
+                                ls_aal.write_date = sv_aal[7];
+                            }
+                        }
+                    }
+                    parent.update_localStorage();
+                });
+            })
+            .then(function(){
+                //LS => SV sync
+                var context = new openerp.web.CompoundContext({default_is_timesheet : true});
+                // For the aals that need to be synced, update unit_amount with minimal duration or round with time_unit.
+                // TAC TODO
+                // This feature is currently disabled. It might need to be moved to the backend.
+                // _.each(data.account_analytic_lines, function(aal){
+                //     if(aal.to_sync){
+                //         //
+                //         if (aal.unit_amount < data.settings.minimal_duration){
+                //             aal.unit_amount = data.settings.minimal_duration;
+                //         }
+                //         else if(data.settings.time_unit > 0){
+                //             var round_to = 1 / data.settings.time_unit;
+                //             aal.unit_amount = (Math.ceil(aal.unit_amount * round_to) / round_to).toFixed(2);
+                //         }
+                //     }
+                // });
+                account_analytic_line_model.call("import_ui_data" , [data.account_analytic_lines , data.tasks, data.projects, context]).then(function(sv_response){
+                    console.log(sv_response);
+                    //@TAC TODO : Better error processing system !
+                    if (sv_response.aals_errors.length > 0){
+                        alert("Some activities could no be synchronized !");
+                    }
+                    if (sv_response.project_errors.length > 0){
+                        alert("Some projects could no be synchronized !");
+                    }
+                    if (sv_response.task_errors.length > 0){
+                        alert("Some tasks could no be synchronized !");
+                    }
+                    // The entries that have been removed in the backend must be removed from the LS 
+                    if(sv_response.projects_to_remove.length > 0){
+                        _.each(sv_response.projects_to_remove, function(project_to_remove_id){
+                            p_to_remove = _.findWhere(data.projects, {id : project_to_remove_id});
+                            data.projects.splice(_.indexOf(data.projects, p_to_remove), 1);
+                        });
+                    }
+                    if(sv_response.tasks_to_remove.length > 0){
+                        _.each(sv_response.tasks_to_remove, function(task_to_remove_id){
+                            t_to_remove = _.findWhere(data.tasks, {id : task_to_remove_id});
+                            data.tasks.splice(_.indexOf(data.tasks, t_to_remove), 1);
+                        });
+                    }
+                    if(sv_response.aals_to_remove.length > 0){
+                        _.each(sv_response.aals_to_remove, function(aal_to_remove_id){
+                            aal_to_remove = _.findWhere(data.account_analytic_lines, {id : aal_to_remove_id});
+                            data.account_analytic_lines.splice(_.indexOf(data.account_analytic_lines, aal_to_remove), 1);
+                        });
+                    }
+                    self.renderElement();
+                    // Set to_sync to false for further syncs.
+                    _.each(data.account_analytic_lines, function(aal){
+                        aal.to_sync = false;
+                    });
+                    _.each(data.projects, function(project){
+                        project.to_sync = false;
+                    });
+                    _.each(data.tasks, function(task){
+                        task.to_sync = false;
+                    });
+                    parent.update_localStorage();
+                });
+            });   
         }
     });
 };
