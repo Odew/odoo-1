@@ -6,15 +6,7 @@
 
         <!-- Asset -->
 
-        <record id="user_type_accumulated_depreciation" model="account.account.type">
-            <field name="name">Accumulated Depreciation</field>
-        </record>        
-
         <!-- Expense -->  
         
-        <record id="user_type_cogs" model="account.account.type">
-            <field name="name">Cost of Goods Sold</field>
-        </record>
-
     </data>
 </openerp>
