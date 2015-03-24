@@ -1087,7 +1087,7 @@ var DomainEditorPopup = SelectCreatePopup.extend({
     get_domain: function (selected_ids) {
         var group_domain = [],
             domain;
-        if (this.$('input.oe_list_record_selector').prop('checked')) {
+        if (this.$('input.o-list-record-selector').prop('checked')) {
             if (this.view_list.grouped) {
                 var group_domain = _.chain(_.values(this.view_list.groups.children))
                                         .filter(function (child) { return child.records.length; })
