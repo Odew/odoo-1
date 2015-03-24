@@ -2,29 +2,8 @@
 <openerp>
     <data>
         <!-- account.account.type -->
-    <record id="cpt_type_dlt" model="account.account.type">
-       <field name="name">Dettes à long terme</field>
-    </record>
     <record id="cpt_type_tax" model="account.account.type">
            <field name="name">Taxes</field>
-    </record>
-    <record id="cpt_type_tpl" model="account.account.type">
-           <field name="name">Titres de placement</field>
-    </record>
-    <record id="cpt_type_ach" model="account.account.type">
-           <field name="name">Charges Achats</field>
-    </record>
-    <record id="cpt_type_per" model="account.account.type">
-           <field name="name">Charges Personnel</field>
-    </record>
-    <record id="cpt_type_aut" model="account.account.type">
-           <field name="name">Charges Autres</field>
-    </record>
-    <record id="cpt_type_pdt" model="account.account.type">
-           <field name="name">Produits</field>
-    </record>
-    <record id="cpt_type_reg" model="account.account.type">
-           <field name="name">Régularisation</field>
     </record>
   </data>
 </openerp>
