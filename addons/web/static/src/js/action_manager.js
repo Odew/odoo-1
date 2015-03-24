@@ -44,6 +44,13 @@ var Action = core.Class.extend({
         this.on_reverse_breadcrumb = on_reverse_breadcrumb;
     },
     /**
+     * Stores the DOM fragment of the action
+     * @param {jQuery} [fragment] the DOM fragment
+     */
+    set_fragment: function($fragment) {
+        this.$fragment = $fragment;
+    },
+    /**
      * @return {Object} the description of the action
      */
     get_action_descr: function() {
@@ -60,6 +67,12 @@ var Action = core.Class.extend({
      */
     get_nb_views: function() {
         return 0;
+    },
+    /**
+     * @return {jQuery} the DOM fragment of the action
+     */
+    get_fragment: function() {
+        return this.$fragment;
     },
 });
 /**
@@ -214,12 +227,11 @@ var ActionManager = Widget.extend({
         // document only when it's ready
         var new_widget_fragment = document.createDocumentFragment();
         return $.when(this.inner_widget.appendTo(new_widget_fragment)).done(function() {
-            self.$el.append(new_widget_fragment);
-            // Hide the old_widget as it will be removed from the DOM when it
-            // is destroyed
-            if (old_widget) {
-                old_widget.$el.hide();
+            // Detach the fragment of the previous action and store it within the action
+            if (old_action) {
+                old_action.set_fragment(self.$('> .o-view-manager').detach());
             }
+            self.$el.append(new_widget_fragment);
             if (options.clear_breadcrumbs) {
                 self.clear_action_stack(to_destroy);
             }
@@ -266,16 +278,23 @@ var ActionManager = Widget.extend({
         return $.Deferred().reject();
     },
     select_action: function(action, index) {
+        var self = this;
+
         if (this.webclient.has_uncommitted_changes()) {
             return $.Deferred().reject();
         }
 
-        // Set the new inner_widget and clear the action_stack
+        // Set the new inner_widget and update the action stack
         this.inner_widget = action.widget;
         var action_index = this.action_stack.indexOf(action);
-        this.clear_action_stack(this.action_stack.splice(action_index + 1));
+        var to_destroy = this.action_stack.splice(action_index + 1);
 
-        return action.restore(index);
+        return $.when(action.restore(index)).done(function() {
+            // Clear the action stack (this also removes the current action from the DOM)
+            self.clear_action_stack(to_destroy);
+            // Append the fragment of the action to restore to the DOM
+            self.$el.append(action.get_fragment());
+        });
     },
     clear_action_stack: function(action_stack) {
         _.map(action_stack || this.action_stack, function(action) {
