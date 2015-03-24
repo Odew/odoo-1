@@ -2,38 +2,11 @@
 <openerp>
 <data noupdate="1">
 
-    <record id="type_equity" model="account.account.type">
-        <field name="name">Capital</field>
-    </record>
-    
-    <record id="type_third" model="account.account.type">
-        <field name="name">Terceros</field>
-    </record>
-
-    <record id="type_third_rec" model="account.account.type">
-        <field name="name">Terceros A Cobrar</field>
-    </record>
-
-    <record id="type_third_pay" model="account.account.type">
-        <field name="name">Terceros A Pagar</field>
-    </record>    
     
     <record id="type_tax" model="account.account.type">
         <field name="name">Impuestos</field>
     </record>
 
-    <record id="type_tax_in" model="account.account.type">
-        <field name="name">Impuestos Cobrados</field>
-    </record>
-    
-    <record id="type_tax_out" model="account.account.type">
-        <field name="name">Impuestos Pagados</field>
-    </record>
-    
-    <record id="type_financial" model="account.account.type">
-        <field name="name">Financieros</field>
-    </record>
-    
     <record id="type_other" model="account.account.type">
         <field name="name">Otros</field>
     </record>
