@@ -298,7 +298,7 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
      * Set this.$buttons with the produced jQuery element
      * @param {jQuery} [$node] a jQuery node where the rendered buttons should be inserted
      * $node may be undefined, in which case the ListView inserts them into this.options.$buttons
-     * or into a div of its template
+     * if it exists
      */
     render_buttons: function($node) {
         if (!this.$buttons) {
