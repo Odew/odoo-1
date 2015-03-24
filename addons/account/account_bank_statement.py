@@ -648,6 +648,12 @@ class account_bank_statement_line(osv.osv):
             ]
             if not st_line.partner_id.id:
                 str_domain = expression.OR([str_domain, [('partner_id.name', 'ilike', str)]])
+            try:
+                amount = float(str)
+                amount_domain = ['|', ('amount_residual', '=', amount), '|', ('amount_residual_currency', '=', amount), '|', ('amount_residual', '=', -amount), ('amount_residual_currency', '=', -amount)]
+                str_domain = expression.OR([str_domain, amount_domain])
+            except:
+                pass
             domain = expression.AND([domain, str_domain])
 
         return expression.AND([additional_domain, domain])

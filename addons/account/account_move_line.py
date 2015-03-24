@@ -20,6 +20,7 @@
 ##############################################################################
 
 import time
+import logging
 from datetime import datetime
 
 from openerp import workflow
@@ -30,6 +31,8 @@ from openerp import tools
 from openerp.report import report_sxw
 import openerp
 from openerp.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 class account_move_line(osv.osv):
     _name = "account.move.line"
@@ -156,6 +159,30 @@ class account_move_line(osv.osv):
             res[move_line.id]['amount_residual_currency'] =  sign * (move_line.currency_id and self.pool.get('res.currency').round(cr, uid, move_line.currency_id, result) or result)
             res[move_line.id]['amount_residual'] = sign * line_total_in_company_currency
         return res
+
+    def _amount_residual_search(self, cursor, user, obj, name, args, domain=None, context=None):
+        if not args:
+            return []
+        if len(args) > 1 or args[0][1] != '=':
+            _logger.error('Error searching on field %s of model account_move_line : the only supported operator is =' % name)
+            return []
+        search_amount = args[0][2]
+        if search_amount == 0:
+            return [('id', 'in', self.search(cursor, user, [('reconcile_id', '!=', False)], context))]
+        amount_field = name == 'amount_residual_currency' and 'amount_currency' or (search_amount > 0 and 'debit' or 'credit')
+        search_amount_sign_corrected = amount_field in ('debit', 'credit') and abs(search_amount) or search_amount
+        # Get unreconciled move lines (for those, debit/credit/amount_currency is the residual amount)
+        results = self.search(cursor, user, [('reconcile_id', '=', False), ('reconcile_partial_id', '=', False), (amount_field, '=', search_amount_sign_corrected)])
+        # Get partially reconciled move lines (for those, we need to query the computed amount_residual(_currency) field)
+        amount_comparator = (amount_field == 'amount_currency' and search_amount < 0) and '<=' or '>='
+        candidate_ids = self.search(cursor, user, [('reconcile_partial_id', '!=', False), (amount_field, amount_comparator, search_amount_sign_corrected)])
+        candidates = self.browse(cursor, user, candidate_ids, context)
+        if name == 'amount_residual_currency':
+            results += [x.id for x in candidates if abs(x.amount_residual_currency - search_amount) < 10**-4]
+        elif name == 'amount_residual':
+            results += [x.id for x in candidates if abs(x.amount_residual - search_amount) < 10**-4]
+
+        return [('id', 'in', results)]
 
     def default_get(self, cr, uid, fields, context=None):
         data = self._default_get(cr, uid, fields, context=context)
@@ -461,8 +488,8 @@ class account_move_line(osv.osv):
         'reconcile_ref': fields.function(_get_reconcile, type='char', string='Reconcile Ref', oldname='reconcile', store={
                     'account.move.line': (lambda self, cr, uid, ids, c={}: ids, ['reconcile_id','reconcile_partial_id'], 50),'account.move.reconcile': (_get_move_from_reconcile, None, 50)}),
         'amount_currency': fields.float('Amount Currency', help="The amount expressed in an optional other currency if it is a multi-currency entry.", digits_compute=dp.get_precision('Account')),
-        'amount_residual_currency': fields.function(_amount_residual, string='Residual Amount in Currency', multi="residual", help="The residual amount on a receivable or payable of a journal entry expressed in its currency (maybe different of the company currency)."),
-        'amount_residual': fields.function(_amount_residual, string='Residual Amount', multi="residual", help="The residual amount on a receivable or payable of a journal entry expressed in the company currency."),
+        'amount_residual_currency': fields.function(_amount_residual, string='Residual Amount in Currency', multi="residual", fnct_search=_amount_residual_search, help="The residual amount on a receivable or payable of a journal entry expressed in its currency (maybe different of the company currency)."),
+        'amount_residual': fields.function(_amount_residual, string='Residual Amount', multi="residual", fnct_search=_amount_residual_search, help="The residual amount on a receivable or payable of a journal entry expressed in the company currency."),
         'currency_id': fields.many2one('res.currency', 'Currency', help="The optional other currency if it is a multi-currency entry."),
         'journal_id': fields.related('move_id', 'journal_id', string='Journal', type='many2one', relation='account.journal', required=True, select=True,
                                 store = {
