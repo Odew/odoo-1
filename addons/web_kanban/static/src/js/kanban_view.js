@@ -214,6 +214,40 @@ var KanbanView = View.extend({
         this.do_switch_view('form');
     },
     do_add_group: function() {
+        var self = this;
+        self.do_action({
+            name: _t("Add column"),
+            res_model: self.group_by_field.relation,
+            views: [[false, 'form']],
+            type: 'ir.actions.act_window',
+            target: "new",
+            context: self.dataset.get_context(),
+            flags: {
+                action_buttons: true,
+            }
+        });
+        var am = web_client.action_manager;
+        var form = am.dialog_widget.views.form.controller;
+        form.on("on_button_cancel", am.dialog, am.dialog.close);
+        form.on('record_created', self, function(r) {
+            (new data.DataSet(self, self.group_by_field.relation)).name_get([r]).done(function(new_record) {
+                am.dialog.close();
+                var domain = self.dataset.domain.slice(0);
+                domain.push([self.group_by, '=', new_record[0][0]]);
+                var dataset = new data.DataSetSearch(self, self.dataset.model, self.dataset.get_context(), domain);
+                var datagroup = {
+                    get: function(key) {
+                        return this[key];
+                    },
+                    value: new_record[0],
+                    length: 0,
+                };
+                var new_group = new KanbanGroup(self, [], datagroup, dataset);
+                self.do_add_groups([new_group]).done(function() {
+                    $(window).scrollTo(self.groups.slice(-1)[0].$el, { axis: 'x' });
+                });
+            });
+        });
     },
     do_search: function(domain, context, group_by) {
         var self = this;
@@ -595,55 +629,3 @@ return KanbanView;
 
 });
 
-
-odoo.define(function (require) {
-
-var core = require('web.core');
-var data = require('web.data');
-var web_client = require('web.web_client');
-var kanban_common = require('web_kanban.common');
-var KanbanView = require('web_kanban.KanbanView');
-
-var KanbanGroup = kanban_common.KanbanGroup;
-var _t = core._t;
-
-KanbanView.include({
-    do_add_group: function() {
-        var self = this;
-        self.do_action({
-            name: _t("Add column"),
-            res_model: self.group_by_field.relation,
-            views: [[false, 'form']],
-            type: 'ir.actions.act_window',
-            target: "new",
-            context: self.dataset.get_context(),
-            flags: {
-                action_buttons: true,
-            }
-        });
-        var am = web_client.action_manager;
-        var form = am.dialog_widget.views.form.controller;
-        form.on("on_button_cancel", am.dialog, am.dialog.close);
-        form.on('record_created', self, function(r) {
-            (new data.DataSet(self, self.group_by_field.relation)).name_get([r]).done(function(new_record) {
-                am.dialog.close();
-                var domain = self.dataset.domain.slice(0);
-                domain.push([self.group_by, '=', new_record[0][0]]);
-                var dataset = new data.DataSetSearch(self, self.dataset.model, self.dataset.get_context(), domain);
-                var datagroup = {
-                    get: function(key) {
-                        return this[key];
-                    },
-                    value: new_record[0],
-                    length: 0,
-                };
-                var new_group = new KanbanGroup(self, [], datagroup, dataset);
-                self.do_add_groups([new_group]).done(function() {
-                    $(window).scrollTo(self.groups.slice(-1)[0].$el, { axis: 'x' });
-                });
-            });
-        });
-    },
-});
-
-});
