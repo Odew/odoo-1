@@ -9,9 +9,9 @@ var Widget = require('web.Widget');
 var _t = core._t;
 
 var Loading = Widget.extend({
-    template: _t("Loading"),
+    template: "Loading",
+
     init: function(parent) {
-        return;  // FIXME
         this._super(parent);
         this.count = 0;
         this.blocked_ui = false;

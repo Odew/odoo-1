@@ -116,7 +116,7 @@ var WebClient = Widget.extend({
         self.notification = new Notification(this);
         self.notification.appendTo(self.$('.openerp'));
         self.loading = new Loading(self);
-        self.loading.appendTo(self.$('.o-web-client'));
+        self.loading.appendTo(self.$el);
         self.action_manager = new ActionManager(self);
         self.action_manager.setElement(self.$('.o-content'));
         self.action_manager.start();

@@ -4,10 +4,8 @@
     <div></div>
 </t>
 <t t-name="Loading">
-<!--     <div class="oe_loading">
-        Loading...
-    </div>
- --></t>
+    <div class="o-loading" />
+</t>
 <t t-name="Notification">
     <div class="oe_notification" t-translation="off">
         <div id="oe_notification_default">
