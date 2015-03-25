@@ -11,6 +11,7 @@
 @o-overlay-zindex: @zindex-tooltip + 1;
 
 @o-navbar-zindex: @zindex-tooltip + 4;
+@o-control-panel-zindex: 5;
 
 // Mixins
 .o-menu-boilerplate() {
@@ -83,6 +84,7 @@ html {
             }
             .o-control-panel {
                 .o-flex(0, 0, auto);
+                z-index: @o-control-panel-zindex;
             }
             .o-content {
                 .o-flex(1, 1, auto);
