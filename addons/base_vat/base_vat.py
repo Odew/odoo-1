@@ -136,9 +136,6 @@ class res_partner(osv.osv):
                 return False
         return True
 
-    def vat_change(self, cr, uid, ids, value, context=None):
-        return {'value': {'vat_subjected': bool(value)}}
-
     def _commercial_fields(self, cr, uid, context=None):
         return super(res_partner, self)._commercial_fields(cr, uid, context=context) + ['vat_subjected']
 
