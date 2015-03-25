@@ -1033,6 +1033,9 @@ var SelectCreatePopup = AbstractFormPopup.extend({
                 });
                 $cbutton = self.$buttonpane.find(".oe_selectcreatepopup-search-create");
                 $cbutton.click(function() {
+                    if ($(".fa-caret-up").is(":visible")){
+                        self.searchview.toggle_buttons();
+                    }
                     self.new_object();
                 });
             });
