@@ -64,7 +64,7 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
             self.views[view_type] = view_descr;
         });
 
-        // Listen to event 'switch_view' indicating that the VM must now display view wiew_type
+        // Listen to event 'switch_view' indicating that the VM must now display view view_type
         this.on('switch_view', this, function(view_type) {
             if (view_type === 'form' && this.active_view && this.active_view.type === 'form') {
                 this._display_view(view_type);
@@ -90,10 +90,8 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
                 action : self.action,
                 action_views_ids : views_ids,
             }, self.flags, self.flags[view.type], view.options);
-            view.$container = self.$(".oe-view-manager-view-" + view.type);
+            view.fragment = undefined;
         });
-
-        this.$el.addClass("oe_view_manager_" + ((this.action && this.action.target) || 'current'));
 
         this.control_elements = {};
         if (this.flags.search_view) {
@@ -114,6 +112,7 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
     switch_mode: function(view_type, no_store, view_options) {
         var self = this;
         var view = this.views[view_type];
+        var old_view = this.active_view;
 
         if (!view) {
             return $.Deferred().reject();
@@ -127,11 +126,6 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
         }
         this.view_stack.push(view);
 
-        // Hide active view (at first rendering, there is no view to hide)
-        if (this.active_view && this.active_view !== view) {
-            if (this.active_view.controller) this.active_view.controller.do_hide();
-            if (this.active_view.$container) this.active_view.$container.hide();
-        }
         this.active_view = view;
 
         if (!view.created) {
@@ -148,17 +142,23 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
             });
         }
         return $.when(view.created, this.active_search).done(function () {
-            self._display_view(view_options);
+            self._display_view(view_options, old_view);
             self.trigger('switch_mode', view_type, no_store, view_options);
         });
     },
-    _display_view: function (view_options) {
+    _display_view: function (view_options, old_view) {
         var self = this;
         var view_controller = this.active_view.controller;
-
+        var view_fragment = this.active_view.fragment;
         // Show the view
-        this.active_view.$container.show();
         $.when(view_controller.do_show(view_options)).done(function () {
+            // Detach the old view and store it
+            if (old_view && old_view !== self.active_view) {
+                old_view.fragment = self.$el.contents().detach();
+            }
+            // Append the view fragment to the DOM
+            self.$el.append(view_fragment);
+
             // Prepare the ControlPanel content and update it
             var cp_status = {
                 active_view_selector: '.oe-cp-switch-' + self.active_view.type,
@@ -182,11 +182,8 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
             options.initial_mode = 'edit';
         }
         var controller = new View(this, this.dataset, view.view_id, options);
-        var $container = view.$container;
-
-        $container.hide();
         view.controller = controller;
-        view.$container = $container;
+        view.fragment = $('<div>');
 
         if (view.embedded_view) {
             controller.set_embedded_view(view.embedded_view);
@@ -204,8 +201,10 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
         controller.on('view_loaded', this, function () {
             view_loaded.resolve();
         });
-        return $.when(controller.appendTo($container), view_loaded)
+        return $.when(controller.appendTo(view.fragment), view_loaded)
                 .done(function () {
+                    // Remove the unnecessary outer div
+                    view.fragment = view.fragment.contents();
                     self.trigger("controller_inited", view.type, controller);
                 });
     },
@@ -298,7 +297,6 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
                 search_defaults[match[1]] = value;
             }
         });
-
 
         var options = {
             hidden: this.flags.search_view === false,

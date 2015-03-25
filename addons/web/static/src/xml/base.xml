@@ -471,14 +471,6 @@
     </li>
 </t>
 
-<t t-name="EmbedClient">
-    <div class="openerp">
-        <div class="oe_application"></div>
-    </div>
-</t>
-
-<div t-name="ActionManager" class="oe_application" />
-
 <t t-name="ControlPanel">
     <div class="row o-control-panel">
         <div class="col-md-12">
@@ -513,15 +505,9 @@
     </div>
 </t>
 
-<div t-name="ViewManager" class="row o-view-manager">
-    <div class="col-md-12">
-        <div class="oe-view-manager-content">
-            <t t-foreach="widget.views" t-as="view">
-                <div t-attf-class="oe-view-manager-view-#{view} fade"/>
-            </t>
-        </div>
-    </div>
-</div>
+<t t-name="ViewManager">
+    <div class="col-md-12 o-view-manager-content" />
+</t>
 
 <t t-name="ViewManager.switch-buttons">
     <t t-foreach="views" t-as="view">

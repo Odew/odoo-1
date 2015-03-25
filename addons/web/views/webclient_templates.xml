@@ -421,9 +421,7 @@
             </nav>
 
             <div class="container-fluid o-web-client">
-                <div class="row o-web-client-row">
-                    <div class="col-sm-12 o-action-manager"></div>
-                </div>
+                <div class="row o-content"/>
             </div>
         </body>
     </html>

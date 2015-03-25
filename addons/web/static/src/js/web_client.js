@@ -118,7 +118,7 @@ var WebClient = Widget.extend({
         self.loading = new Loading(self);
         self.loading.appendTo(self.$('.o-web-client'));
         self.action_manager = new ActionManager(self);
-        self.action_manager.setElement(self.$('.o-action-manager'));
+        self.action_manager.setElement(self.$('.o-content'));
         self.action_manager.start();
 
         core.bus.on('display_notification_warning', this, function (title, message) {
