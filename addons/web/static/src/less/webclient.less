@@ -39,7 +39,7 @@
 }
 
 .o-secondary-menu {
-    box-shadow: 0px 8px 8px @odoo-main-text-color;
+    box-shadow: 4px 0px 4px -3px @odoo-main-text-color;
 }
 
 
@@ -54,9 +54,12 @@
     .transition(background-color 0.15s ease);
 }
 
-.o-control-panel {
+.o-control-panel-first-row, .o-control-panel-second-row {
     background-color: white;
-    box-shadow: 8px 0px 8px @odoo-main-text-color;
+}
+
+.o-control-panel-second-row {
+    box-shadow: 0px 4px 4px -3px @odoo-main-text-color;
 }
 
 .o-web-client {

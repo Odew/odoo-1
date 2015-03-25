@@ -472,36 +472,29 @@
 </t>
 
 <t t-name="ControlPanel">
-    <div class="row o-control-panel">
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-md-6 oe-cp-title">
-                    <ol class="oe-view-title breadcrumb">
-                    </ol>
-                </div>
-                <div class="oe-cp-search-view col-md-6" />
-            </div>
-            <div class="row">
-                <div class="col-md-6 oe-button-column">
-                    <div class="oe-cp-buttons pull-left"></div>
-                    <div class="oe-cp-sidebar pull-right"></div>
-                </div>
-                <div class="col-md-6">
-                    <div class="oe-search-options btn-group pull-left"/>
-                    <div class="oe-right-toolbar pull-right">
-                        <div class="oe-cp-pager"></div>
-                        <div class="oe-cp-switch-buttons btn-group btn-group-sm"></div>
-                    </div>
-                </div>
-            </div>
+    <div class="row o-control-panel-first-row">
+        <div class="col-md-6 o-cp-breadcrumbs-col">
+            <ol class="breadcrumb o-cp-breadcrumbs" />
+        </div>
+        <div class="col-md-6 o-cp-searchview" />
+    </div>
+    <div class="row o-control-panel-second-row">
+        <div class="col-md-6 o-buttons-col">
+            <div class="o-cp-buttons pull-left"></div>
+            <div class="o-cp-sidebar pull-right"></div>
+        </div>
+        <div class="col-md-6">
+            <div class="btn-group o-search-options pull-left"/>
+            <div class="btn-group btn-group-sm fa o-cp-switch-buttons pull-right"></div>
+            <div class="o-cp-pager pull-right"></div>
         </div>
     </div>
 </t>
 
 <t t-name="One2ManyControlPanel">
     <div class="oe-o2m-control-panel container-fluid">
-        <div class="oe-cp-buttons pull-left"/>
-        <div class="oe-cp-pager pull-right"/>
+        <div class="o-cp-buttons pull-left"/>
+        <div class="o-cp-pager pull-right"/>
     </div>
 </t>
 
@@ -511,7 +504,7 @@
 
 <t t-name="ViewManager.switch-buttons">
     <t t-foreach="views" t-as="view">
-        <button type="button" t-attf-class="btn btn-default fa oe-cp-switch-#{view.type}" t-att-data-view-type="view.type" t-att-title="view.label"/>
+        <button type="button" t-attf-class="btn btn-default o-cp-switch-#{view.type}" t-att-data-view-type="view.type" t-att-title="view.label"/>
     </t>
 </t>
 

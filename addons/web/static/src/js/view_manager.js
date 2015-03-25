@@ -161,7 +161,7 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
 
             // Prepare the ControlPanel content and update it
             var cp_status = {
-                active_view_selector: '.oe-cp-switch-' + self.active_view.type,
+                active_view_selector: '.o-cp-switch-' + self.active_view.type,
                 breadcrumbs: self.action_manager && self.action_manager.get_breadcrumbs(),
                 cp_content: _.extend({}, self.control_elements, self.render_view_control_elements()),
                 hidden: self.flags.headless,
@@ -229,7 +229,7 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
 
             // Create bootstrap tooltips
             _.each(this.views, function(view) {
-                self.control_elements.$switch_buttons.siblings('.oe-cp-switch-' + view.type).tooltip();
+                self.control_elements.$switch_buttons.siblings('.o-cp-switch-' + view.type).tooltip();
             });
 
             // Add onclick event listener
