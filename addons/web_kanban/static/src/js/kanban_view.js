@@ -20,6 +20,7 @@ var KanbanView = View.extend({
     display_name: _lt("Kanban"),
     view_type: "kanban",
     className: "o-kanban-view",
+    number_of_color_schemes: 10,
 
     init: function (parent, dataset, view_id, options) {
         this._super(parent, dataset, view_id, options);
@@ -131,12 +132,24 @@ var KanbanView = View.extend({
     render: function(records) {
         this.$el.css({display:'flex'});
         var kanban_record;
-        // var fragment = document.createDocumentFragment();
+        var fragment = document.createDocumentFragment();
         for (var i = 0; i < records.length; i++) {
             kanban_record = new kanban_common.KanbanRecord(this, records[i]);
-            kanban_record.appendTo(this.$el);
+            // kanban_record.appendTo(this.$el);
+            kanban_record.appendTo(fragment);
         }
-        // this.$el.append(fragment);
+        this.$el.append(fragment);
+    },
+    do_show: function() {
+        this.do_push_state({});
+        return this._super();
+    },
+    open_record: function(id, editable) {
+        if (this.dataset.select_id(id)) {
+            this.do_switch_view('form', null, { mode: editable ? "edit" : undefined });
+        } else {
+            this.do_warn("Kanban: could not find id#" + id);
+        }
     },
 });
 
@@ -199,13 +212,14 @@ var OldKanbanView = View.extend({
         this.fields_view = data;
 
         // use default order if defined in xml description
-        var default_order = this.fields_view.arch.attrs.default_order,
-            unsorted = !this.dataset._sort.length;
+        var default_order = this.fields_view.arch.attrs.default_order;
+        var unsorted = !this.dataset._sort.length;
+
         if (unsorted && default_order) {
             this.dataset.set_sort(default_order.split(','));
         }
         this.$el.addClass(this.fields_view.arch.attrs['class']);
-        this.$groups = this.$el.find('.oe_kanban_groups tr');
+        this.$groups = this.$('.oe_kanban_groups tr');
         this.fields_keys = _.keys(this.fields_view.fields);
         this.add_qweb_template();
         this.has_been_loaded.resolve();
