@@ -79,7 +79,7 @@
     </td>
 </t>
 <t t-name="KanbanView.record">
-    <div class="oe_fold_column oe_kanban_record">
+    <div class="o-kanban-record">
         <t t-raw="content"/>
     </div>
 </t>
