@@ -184,14 +184,16 @@
 </template>
 
 <template id="editor_head" inherit_id="website.layout" name="Editor" groups="base.group_website_publisher">
+    <xpath expr='//t[@t-call-assets="website.assets_frontend"]' position="before">
+        <t groups="base.group_website_designer" t-call-assets="web_editor.summernote"/>
+        <t groups="base.group_website_designer" t-call-assets="web_editor.editor"/>
+    </xpath>
     <xpath expr='//t[@t-call-assets="website.assets_frontend"]' position="after">
         <t t-call-assets="website.assets_editor"/>
     </xpath>
 </template>
 
 <template id="assets_editor" name="Editor assets">
-    <t groups="base.group_website_designer" t-call="web_editor.summernote"/>
-    <t groups="base.group_website_designer" t-call="web_editor.editor"/>
     <script type="text/javascript" src="/website/static/src/js/website.editor.js"></script>
     <script groups="base.group_website_designer" type="text/javascript" src="/website/static/lib/jQuery.transfo.js"></script>
     <script groups="base.group_website_designer" type="text/javascript" src="/website/static/lib/ace/ace.js"></script>

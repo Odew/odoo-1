@@ -13,6 +13,7 @@ openerp.Tour.register({
     id:   'rte',
     name: "Test RTE",
     mode: 'test',
+    path: '/web_editor/field/html?callback=FieldTextHtml_0&enable_editor=1&datarecord=%7B%7D',
     steps: [
         {
             title:     "Change html for this test",
@@ -333,6 +334,7 @@ openerp.Tour.register({
     id:   'rte_inline',
     name: "Test RTE Inline",
     mode: 'test',
+    path: '/web_editor/field/html/inline?callback=FieldTextHtml_0&enable_editor=1&datarecord=%7B%7D',
     steps: [
         {
             title:     "Change html for this test",
@@ -382,6 +384,5 @@ openerp.Tour.register({
         },
     ]
 });
-
 
 }());
