@@ -947,7 +947,7 @@ class view(osv.osv):
             view_id = self.get_view_id(cr, uid, xml_id, context=context)
         return self._read_template(cr, uid, view_id, context=context)
 
-    @tools.ormcache(skiparg=3)
+    @tools.ormcache('xml_id')
     def get_view_id(self, cr, uid, xml_id, context=None):
         return self.pool['ir.model.data'].xmlid_to_res_id(cr, uid, xml_id, raise_if_not_found=True)
 
