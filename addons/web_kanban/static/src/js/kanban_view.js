@@ -29,6 +29,7 @@ var KanbanView = View.extend({
         this.qweb.default_dict = _.clone(QWeb.default_dict);
         this.many2manys = [];
         this.fields_keys = [];
+        this.records = [];
     },
 
     view_loading: function(fvg) {
@@ -43,6 +44,30 @@ var KanbanView = View.extend({
         this.search_group_by = group_by;
         return this.dataset.read_slice(this.fields_keys.concat(['__last_update']), { 'limit': this.limit })
             .done(this.proxy('render'));
+    },
+    /**
+     * Render the buttons according to the KanbanView.buttons template and
+     * add listeners on it.
+     * Set this.$buttons with the produced jQuery element
+     * @param {jQuery} [$node] a jQuery node where the rendered buttons should be inserted
+     * $node may be undefined, in which case the ListView inserts them into this.options.$buttons
+     * or into a div of its template
+     */
+    render_buttons: function($node) {
+        this.$buttons = $(QWeb.render("KanbanView.buttons", {'widget': this}));
+        this.$buttons
+            .on('click', 'button.oe_kanban_button_new', this.do_add_record);
+            // .on('click', '.oe_kanban_add_column', this.do_add_group);
+        // Important: This should be done after do_search is finished so that
+        // this.grouped_by_m2o is set
+        this.$buttons.find('.oe_alternative').toggle(this.grouped_by_m2o);
+
+        $node = $node || this.options.$buttons;
+        if ($node) {
+            this.$buttons.appendTo($node);
+        } else {
+            this.$('.oe_kanban_buttons').replaceWith(this.$buttons);
+        }
     },
 
     add_qweb_template: function() {
@@ -129,14 +154,21 @@ var KanbanView = View.extend({
             }
         }
     },
+    do_add_record: function() {
+        this.dataset.index = null;
+        this.do_switch_view('form');
+    },
     render: function(records) {
         this.$el.css({display:'flex'});
+        _.invoke(this.records, 'destroy');
+        this.records = [];
         var kanban_record;
         var fragment = document.createDocumentFragment();
         for (var i = 0; i < records.length; i++) {
             kanban_record = new kanban_common.KanbanRecord(this, records[i]);
             // kanban_record.appendTo(this.$el);
             kanban_record.appendTo(fragment);
+            this.records.push(kanban_record);
         }
         this.$el.append(fragment);
     },
