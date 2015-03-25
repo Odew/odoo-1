@@ -15,7 +15,7 @@ class TestCodaFile(TransactionCase):
         coda_file_path = get_module_resource('l10n_be_coda', 'test_coda_file', 'Ontvangen_CODA.2013-01-11-18.59.15.txt')
         self.coda_file = open(coda_file_path, 'rb').read().encode('base64')
         self.context = {
-            'journal_id': self.registry('account.journal').search(cr, uid, [('name', '=', 'Bank Bank Account (test)')])[0]
+            'journal_id': self.registry('ir.model.data').get_object_reference(cr, uid, 'account', 'bank_journal')[1]
         }
         self.bank_statement_id = self.statement_import_model.create(cr, uid, dict(
             data_file=self.coda_file,

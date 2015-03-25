@@ -69,7 +69,7 @@
               self._update(cr, uid, 'account.invoice.line', 'sale', vals, 'test_crm_sale_invoice_2_line_1')
               self.pool.get('account.invoice').signal_workflow(cr, uid, [ref('test_crm_sale_invoice_1')], 'invoice_open')
               self.pool.get('account.invoice').signal_workflow(cr, uid, [ref('test_crm_sale_invoice_2')], 'invoice_open')
-              bank_journal_id = self.pool.get('account.journal').search(cr, uid, [('name', '=', 'Bank Bank Account (test)')])
+              bank_journal_id = ref('account.bank_journal')
               if bank_journal_id:
                   self.pool.get('account.invoice').pay_and_reconcile(cr, uid, [ref('test_crm_sale_invoice_1')], bank_journal_id[0], 1850)
                   self.pool.get('account.invoice').pay_and_reconcile(cr, uid, [ref('test_crm_sale_invoice_2')], bank_journal_id[0], 500)
