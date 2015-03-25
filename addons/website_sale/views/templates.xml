@@ -77,7 +77,7 @@
   </div>
   <div class="oe_product_image">
       <a itemprop="url" t-att-href="keep('/shop/product/%s' % slug(product), page=(pager['page']['num'] if pager['page']['num']>1 else None))">
-          <span itemprop="image" t-field="product.image" t-field-options='{"widget": "image" #{None if product_image_big else ", \"resize\": \"300x300\""}}'/>
+          <span itemprop="image" t-field="product.product_variant_ids.sorted(key=lambda i : i.price)[0].image" t-field-options='{"widget": "image" #{None if product_image_big else ", \"resize\": \"300x300\""}}'/>
       </a>
   </div>
   <section>
@@ -91,7 +91,7 @@
                   "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
                 }'/>&amp;nbsp;
               </t>
-              <span t-field="product.price" style="white-space: nowrap;"  t-field-options='{
+              <span t-field="product.product_variant_ids.sorted(key=lambda p : p.price)[0].price" style="white-space: nowrap;"  t-field-options='{
                    "widget": "monetary",
                    "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
                }'>
