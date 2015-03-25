@@ -485,7 +485,7 @@
         </div>
         <div class="col-md-6">
             <div class="btn-group o-search-options pull-left"/>
-            <div class="btn-group btn-group-sm fa o-cp-switch-buttons pull-right"></div>
+            <div class="btn-group btn-group-sm o-cp-switch-buttons pull-right"></div>
             <div class="o-cp-pager pull-right"></div>
         </div>
     </div>
@@ -504,7 +504,7 @@
 
 <t t-name="ViewManager.switch-buttons">
     <t t-foreach="views" t-as="view">
-        <button type="button" t-attf-class="btn btn-default o-cp-switch-#{view.type}" t-att-data-view-type="view.type" t-att-title="view.label"/>
+        <button type="button" t-attf-class="btn btn-default fa fa-lg o-cp-switch-#{view.type}" t-att-data-view-type="view.type" t-att-title="view.label"/>
     </t>
 </t>
 
