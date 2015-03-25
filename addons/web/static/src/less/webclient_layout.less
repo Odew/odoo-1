@@ -10,6 +10,8 @@
 @o-secondary-menu-zindex: @zindex-tooltip + 2;
 @o-overlay-zindex: @zindex-tooltip + 1;
 
+@o-navbar-zindex: @zindex-tooltip + 4;
+
 // Mixins
 .o-menu-boilerplate() {
     position: absolute;
@@ -25,6 +27,10 @@ html {
 
     body {
         height: 100%;
+
+        .navbar {
+            z-index: @o-navbar-zindex;
+        }
 
         .o-primary-menu {
             z-index: @o-primary-menu-zindex;
