@@ -373,7 +373,7 @@ class res_users(osv.osv):
             default['login'] = _("%s (copy)") % user2copy['login']
         return super(res_users, self).copy(cr, uid, id, default, context)
 
-    @tools.ormcache(skiparg=2)
+    @tools.ormcache('uid')
     def context_get(self, cr, uid, context=None):
         user = self.browse(cr, SUPERUSER_ID, uid, context)
         result = {}
@@ -524,7 +524,7 @@ class res_users(osv.osv):
             'target': 'new',
         }
 
-    @tools.ormcache(skiparg=2)
+    @tools.ormcache('uid', 'group_ext_id')
     def has_group(self, cr, uid, group_ext_id):
         """Checks whether user belongs to given group.
 

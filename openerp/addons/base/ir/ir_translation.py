@@ -334,7 +334,7 @@ class ir_translation(osv.osv):
         
         return (query, params)
 
-    @tools.ormcache(skiparg=3)
+    @tools.ormcache('name', 'types', 'lang', 'source', 'res_id')
     def _get_source(self, cr, uid, name, types, lang, source=None, res_id=None):
         """
         Returns the translation for the given combination of name, type, language
