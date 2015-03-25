@@ -704,9 +704,9 @@
             </th>
             <t t-foreach="columns" t-as="column">
                 <th t-if="!column.meta and column.invisible !== '1'" t-att-data-id="column.id"
-                    t-attf-class="#{((options.sortable and column.tag !== 'button') ? 'o-sortable' : null)}"><div>
+                    t-attf-class="#{((options.sortable and column.tag !== 'button') ? 'o-sortable' : null)}">
                     <t t-if="column.tag !== 'button'"><t t-esc="column.string"/></t>
-                </div></th>
+                </th>
             </t>
             <th t-if="options.deletable" class="oe_list_record_delete" width="13px"/>
         </tr>
