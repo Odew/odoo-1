@@ -1,0 +1,86 @@
+# -*- coding: utf-8 -*-
+import requests
+import simplejson
+#from openerp import models, api, fields
+#
+#def account_journal(models.Model):
+#    _inherit = "account.journal"
+#
+#    plaid_id = field.char(string="The plaid id")
+#
+#def bank_statement(models.Model):
+#    _inherit = "account.bank.statement"
+#
+#    plaid_id = field.char(string="The plaid id")
+#
+##def plaid_account_to_odoo_account(plaid_account):
+#
+#def transactions_to_bank_statement(transactions):
+#    # Create a bank statement
+#    bank_statement = {
+#        bank_statement['date'] = 1, #today
+#        bank_statement['name'] = "plaid", #Unique?
+#    }
+#
+#    journal = self.env['account.journal'].search([('plaid_id', '=', transactions[0]['_account'])])
+#    bank_statement['journal_id'] = #Look with the plaid_id
+#
+#    # Add all the transactions
+#    for transaction in transactions:
+#        line = {
+#            'plaid_id': transaction['_id'],
+#            'name' = transaction['name'],
+#            'date' = transaction['date'],
+#            'amount' = -1 * transaction['amount'],
+#        }
+#        bank_statement['line'].append((0, 0, line))
+
+        
+
+
+
+def fetch_plaid(service, params):
+    params['client_id'] = 'test_id'
+    params['secret'] = 'test_secret'
+    resp = requests.post('https://tartan.plaid.com/'+service, params=params)
+    return (resp.status_code, simplejson.loads(resp.text))
+
+
+def connect(user, passwd, institution, pin=None):
+    print("----- connect ----- ")
+    print("user: " + str(user) + " | passwd: " + str(passwd) + " | institution: " + str(institution))
+    params = {
+        'username': user,
+        'password': passwd,
+        'type': institution,
+    }
+    if pin:
+        params['pin'] = pin
+
+    code, connect = fetch_plaid("connect", params)
+
+    return mfa(code, connect, institution)
+
+def update_account(connect):
+    print("----- end -----")
+    return connect
+
+def mfa(code, connect, institution):
+    print("----- mfa -----")
+    print("code: " + str(code) + " | institution: " + str(institution))
+    if code == 200:
+        return update_account(connect)
+    else:
+        # Ask for new
+        print(connect)
+        mfa = raw_input("new mfa : ")
+        params = {
+            'access_token': connect['access_token'],
+            'mfa': mfa,
+        }
+        n_code, n_connect = fetch_plaid("step", params)
+        return mfa(n_code, n_connect, institution)
+    
+
+res = connect("plaid_test", "plaid_good", "bofa")
+print(res)

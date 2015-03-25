@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="SelectionsTemplate">
+      <t t-foreach="mfa" t-as="selection">
+        <div>
+	<t t-esc="selection.question"/>
+	<select class="choices">
+	  <t t-foreach="selection.answers" t-as="answer">
+	    <option t-att-value="answer"><t t-esc="answer"/></option>
+	  </t>
+	</select>
+	</div>
+      </t>
+    </t>
+</templates>

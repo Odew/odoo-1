@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <template id="assets_backend" name="account plaid assets" inherit_id="web.assets_backend">
+      <xpath expr="." position="inside">
+        <script type="text/javascript" src="/account_plaid/static/js/widget.js"></script>
+	<link rel="stylesheet" href="/account_plaid/static/css/widgets.less"/>
+      </xpath>
+    </template>
+
+    <record model="ir.ui.view" id="plaid_page">
+      <field name="name">plaid institution</field>
+      <field name="model">account.journal</field>
+      <field name="inherit_id" ref="account.view_account_journal_form"/>
+      <field name="arch" type="xml">
+        <notebook position="inside">
+	  <page string="Plaid" attrs="{'invisible': [('type', '!=', 'bank')]}">
+	    <button name="launch_plaid_wizard"
+		    string="select"
+		    type="object"/>
+	    <button name="launch_synch"
+		    string="Retrieve data"
+		    type="object"/>
+	    <group>
+		<field name="plaid_id" readonly="1"/>
+	    </group>
+	  </page>
+        </notebook>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="plaid_institution_wizard">
+      <field name="name">Plaid Institution Wizard</field>
+      <field name="model">plaid.institutions.wizard</field>
+      <field name="arch" type="xml">
+	<form string="Institution">
+	  <field name="error" class="error"
+		 attrs="{'invisible': [('error', '=', '')]}"
+		 readonly="1"/>
+	  <group>
+	    <field name="have_username" invisible="1"/>
+	    <field name="have_passwd" invisible="1"/>
+	    <field name="have_pin" invisible="1"/>
+	    <field name="have_mfa" invisible="1"/>
+	    <field name="goal" invisible="1"/>
+	    <field name="name" attrs="{'readonly': [('goal', '=', 'sync')]}"
+		   widget='selection'/>
+	    <field name="username"
+		   attrs="{'invisible': ['|', ('name', '=', False), ('have_username', '=', False)]}"/>
+	    <field name="passwd"
+		   attrs="{'invisible': ['|', ('name', '=', False), ('have_passwd', '=', False)]}"/>
+	    <field name="pin"
+		   attrs="{'invisible': ['|', ('name', '=', False), ('have_pin', '=', False)]}"/>
+	    <field name="mfa"
+		   domain="[('institution', '=', name)]"
+		   attrs="{'invisible': ['|', ('name', '=', False), ('have_mfa', '=', False)]}"
+		   widget='selection'/>
+	  </group>
+	  <footer>
+	    <button string="Login" type="object" name="plaid_login"/>
+	    <button string="Cancel" class="oe_link" special="cancel"/>
+	  </footer>
+	</form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="plaid_mfa_response_wizard">
+      <field name="name">Plaid MFA response Wizard</field>
+      <field name="model">plaid.mfa.response.wizard</field>
+      <field name="arch" type="xml">
+	<form string="MFA">
+	  <field name="mfa_type" invisible="1"/>
+	  <field name="error" class="error"
+		 attrs="{'invisible': [('error', '=', '')]}"
+		 readonly="1"/>
+	  <field name="message" widget="label"
+		 readonly="1" attrs="{'invisible': [('mfa_type', '!=', 'message')]}"/>
+	  <group>
+	    <field name="response" attrs="{'invisible': [('mfa_type', '!=', 'message')]}"/>
+	  </group>
+	  <field name="selections" widget="selections" attrs="{'invisible': [('mfa_type', '!=', 'selections')]}"/>
+	  <footer>
+	    <button string="continue" type="object" name="create_wizard"/>
+	    <button string="Cancel" class="oe_link" special="cancel"/>
+	  </footer>
+	</form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="plaid_select_account_wizard">
+      <field name="name">Plaid select account Wizard</field>
+      <field name="model">plaid.select.account.wizard</field>
+      <field name="arch" type="xml">
+	<form string="MFA">
+	  <field name="name"/>
+	  <footer>
+	    <button string="Select" type="object" name="select"/>
+	    <button string="Cancel" class="oe_link" special="cancel"/>
+	  </footer>
+	</form>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="plaid_code_wizard">
+      <field name="name">Plaid code Wizard</field>
+      <field name="model">plaid.code.wizard</field>
+      <field name="arch" type="xml">
+	<form string="MFA">
+	  <field name="type" widget='selection'/>
+	  <footer>
+	    <button string="Select" type="object" name="select"/>
+	    <button string="Cancel" class="oe_link" special="cancel"/>
+	  </footer>
+	</form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="plaid_select_account_wizard">
+      <field name="name">Plaid select code Wizard</field>
+      <field name="model">plaid.select.account.wizard</field>
+      <field name="arch" type="xml">
+	<form string="Select Account">
+	  <group>
+	    <field name="name" widget='selection'/>
+	  </group>
+	  <footer>
+	    <button string="Select" type="object" name="select"/>
+	    <button string="Cancel" class="oe_link" special="cancel"/>
+	  </footer>
+	</form>
+      </field>
+    </record>
+    <!-- menu categories -->
+    <!--
+    <menuitem name="Menu 1" id="account_plaid.menu_1" parent="account_plaid.menu_root"/>
+    <menuitem name="Menu 2" id="account_plaid.menu_2" parent="account_plaid.menu_root"/>
+    -->
+    <!-- actions -->
+    <!--
+    <menuitem name="List" id="account_plaid.menu_1_list" parent="account_plaid.menu_1"
+              action="account_plaid.action_window"/>
+    <menuitem name="Server to list" id="account_plaid" parent="account_plaid.menu_2"
+              action="account_plaid.action_server"/>
+    -->
+  </data>
+</openerp>
