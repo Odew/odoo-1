@@ -1,7 +1,412 @@
-/* ---- SummerNote Minimal Reset ---- {{{ */
-.note-popover .popover {
+/* ---- EDITOR BAR ---- {{{ */
+.note-popover, #oe_manipulators, #web_editor-top-edit, .note-link-dialog, .note-image-dialog {
+  /* button */
+  /* form */
+  /* col */
+  /* dropdown */
+  /* list-group */
+  /* tab */
+  /* pager */
+  /* add submenu css */
+  /* global */
+}
+.note-popover *, #oe_manipulators *, #web_editor-top-edit *, .note-link-dialog *, .note-image-dialog * {
+  box-sizing: border-box;
+}
+.note-popover a, #oe_manipulators a, #web_editor-top-edit a, .note-link-dialog a, .note-image-dialog a {
+  text-decoration: none;
+}
+.note-popover ul, .note-popover ol, #oe_manipulators ul, #oe_manipulators ol, #web_editor-top-edit ul, #web_editor-top-edit ol, .note-link-dialog ul, .note-link-dialog ol, .note-image-dialog ul, .note-image-dialog ol {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+.note-popover .clearfix:before, .note-popover .clearfix:after, .note-popover .dl-horizontal dd:before, .note-popover .dl-horizontal dd:after, .note-popover .container:before, .note-popover .container:after, .note-popover .container-fluid:before, .note-popover .container-fluid:after, .note-popover .row:before, .note-popover .row:after, .note-popover .form-horizontal .form-group:before, .note-popover .form-horizontal .form-group:after, .note-popover .btn-toolbar:before, .note-popover .btn-toolbar:after, .note-popover .btn-group-vertical > .btn-group:before, .note-popover .btn-group-vertical > .btn-group:after, .note-popover .nav:before, .note-popover .nav:after, .note-popover .navbar:before, .note-popover .navbar:after, .note-popover .navbar-header:before, .note-popover .navbar-header:after, .note-popover .navbar-collapse:before, .note-popover .navbar-collapse:after, .note-popover .pager:before, .note-popover .pager:after, .note-popover .panel-body:before, .note-popover .panel-body:after, .note-popover .modal-footer:before, .note-popover .modal-footer:after, #oe_manipulators .clearfix:before, #oe_manipulators .clearfix:after, #oe_manipulators .dl-horizontal dd:before, #oe_manipulators .dl-horizontal dd:after, #oe_manipulators .container:before, #oe_manipulators .container:after, #oe_manipulators .container-fluid:before, #oe_manipulators .container-fluid:after, #oe_manipulators .row:before, #oe_manipulators .row:after, #oe_manipulators .form-horizontal .form-group:before, #oe_manipulators .form-horizontal .form-group:after, #oe_manipulators .btn-toolbar:before, #oe_manipulators .btn-toolbar:after, #oe_manipulators .btn-group-vertical > .btn-group:before, #oe_manipulators .btn-group-vertical > .btn-group:after, #oe_manipulators .nav:before, #oe_manipulators .nav:after, #oe_manipulators .navbar:before, #oe_manipulators .navbar:after, #oe_manipulators .navbar-header:before, #oe_manipulators .navbar-header:after, #oe_manipulators .navbar-collapse:before, #oe_manipulators .navbar-collapse:after, #oe_manipulators .pager:before, #oe_manipulators .pager:after, #oe_manipulators .panel-body:before, #oe_manipulators .panel-body:after, #oe_manipulators .modal-footer:before, #oe_manipulators .modal-footer:after, #web_editor-top-edit .clearfix:before, #web_editor-top-edit .clearfix:after, #web_editor-top-edit .dl-horizontal dd:before, #web_editor-top-edit .dl-horizontal dd:after, #web_editor-top-edit .container:before, #web_editor-top-edit .container:after, #web_editor-top-edit .container-fluid:before, #web_editor-top-edit .container-fluid:after, #web_editor-top-edit .row:before, #web_editor-top-edit .row:after, #web_editor-top-edit .form-horizontal .form-group:before, #web_editor-top-edit .form-horizontal .form-group:after, #web_editor-top-edit .btn-toolbar:before, #web_editor-top-edit .btn-toolbar:after, #web_editor-top-edit .btn-group-vertical > .btn-group:before, #web_editor-top-edit .btn-group-vertical > .btn-group:after, #web_editor-top-edit .nav:before, #web_editor-top-edit .nav:after, #web_editor-top-edit .navbar:before, #web_editor-top-edit .navbar:after, #web_editor-top-edit .navbar-header:before, #web_editor-top-edit .navbar-header:after, #web_editor-top-edit .navbar-collapse:before, #web_editor-top-edit .navbar-collapse:after, #web_editor-top-edit .pager:before, #web_editor-top-edit .pager:after, #web_editor-top-edit .panel-body:before, #web_editor-top-edit .panel-body:after, #web_editor-top-edit .modal-footer:before, #web_editor-top-edit .modal-footer:after, .note-link-dialog .clearfix:before, .note-link-dialog .clearfix:after, .note-link-dialog .dl-horizontal dd:before, .note-link-dialog .dl-horizontal dd:after, .note-link-dialog .container:before, .note-link-dialog .container:after, .note-link-dialog .container-fluid:before, .note-link-dialog .container-fluid:after, .note-link-dialog .row:before, .note-link-dialog .row:after, .note-link-dialog .form-horizontal .form-group:before, .note-link-dialog .form-horizontal .form-group:after, .note-link-dialog .btn-toolbar:before, .note-link-dialog .btn-toolbar:after, .note-link-dialog .btn-group-vertical > .btn-group:before, .note-link-dialog .btn-group-vertical > .btn-group:after, .note-link-dialog .nav:before, .note-link-dialog .nav:after, .note-link-dialog .navbar:before, .note-link-dialog .navbar:after, .note-link-dialog .navbar-header:before, .note-link-dialog .navbar-header:after, .note-link-dialog .navbar-collapse:before, .note-link-dialog .navbar-collapse:after, .note-link-dialog .pager:before, .note-link-dialog .pager:after, .note-link-dialog .panel-body:before, .note-link-dialog .panel-body:after, .note-link-dialog .modal-footer:before, .note-link-dialog .modal-footer:after, .note-image-dialog .clearfix:before, .note-image-dialog .clearfix:after, .note-image-dialog .dl-horizontal dd:before, .note-image-dialog .dl-horizontal dd:after, .note-image-dialog .container:before, .note-image-dialog .container:after, .note-image-dialog .container-fluid:before, .note-image-dialog .container-fluid:after, .note-image-dialog .row:before, .note-image-dialog .row:after, .note-image-dialog .form-horizontal .form-group:before, .note-image-dialog .form-horizontal .form-group:after, .note-image-dialog .btn-toolbar:before, .note-image-dialog .btn-toolbar:after, .note-image-dialog .btn-group-vertical > .btn-group:before, .note-image-dialog .btn-group-vertical > .btn-group:after, .note-image-dialog .nav:before, .note-image-dialog .nav:after, .note-image-dialog .navbar:before, .note-image-dialog .navbar:after, .note-image-dialog .navbar-header:before, .note-image-dialog .navbar-header:after, .note-image-dialog .navbar-collapse:before, .note-image-dialog .navbar-collapse:after, .note-image-dialog .pager:before, .note-image-dialog .pager:after, .note-image-dialog .panel-body:before, .note-image-dialog .panel-body:after, .note-image-dialog .modal-footer:before, .note-image-dialog .modal-footer:after {
+  content: " ";
+  display: table;
+  clear: both;
+}
+.note-popover .caret, #oe_manipulators .caret, #web_editor-top-edit .caret, .note-link-dialog .caret, .note-image-dialog .caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  vertical-align: middle;
+  border-top: 4px solid;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+.note-popover .btn.dropdown-toggle, #oe_manipulators .btn.dropdown-toggle, #web_editor-top-edit .btn.dropdown-toggle, .note-link-dialog .btn.dropdown-toggle, .note-image-dialog .btn.dropdown-toggle {
+  position: relative;
+  float: left;
+}
+.note-popover .btn, #oe_manipulators .btn, #web_editor-top-edit .btn, .note-link-dialog .btn, .note-image-dialog .btn {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.note-popover .btn .caret, #oe_manipulators .btn .caret, #web_editor-top-edit .btn .caret, .note-link-dialog .btn .caret, .note-image-dialog .btn .caret {
+  margin-left: 0;
+}
+.note-popover .btn-sm, #oe_manipulators .btn-sm, #web_editor-top-edit .btn-sm, .note-link-dialog .btn-sm, .note-image-dialog .btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+.note-popover .btn-group, #oe_manipulators .btn-group, #web_editor-top-edit .btn-group, .note-link-dialog .btn-group, .note-image-dialog .btn-group {
+  padding-top: 0;
+  margin-top: 0;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+.note-popover .btn-group > .btn, #oe_manipulators .btn-group > .btn, #web_editor-top-edit .btn-group > .btn, .note-link-dialog .btn-group > .btn, .note-image-dialog .btn-group > .btn {
+  position: relative;
+  float: left;
+}
+.note-popover .btn-group > .btn:first-child, #oe_manipulators .btn-group > .btn:first-child, #web_editor-top-edit .btn-group > .btn:first-child, .note-link-dialog .btn-group > .btn:first-child, .note-image-dialog .btn-group > .btn:first-child {
+  margin-left: 0;
+}
+.note-popover .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle), #oe_manipulators .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle), #web_editor-top-edit .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle), .note-link-dialog .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle), .note-image-dialog .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.note-popover .btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle), #oe_manipulators .btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle), #web_editor-top-edit .btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle), .note-link-dialog .btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle), .note-image-dialog .btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+  border-radius: 0;
+}
+.note-popover .btn-group > .btn:last-child:not(:first-child), .note-popover .btn-group > .btn > .dropdown-toggle:not(:first-child), #oe_manipulators .btn-group > .btn:last-child:not(:first-child), #oe_manipulators .btn-group > .btn > .dropdown-toggle:not(:first-child), #web_editor-top-edit .btn-group > .btn:last-child:not(:first-child), #web_editor-top-edit .btn-group > .btn > .dropdown-toggle:not(:first-child), .note-link-dialog .btn-group > .btn:last-child:not(:first-child), .note-link-dialog .btn-group > .btn > .dropdown-toggle:not(:first-child), .note-image-dialog .btn-group > .btn:last-child:not(:first-child), .note-image-dialog .btn-group > .btn > .dropdown-toggle:not(:first-child) {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+.note-popover .btn-group > .btn + .dropdown-toggle, #oe_manipulators .btn-group > .btn + .dropdown-toggle, #web_editor-top-edit .btn-group > .btn + .dropdown-toggle, .note-link-dialog .btn-group > .btn + .dropdown-toggle, .note-image-dialog .btn-group > .btn + .dropdown-toggle {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.note-popover .btn-group .btn + .btn, .note-popover .btn-group .btn + .btn-group, .note-popover .btn-group + .btn, .note-popover .btn-group + .btn-group, #oe_manipulators .btn-group .btn + .btn, #oe_manipulators .btn-group .btn + .btn-group, #oe_manipulators .btn-group + .btn, #oe_manipulators .btn-group + .btn-group, #web_editor-top-edit .btn-group .btn + .btn, #web_editor-top-edit .btn-group .btn + .btn-group, #web_editor-top-edit .btn-group + .btn, #web_editor-top-edit .btn-group + .btn-group, .note-link-dialog .btn-group .btn + .btn, .note-link-dialog .btn-group .btn + .btn-group, .note-link-dialog .btn-group + .btn, .note-link-dialog .btn-group + .btn-group, .note-image-dialog .btn-group .btn + .btn, .note-image-dialog .btn-group .btn + .btn-group, .note-image-dialog .btn-group + .btn, .note-image-dialog .btn-group + .btn-group {
+  margin-left: -1px;
+}
+.note-popover .btn-link, #oe_manipulators .btn-link, #web_editor-top-edit .btn-link, .note-link-dialog .btn-link, .note-image-dialog .btn-link {
+  border-color: transparent;
+  color: #428bca;
+}
+.note-popover .btn-link:hover, .note-popover .btn-link:focus, #oe_manipulators .btn-link:hover, #oe_manipulators .btn-link:focus, #web_editor-top-edit .btn-link:hover, #web_editor-top-edit .btn-link:focus, .note-link-dialog .btn-link:hover, .note-link-dialog .btn-link:focus, .note-image-dialog .btn-link:hover, .note-image-dialog .btn-link:focus {
+  color: #2a6496;
+  text-decoration: underline;
+  background-color: transparent;
+}
+.note-popover .form-group, #oe_manipulators .form-group, #web_editor-top-edit .form-group, .note-link-dialog .form-group, .note-image-dialog .form-group {
+  margin-bottom: 15px;
+}
+.note-popover .form-control, #oe_manipulators .form-control, #web_editor-top-edit .form-control, .note-link-dialog .form-control, .note-image-dialog .form-control {
+  display: block;
+  width: 100%;
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857;
+  color: #555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+.note-popover .form-horizontal .form-group, #oe_manipulators .form-horizontal .form-group, #web_editor-top-edit .form-horizontal .form-group, .note-link-dialog .form-horizontal .form-group, .note-image-dialog .form-horizontal .form-group {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+.note-popover .form-group, #oe_manipulators .form-group, #web_editor-top-edit .form-group, .note-link-dialog .form-group, .note-image-dialog .form-group {
+  margin-bottom: 15px;
+}
+.note-popover .form-control.select2-container, #oe_manipulators .form-control.select2-container, #web_editor-top-edit .form-control.select2-container, .note-link-dialog .form-control.select2-container, .note-image-dialog .form-control.select2-container {
+  height: auto !important;
+  padding: 0;
+}
+.note-popover label, #oe_manipulators label, #web_editor-top-edit label, .note-link-dialog label, .note-image-dialog label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+.note-popover input, .note-popover button, .note-popover select, .note-popover textarea, #oe_manipulators input, #oe_manipulators button, #oe_manipulators select, #oe_manipulators textarea, #web_editor-top-edit input, #web_editor-top-edit button, #web_editor-top-edit select, #web_editor-top-edit textarea, .note-link-dialog input, .note-link-dialog button, .note-link-dialog select, .note-link-dialog textarea, .note-image-dialog input, .note-image-dialog button, .note-image-dialog select, .note-image-dialog textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+.note-popover .col-sm-1, .note-popover .col-sm-2, .note-popover .col-sm-3, .note-popover .col-sm-4, .note-popover .col-sm-5, .note-popover .col-sm-6, .note-popover .col-sm-7, .note-popover .col-sm-8, .note-popover .col-sm-9, .note-popover .col-sm-10, .note-popover .col-sm-11, .note-popover .col-sm-12, .note-popover .col-lg-12, #oe_manipulators .col-sm-1, #oe_manipulators .col-sm-2, #oe_manipulators .col-sm-3, #oe_manipulators .col-sm-4, #oe_manipulators .col-sm-5, #oe_manipulators .col-sm-6, #oe_manipulators .col-sm-7, #oe_manipulators .col-sm-8, #oe_manipulators .col-sm-9, #oe_manipulators .col-sm-10, #oe_manipulators .col-sm-11, #oe_manipulators .col-sm-12, #oe_manipulators .col-lg-12, #web_editor-top-edit .col-sm-1, #web_editor-top-edit .col-sm-2, #web_editor-top-edit .col-sm-3, #web_editor-top-edit .col-sm-4, #web_editor-top-edit .col-sm-5, #web_editor-top-edit .col-sm-6, #web_editor-top-edit .col-sm-7, #web_editor-top-edit .col-sm-8, #web_editor-top-edit .col-sm-9, #web_editor-top-edit .col-sm-10, #web_editor-top-edit .col-sm-11, #web_editor-top-edit .col-sm-12, #web_editor-top-edit .col-lg-12, .note-link-dialog .col-sm-1, .note-link-dialog .col-sm-2, .note-link-dialog .col-sm-3, .note-link-dialog .col-sm-4, .note-link-dialog .col-sm-5, .note-link-dialog .col-sm-6, .note-link-dialog .col-sm-7, .note-link-dialog .col-sm-8, .note-link-dialog .col-sm-9, .note-link-dialog .col-sm-10, .note-link-dialog .col-sm-11, .note-link-dialog .col-sm-12, .note-link-dialog .col-lg-12, .note-image-dialog .col-sm-1, .note-image-dialog .col-sm-2, .note-image-dialog .col-sm-3, .note-image-dialog .col-sm-4, .note-image-dialog .col-sm-5, .note-image-dialog .col-sm-6, .note-image-dialog .col-sm-7, .note-image-dialog .col-sm-8, .note-image-dialog .col-sm-9, .note-image-dialog .col-sm-10, .note-image-dialog .col-sm-11, .note-image-dialog .col-sm-12, .note-image-dialog .col-lg-12 {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+  width: 100%;
+}
+.note-popover .dropdown, #oe_manipulators .dropdown, #web_editor-top-edit .dropdown, .note-link-dialog .dropdown, .note-image-dialog .dropdown {
+  position: relative;
+}
+.note-popover .dropdown > .btn, .note-popover .btn-group > .btn, #oe_manipulators .dropdown > .btn, #oe_manipulators .btn-group > .btn, #web_editor-top-edit .dropdown > .btn, #web_editor-top-edit .btn-group > .btn, .note-link-dialog .dropdown > .btn, .note-link-dialog .btn-group > .btn, .note-image-dialog .dropdown > .btn, .note-image-dialog .btn-group > .btn {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+  text-decoration: none;
+}
+.note-popover .dropdown > .btn-primary, .note-popover .btn-group > .btn-primary, #oe_manipulators .dropdown > .btn-primary, #oe_manipulators .btn-group > .btn-primary, #web_editor-top-edit .dropdown > .btn-primary, #web_editor-top-edit .btn-group > .btn-primary, .note-link-dialog .dropdown > .btn-primary, .note-link-dialog .btn-group > .btn-primary, .note-image-dialog .dropdown > .btn-primary, .note-image-dialog .btn-group > .btn-primary {
+  color: #fff;
+  background-color: #428bca;
+  border-color: #357ebd;
+}
+.note-popover .dropdown-menu, #oe_manipulators .dropdown-menu, #web_editor-top-edit .dropdown-menu, .note-link-dialog .dropdown-menu, .note-image-dialog .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  font-size: 14px;
+  text-align: left;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  background-clip: padding-box;
+}
+.note-popover .dropdown-menu > li > a, #oe_manipulators .dropdown-menu > li > a, #web_editor-top-edit .dropdown-menu > li > a, .note-link-dialog .dropdown-menu > li > a, .note-image-dialog .dropdown-menu > li > a {
+  display: block !important;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  color: #666;
+  white-space: nowrap;
+  background: transparent;
+}
+.note-popover .dropdown-menu > li.active > a, #oe_manipulators .dropdown-menu > li.active > a, #web_editor-top-edit .dropdown-menu > li.active > a, .note-link-dialog .dropdown-menu > li.active > a, .note-image-dialog .dropdown-menu > li.active > a {
+  color: #fff;
+  text-decoration: none;
+  background-color: #428bca;
+  outline: 0;
+}
+.note-popover .open > .dropdown-menu, #oe_manipulators .open > .dropdown-menu, #web_editor-top-edit .open > .dropdown-menu, .note-link-dialog .open > .dropdown-menu, .note-image-dialog .open > .dropdown-menu {
+  display: block;
+}
+.note-popover .list-group, #oe_manipulators .list-group, #web_editor-top-edit .list-group, .note-link-dialog .list-group, .note-image-dialog .list-group {
+  margin-bottom: 20px;
+  padding-left: 0;
+}
+.note-popover .list-group-item, #oe_manipulators .list-group-item, #web_editor-top-edit .list-group-item, .note-link-dialog .list-group-item, .note-image-dialog .list-group-item {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+  margin-bottom: -1px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+.note-popover .list-group-item:first-child, #oe_manipulators .list-group-item:first-child, #web_editor-top-edit .list-group-item:first-child, .note-link-dialog .list-group-item:first-child, .note-image-dialog .list-group-item:first-child {
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+}
+.note-popover .list-group-item:last-child, #oe_manipulators .list-group-item:last-child, #web_editor-top-edit .list-group-item:last-child, .note-link-dialog .list-group-item:last-child, .note-image-dialog .list-group-item:last-child {
+  margin-bottom: 0;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+.note-popover .list-group-item-heading, #oe_manipulators .list-group-item-heading, #web_editor-top-edit .list-group-item-heading, .note-link-dialog .list-group-item-heading, .note-image-dialog .list-group-item-heading {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+.note-popover .list-group-item.active, #oe_manipulators .list-group-item.active, #web_editor-top-edit .list-group-item.active, .note-link-dialog .list-group-item.active, .note-image-dialog .list-group-item.active {
+  z-index: 2;
+  color: #fff;
+  background-color: #428bca;
+  border-color: #428bca;
+}
+.note-popover .tab-content > .tab-pane, #oe_manipulators .tab-content > .tab-pane, #web_editor-top-edit .tab-content > .tab-pane, .note-link-dialog .tab-content > .tab-pane, .note-image-dialog .tab-content > .tab-pane {
+  display: none;
+}
+.note-popover .tab-content > .active, #oe_manipulators .tab-content > .active, #web_editor-top-edit .tab-content > .active, .note-link-dialog .tab-content > .active, .note-image-dialog .tab-content > .active {
+  display: block;
+}
+.note-popover .nav, #oe_manipulators .nav, #web_editor-top-edit .nav, .note-link-dialog .nav, .note-image-dialog .nav {
+  margin-bottom: 0;
+  padding-left: 0;
+  list-style: none;
+}
+.note-popover .nav > li, #oe_manipulators .nav > li, #web_editor-top-edit .nav > li, .note-link-dialog .nav > li, .note-image-dialog .nav > li {
+  position: relative;
+  display: block;
+}
+.note-popover .nav > li > a, #oe_manipulators .nav > li > a, #web_editor-top-edit .nav > li > a, .note-link-dialog .nav > li > a, .note-image-dialog .nav > li > a {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+}
+.note-popover .nav-tabs, #oe_manipulators .nav-tabs, #web_editor-top-edit .nav-tabs, .note-link-dialog .nav-tabs, .note-image-dialog .nav-tabs {
+  border-bottom: 1px solid #ddd;
+}
+.note-popover .nav-tabs > li, #oe_manipulators .nav-tabs > li, #web_editor-top-edit .nav-tabs > li, .note-link-dialog .nav-tabs > li, .note-image-dialog .nav-tabs > li {
+  float: left;
+  margin-bottom: -1px;
+}
+.note-popover .nav-tabs > li > a, #oe_manipulators .nav-tabs > li > a, #web_editor-top-edit .nav-tabs > li > a, .note-link-dialog .nav-tabs > li > a, .note-image-dialog .nav-tabs > li > a {
+  margin-right: 2px;
+  line-height: 1.42857;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+}
+.note-popover .nav-tabs > li.active > a, .note-popover .nav-tabs > li.active > a:hover, .note-popover .nav-tabs > li.active > a:focus, #oe_manipulators .nav-tabs > li.active > a, #oe_manipulators .nav-tabs > li.active > a:hover, #oe_manipulators .nav-tabs > li.active > a:focus, #web_editor-top-edit .nav-tabs > li.active > a, #web_editor-top-edit .nav-tabs > li.active > a:hover, #web_editor-top-edit .nav-tabs > li.active > a:focus, .note-link-dialog .nav-tabs > li.active > a, .note-link-dialog .nav-tabs > li.active > a:hover, .note-link-dialog .nav-tabs > li.active > a:focus, .note-image-dialog .nav-tabs > li.active > a, .note-image-dialog .nav-tabs > li.active > a:hover, .note-image-dialog .nav-tabs > li.active > a:focus {
+  color: #8c8c8c;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-bottom-color: transparent;
+  cursor: default;
+}
+.note-popover .pager, #oe_manipulators .pager, #web_editor-top-edit .pager, .note-link-dialog .pager, .note-image-dialog .pager {
+  padding-left: 0;
+  margin: 20px 0;
+  list-style: none;
+  text-align: center;
+}
+.note-popover .pager li, #oe_manipulators .pager li, #web_editor-top-edit .pager li, .note-link-dialog .pager li, .note-image-dialog .pager li {
+  display: inline;
+}
+.note-popover .pager li > a, .note-popover .pager li > span, #oe_manipulators .pager li > a, #oe_manipulators .pager li > span, #web_editor-top-edit .pager li > a, #web_editor-top-edit .pager li > span, .note-link-dialog .pager li > a, .note-link-dialog .pager li > span, .note-image-dialog .pager li > a, .note-image-dialog .pager li > span {
+  display: inline-block;
+  padding: 5px 14px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+}
+.note-popover .pager .previous > a, .note-popover .pager .previous > span, #oe_manipulators .pager .previous > a, #oe_manipulators .pager .previous > span, #web_editor-top-edit .pager .previous > a, #web_editor-top-edit .pager .previous > span, .note-link-dialog .pager .previous > a, .note-link-dialog .pager .previous > span, .note-image-dialog .pager .previous > a, .note-image-dialog .pager .previous > span {
+  float: left;
+}
+.note-popover .pager .disabled > a, .note-popover .pager .disabled > a:hover, .note-popover .pager .disabled > a:focus, .note-popover .pager .disabled > span, #oe_manipulators .pager .disabled > a, #oe_manipulators .pager .disabled > a:hover, #oe_manipulators .pager .disabled > a:focus, #oe_manipulators .pager .disabled > span, #web_editor-top-edit .pager .disabled > a, #web_editor-top-edit .pager .disabled > a:hover, #web_editor-top-edit .pager .disabled > a:focus, #web_editor-top-edit .pager .disabled > span, .note-link-dialog .pager .disabled > a, .note-link-dialog .pager .disabled > a:hover, .note-link-dialog .pager .disabled > a:focus, .note-link-dialog .pager .disabled > span, .note-image-dialog .pager .disabled > a, .note-image-dialog .pager .disabled > a:hover, .note-image-dialog .pager .disabled > a:focus, .note-image-dialog .pager .disabled > span {
+  color: #b3b3b3;
+  background-color: #fff;
+  cursor: not-allowed;
+}
+.note-popover .dropdown-submenu, #oe_manipulators .dropdown-submenu, #web_editor-top-edit .dropdown-submenu, .note-link-dialog .dropdown-submenu, .note-image-dialog .dropdown-submenu {
+  position: relative;
+  z-index: 1000;
+}
+.note-popover .dropdown-submenu > .dropdown-menu, #oe_manipulators .dropdown-submenu > .dropdown-menu, #web_editor-top-edit .dropdown-submenu > .dropdown-menu, .note-link-dialog .dropdown-submenu > .dropdown-menu, .note-image-dialog .dropdown-submenu > .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  -webkit-border-radius: 0 6px 6px 6px;
+  -moz-border-radius: 0 6px 6px 6px;
+  border-radius: 0 6px 6px 6px;
+}
+.note-popover .dropdown-submenu:hover > .dropdown-menu, #oe_manipulators .dropdown-submenu:hover > .dropdown-menu, #web_editor-top-edit .dropdown-submenu:hover > .dropdown-menu, .note-link-dialog .dropdown-submenu:hover > .dropdown-menu, .note-image-dialog .dropdown-submenu:hover > .dropdown-menu {
+  display: block;
+}
+.note-popover .dropdown-submenu:hover > a:after, #oe_manipulators .dropdown-submenu:hover > a:after, #web_editor-top-edit .dropdown-submenu:hover > a:after, .note-link-dialog .dropdown-submenu:hover > a:after, .note-image-dialog .dropdown-submenu:hover > a:after {
+  border-left-color: #ffffff;
+}
+.note-popover .dropdown-submenu > a:after, #oe_manipulators .dropdown-submenu > a:after, #web_editor-top-edit .dropdown-submenu > a:after, .note-link-dialog .dropdown-submenu > a:after, .note-image-dialog .dropdown-submenu > a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.note-popover .dropdown-submenu.pull-left, #oe_manipulators .dropdown-submenu.pull-left, #web_editor-top-edit .dropdown-submenu.pull-left, .note-link-dialog .dropdown-submenu.pull-left, .note-image-dialog .dropdown-submenu.pull-left {
+  float: none;
+}
+.note-popover .dropdown-submenu.pull-left > .dropdown-menu, #oe_manipulators .dropdown-submenu.pull-left > .dropdown-menu, #web_editor-top-edit .dropdown-submenu.pull-left > .dropdown-menu, .note-link-dialog .dropdown-submenu.pull-left > .dropdown-menu, .note-image-dialog .dropdown-submenu.pull-left > .dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  -webkit-border-radius: 6px 0 6px 6px;
+  -moz-border-radius: 6px 0 6px 6px;
+  border-radius: 6px 0 6px 6px;
+}
+.note-popover .hidden, #oe_manipulators .hidden, #web_editor-top-edit .hidden, .note-link-dialog .hidden, .note-image-dialog .hidden {
+  display: none !important;
+}
+.note-popover .img-responsive, #oe_manipulators .img-responsive, #web_editor-top-edit .img-responsive, .note-link-dialog .img-responsive, .note-image-dialog .img-responsive {
+  display: block;
+  width: 100% \9;
+  max-width: 100%;
+  height: auto;
+}
+.note-popover .fade, #oe_manipulators .fade, #web_editor-top-edit .fade, .note-link-dialog .fade, .note-image-dialog .fade {
+  opacity: 0;
+  -webkit-transition: opacity 0.15s linear;
+  -o-transition: opacity 0.15s linear;
+  transition: opacity 0.15s linear;
+}
+.note-popover .fade.in, #oe_manipulators .fade.in, #web_editor-top-edit .fade.in, .note-link-dialog .fade.in, .note-image-dialog .fade.in {
+  opacity: 1;
+}
+.note-popover .well, #oe_manipulators .well, #web_editor-top-edit .well, .note-link-dialog .well, .note-image-dialog .well {
+  min-height: 20px;
+  padding: 19px;
+  margin-bottom: 20px;
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+.note-popover .sr-only, #oe_manipulators .sr-only, #web_editor-top-edit .sr-only, .note-link-dialog .sr-only, .note-image-dialog .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.note-popover .text-center, #oe_manipulators .text-center, #web_editor-top-edit .text-center, .note-link-dialog .text-center, .note-image-dialog .text-center {
+  text-align: center;
+}
+.note-popover .text-muted, #oe_manipulators .text-muted, #web_editor-top-edit .text-muted, .note-link-dialog .text-muted, .note-image-dialog .text-muted {
+  color: #b3b3b3;
+}
+
+.note-popover, #oe_manipulators, #web_editor-top-edit {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857;
+  color: #666;
+}
+.note-popover button, #oe_manipulators button, #web_editor-top-edit button {
+  margin: 0;
+}
+.note-popover a, #oe_manipulators a, #web_editor-top-edit a {
+  color: #428bca;
+}
+.note-popover a:hover, .note-popover a:focus, #oe_manipulators a:hover, #oe_manipulators a:focus, #web_editor-top-edit a:hover, #web_editor-top-edit a:focus {
+  color: #2a6496;
+  text-decoration: underline;
+}
+.note-popover .popover, #oe_manipulators .popover, #web_editor-top-edit .popover {
   position: fixed !important;
-  top: -9px !important;
+  top: 1px !important;
   right: auto !important;
   left: 300px !important;
   border: 0;
@@ -9,16 +414,42 @@
   box-shadow: none;
   -webkit-box-shadow: none;
   z-index: 1040;
+  padding: 1px;
+  text-align: left;
+  white-space: normal;
+  border-radius: 6px;
+  margin-top: 0;
+  max-width: none;
 }
-.note-popover .popover-content {
-  padding: 0 !important;
-  margin: 0 0 0 6px !important;
+.note-popover .popover .popover-content, #oe_manipulators .popover .popover-content, #web_editor-top-edit .popover .popover-content {
+  padding: 0;
+  margin: 0 0 0 6px;
 }
-.note-popover .popover-content > div {
-  padding-top: 0 !important;
-  margin-top: 0 !important;
+.note-popover .popover .popover-content .note-para .dropdown-menu, #oe_manipulators .popover .popover-content .note-para .dropdown-menu, #web_editor-top-edit .popover .popover-content .note-para .dropdown-menu {
+  min-width: 148px !important;
+  padding: 5px 0 5px 5px !important;
 }
-.note-popover .popover-content > a {
+.note-popover .popover .popover-content .note-ul .dropdown-menu, #oe_manipulators .popover .popover-content .note-ul .dropdown-menu, #web_editor-top-edit .popover .popover-content .note-ul .dropdown-menu {
+  min-width: 150px !important;
+  padding: 5px 0 5px 5px !important;
+}
+.note-popover .popover .popover-content .note-ul .dropdown-menu .note-li, #oe_manipulators .popover .popover-content .note-ul .dropdown-menu .note-li, #web_editor-top-edit .popover .popover-content .note-ul .dropdown-menu .note-li {
+  margin-right: 5px;
+}
+.note-popover .popover .popover-content .colorpicker, #oe_manipulators .popover .popover-content .colorpicker, #web_editor-top-edit .popover .popover-content .colorpicker {
+  margin: 0;
+}
+.note-popover .popover .popover-content .colorpicker td > *, #oe_manipulators .popover .popover-content .colorpicker td > *, #web_editor-top-edit .popover .popover-content .colorpicker td > * {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #fff;
+}
+.note-popover .popover .popover-content .btn-group, #oe_manipulators .popover .popover-content .btn-group, #web_editor-top-edit .popover .popover-content .btn-group {
+  margin: 0 5px 0 0;
+}
+.note-popover .popover .popover-content > a, #oe_manipulators .popover .popover-content > a, #web_editor-top-edit .popover .popover-content > a {
   border-radius: 3px;
   background-color: #fff;
   border-color: #ccc;
@@ -26,18 +457,7 @@
   font-size: 14px;
   line-height: 1.5;
 }
-.note-popover .popover-content .note-para .dropdown-menu {
-  min-width: 148px !important;
-  padding: 5px 0 5px 5px !important;
-}
-.note-popover .popover-content .note-ul .dropdown-menu {
-  min-width: 150px !important;
-  padding: 5px 0 5px 5px !important;
-}
-.note-popover .popover-content .note-ul .dropdown-menu .note-li {
-  margin-right: 5px;
-}
-.note-popover .popover-content > span {
+.note-popover .popover .popover-content > span, #oe_manipulators .popover .popover-content > span, #web_editor-top-edit .popover .popover-content > span {
   display: inline-block;
   max-width: 200px;
   overflow: hidden;
@@ -51,23 +471,364 @@
   font-size: 14px;
   line-height: 1.5;
 }
-.note-popover .popover-content .colorpicker {
-  margin: 0;
-}
-.note-popover .popover-content .colorpicker td > * {
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  margin: 0;
-  border: 1px solid #fff;
-}
-.note-popover .popover .popover-content .dropdown-menu a {
-  display: block;
-}
-.note-popover .arrow {
+.note-popover .arrow, #oe_manipulators .arrow, #web_editor-top-edit .arrow {
   display: none;
 }
 
+.note-popover .btn-default, #oe_manipulators .btn-default, #web_editor-top-edit .btn-default, .modal-footer .btn-default {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+.note-popover .btn-primary, #oe_manipulators .btn-primary, #web_editor-top-edit .btn-primary, .modal-footer .btn-primary {
+  color: #fff;
+  background-color: #428bca;
+  border-color: #357ebd;
+}
+
+.note-link-dialog, .note-image-dialog {
+  color: #666;
+  display: none;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1050;
+  -webkit-overflow-scrolling: touch;
+  outline: 0;
+}
+.note-link-dialog .btn, .note-image-dialog .btn {
+  border-color: #ccc;
+}
+.note-link-dialog .btn-link, .note-image-dialog .btn-link {
+  border-color: transparent;
+}
+.note-link-dialog .modal-header a, .note-link-dialog .modal-footer a, .note-image-dialog .modal-header a, .note-image-dialog .modal-footer a {
+  color: #428bca;
+}
+.note-link-dialog .modal-header a:hover, .note-link-dialog .modal-header a:focus, .note-link-dialog .modal-footer a:hover, .note-link-dialog .modal-footer a:focus, .note-image-dialog .modal-header a:hover, .note-image-dialog .modal-header a:focus, .note-image-dialog .modal-footer a:hover, .note-image-dialog .modal-footer a:focus {
+  color: #2a6496;
+  text-decoration: underline;
+}
+.note-link-dialog .modal-header .btn, .note-link-dialog .modal-footer .btn, .note-image-dialog .modal-header .btn, .note-image-dialog .modal-footer .btn {
+  border-color: #ccc;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857;
+  border-radius: 4px;
+}
+.note-link-dialog .link-style .dropdown > .btn, .note-image-dialog .link-style .dropdown > .btn {
+  min-width: 160px;
+}
+.note-link-dialog .link-style li, .note-image-dialog .link-style li {
+  text-align: center;
+}
+.note-link-dialog .link-style li label, .note-image-dialog .link-style li label {
+  width: 100px;
+  margin: 0 5px;
+}
+.note-link-dialog .link-style li label input.link-style, .note-image-dialog .link-style li label input.link-style {
+  display: none;
+}
+.note-link-dialog .modal-title, .note-image-dialog .modal-title {
+  margin: 0;
+  line-height: 1.42857;
+}
+.note-link-dialog .modal-dialog, .note-image-dialog .modal-dialog {
+  position: relative;
+  width: auto;
+  margin: 10px;
+}
+.note-link-dialog .modal-content, .note-image-dialog .modal-content {
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #999;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+  background-clip: padding-box;
+  outline: 0;
+}
+.note-link-dialog .modal-header, .note-image-dialog .modal-header {
+  padding: 15px;
+  border-bottom: 1px solid #e5e5e5;
+  min-height: 16.43px;
+}
+.note-link-dialog .modal-header .close, .note-image-dialog .modal-header .close {
+  margin-top: -2px;
+}
+.note-link-dialog .modal-body, .note-image-dialog .modal-body {
+  position: relative;
+  padding: 15px;
+}
+.note-link-dialog .modal-footer, .note-image-dialog .modal-footer {
+  text-align: left;
+  padding: 15px;
+  border-top: 1px solid #e5e5e5;
+}
+.note-link-dialog .close, .note-image-dialog .close {
+  float: right;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+  opacity: 0.2;
+  filter: alpha(opacity=20);
+}
+.note-link-dialog button.close, .note-image-dialog button.close {
+  padding: 0;
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  -webkit-appearance: none;
+}
+
+@media (min-width: 768px) {
+  .note-link-dialog .modal-dialog, .note-image-dialog .modal-dialog {
+    width: 600px;
+    margin: 30px auto;
+  }
+  .note-link-dialog .modal-content, .note-image-dialog .modal-content {
+    -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  }
+
+  .note-popover .col-sm-1, .note-popover .col-sm-2, .note-popover .col-sm-3, .note-popover .col-sm-4, .note-popover .col-sm-5, .note-popover .col-sm-6, .note-popover .col-sm-7, .note-popover .col-sm-8, .note-popover .col-sm-9, .note-popover .col-sm-10, .note-popover .col-sm-11, .note-popover .col-sm-12, #oe_manipulators .col-sm-1, #oe_manipulators .col-sm-2, #oe_manipulators .col-sm-3, #oe_manipulators .col-sm-4, #oe_manipulators .col-sm-5, #oe_manipulators .col-sm-6, #oe_manipulators .col-sm-7, #oe_manipulators .col-sm-8, #oe_manipulators .col-sm-9, #oe_manipulators .col-sm-10, #oe_manipulators .col-sm-11, #oe_manipulators .col-sm-12, #web_editor-top-edit .col-sm-1, #web_editor-top-edit .col-sm-2, #web_editor-top-edit .col-sm-3, #web_editor-top-edit .col-sm-4, #web_editor-top-edit .col-sm-5, #web_editor-top-edit .col-sm-6, #web_editor-top-edit .col-sm-7, #web_editor-top-edit .col-sm-8, #web_editor-top-edit .col-sm-9, #web_editor-top-edit .col-sm-10, #web_editor-top-edit .col-sm-11, #web_editor-top-edit .col-sm-12, .note-link-dialog .col-sm-1, .note-link-dialog .col-sm-2, .note-link-dialog .col-sm-3, .note-link-dialog .col-sm-4, .note-link-dialog .col-sm-5, .note-link-dialog .col-sm-6, .note-link-dialog .col-sm-7, .note-link-dialog .col-sm-8, .note-link-dialog .col-sm-9, .note-link-dialog .col-sm-10, .note-link-dialog .col-sm-11, .note-link-dialog .col-sm-12, .note-image-dialog .col-sm-1, .note-image-dialog .col-sm-2, .note-image-dialog .col-sm-3, .note-image-dialog .col-sm-4, .note-image-dialog .col-sm-5, .note-image-dialog .col-sm-6, .note-image-dialog .col-sm-7, .note-image-dialog .col-sm-8, .note-image-dialog .col-sm-9, .note-image-dialog .col-sm-10, .note-image-dialog .col-sm-11, .note-image-dialog .col-sm-12 {
+    float: left;
+  }
+  .note-popover .col-sm-12, #oe_manipulators .col-sm-12, #web_editor-top-edit .col-sm-12, .note-link-dialog .col-sm-12, .note-image-dialog .col-sm-12 {
+    width: 100%;
+  }
+  .note-popover .col-sm-11, #oe_manipulators .col-sm-11, #web_editor-top-edit .col-sm-11, .note-link-dialog .col-sm-11, .note-image-dialog .col-sm-11 {
+    width: 91.66667%;
+  }
+  .note-popover .col-sm-10, #oe_manipulators .col-sm-10, #web_editor-top-edit .col-sm-10, .note-link-dialog .col-sm-10, .note-image-dialog .col-sm-10 {
+    width: 83.33333%;
+  }
+  .note-popover .col-sm-9, #oe_manipulators .col-sm-9, #web_editor-top-edit .col-sm-9, .note-link-dialog .col-sm-9, .note-image-dialog .col-sm-9 {
+    width: 75%;
+  }
+  .note-popover .col-sm-8, #oe_manipulators .col-sm-8, #web_editor-top-edit .col-sm-8, .note-link-dialog .col-sm-8, .note-image-dialog .col-sm-8 {
+    width: 66.66667%;
+  }
+  .note-popover .col-sm-7, #oe_manipulators .col-sm-7, #web_editor-top-edit .col-sm-7, .note-link-dialog .col-sm-7, .note-image-dialog .col-sm-7 {
+    width: 58.33333%;
+  }
+  .note-popover .col-sm-6, #oe_manipulators .col-sm-6, #web_editor-top-edit .col-sm-6, .note-link-dialog .col-sm-6, .note-image-dialog .col-sm-6 {
+    width: 50%;
+  }
+  .note-popover .col-sm-5, #oe_manipulators .col-sm-5, #web_editor-top-edit .col-sm-5, .note-link-dialog .col-sm-5, .note-image-dialog .col-sm-5 {
+    width: 41.66667%;
+  }
+  .note-popover .col-sm-4, #oe_manipulators .col-sm-4, #web_editor-top-edit .col-sm-4, .note-link-dialog .col-sm-4, .note-image-dialog .col-sm-4 {
+    width: 33.33333%;
+  }
+  .note-popover .col-sm-3, #oe_manipulators .col-sm-3, #web_editor-top-edit .col-sm-3, .note-link-dialog .col-sm-3, .note-image-dialog .col-sm-3 {
+    width: 25%;
+  }
+  .note-popover .col-sm-2, #oe_manipulators .col-sm-2, #web_editor-top-edit .col-sm-2, .note-link-dialog .col-sm-2, .note-image-dialog .col-sm-2 {
+    width: 16.66667%;
+  }
+  .note-popover .col-sm-1, #oe_manipulators .col-sm-1, #web_editor-top-edit .col-sm-1, .note-link-dialog .col-sm-1, .note-image-dialog .col-sm-1 {
+    width: 8.33333%;
+  }
+  .note-popover .form-horizontal .control-label, #oe_manipulators .form-horizontal .control-label, #web_editor-top-edit .form-horizontal .control-label, .note-link-dialog .form-horizontal .control-label, .note-image-dialog .form-horizontal .control-label {
+    text-align: right;
+    margin-bottom: 0;
+    padding-top: 7px;
+  }
+  .note-popover .form-inline .form-group, #oe_manipulators .form-inline .form-group, #web_editor-top-edit .form-inline .form-group, .note-link-dialog .form-inline .form-group, .note-image-dialog .form-inline .form-group {
+    display: inline-block;
+    margin-bottom: 0;
+    vertical-align: middle;
+  }
+}
+.modal-open .note-link-dialog, .modal-open .note-image-dialog {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.editor_enable .modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1040;
+  background-color: #000;
+}
+.editor_enable .modal-backdrop.in {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+
+.note-image-dialog .select-media {
+  width: 80%;
+}
+.note-image-dialog .existing-attachments .pager {
+  margin: 0;
+}
+.note-image-dialog .existing-attachments .pager .disabled {
+  display: none;
+}
+.note-image-dialog .existing-attachments .existing-attachment-cell {
+  position: relative;
+}
+.note-image-dialog .existing-attachments .existing-attachment-cell .img {
+  border: 1px solid #848490;
+}
+.note-image-dialog .existing-attachments .existing-attachment-cell .existing-attachment-remove {
+  position: absolute;
+  top: 0;
+  left: 15px;
+  cursor: pointer;
+  background: white;
+  padding: 2px;
+  border: 1px solid #848490;
+  border-top: none;
+  border-left: none;
+  -moz-border-radius-bottomright: 8px;
+  -webkit-border-bottom-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+.note-image-dialog .existing-attachments .existing-attachment-cell.media_selected > i, .note-image-dialog .existing-attachments .existing-attachment-cell.media_selected > img {
+  border-width: 5px;
+  border-color: #00f8f8;
+}
+.note-image-dialog .image-preview {
+  margin-bottom: 0.5em;
+}
+.note-image-dialog .font-icons-icons {
+  font-size: 2em;
+  max-height: 9em;
+  overflow: auto;
+}
+.note-image-dialog .font-icons-icons .font-icons-icon {
+  display: inline-block;
+  width: 2em;
+  padding: 0.25em;
+  text-align: center;
+  cursor: pointer;
+}
+.note-image-dialog .font-icons {
+  position: relative;
+  display: block;
+}
+.note-image-dialog .font-icons:before {
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
+  opacity: 0.7;
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-size: 2em;
+}
+.note-image-dialog #icon-search {
+  padding-left: 2.5em;
+}
+.note-image-dialog .font-icons-selected {
+  background-color: #ddd;
+}
+.note-image-dialog.nosave .wait {
+  display: inline-block !important;
+  visibility: visible !important;
+}
+.note-image-dialog.nosave .modal-body .filepicker, .note-image-dialog.nosave .modal-body .image-preview {
+  display: none;
+}
+.note-image-dialog.nosave .modal-body .wait {
+  width: 100%;
+}
+.note-image-dialog.nosave .modal-footer .save {
+  display: none;
+}
+.note-image-dialog .preview-container {
+  text-align: center;
+  line-height: 100px;
+  height: 100px;
+}
+.note-image-dialog .preview-container > * {
+  max-height: 100px;
+  line-height: 100px;
+  margin: 0 auto;
+  display: inline-block;
+}
+
+/* }}} */
+/* ---- COLOR-PICKER ----  {{{ */
+.colorpicker {
+  margin: 0 auto;
+  background: transparent;
+  border: 0;
+}
+.colorpicker td {
+  padding: 0;
+  background: transparent;
+}
+.colorpicker td > * {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  margin: 3px;
+  padding: 0;
+  border-width: 1px;
+  display: block;
+}
+.colorpicker .only-text {
+  display: none;
+}
+.colorpicker .automatic-color {
+  background: #fff;
+  border-left: 7px solid #f33;
+  border-top: 7px solid #0e0;
+  border-right: 8px solid #33f;
+  border-bottom: 8px solid #fe0;
+  margin: 4px 3px 3px 3px;
+  width: 0;
+  height: 0;
+}
+
+/* }}} */
+/* ---- TRANSLATIONS ---- {{{ */
+.oe_translate_or {
+  color: white;
+  padding: 0 0 0 1em;
+}
+
+.oe_translate_examples li {
+  margin: 10px;
+  padding: 4px;
+}
+
+.o_translatable_text {
+  outline: 1px solid black;
+}
+
+.o_translatable_field {
+  outline: 1px dashed black;
+}
+
+.o_translatable_text.o_dirty, .o_translatable_field.o_dirty {
+  outline-color: red;
+}
+
+.o_translatable_text.o_dirty:empty {
+  padding: 0 10px;
+}
+
+.o_translatable_todo {
+  background: #ffffb6;
+}
+.o_translatable_todo:hover {
+  background: inherit;
+  cursor: text;
+}
+
+/* }}} */
+/* ---- editable ----  {{{ */
 .o_editable:not(:empty):not([data-oe-model="ir.ui.view"]):not([data-oe-type="html"]):hover, .o_editable[data-oe-type]:not([data-oe-model="ir.ui.view"]):not([data-oe-type="html"]):hover {
   /* to do change into primary color in less */
   -moz-box-shadow: #3071a9 0 0 5px 2px inset;
@@ -81,9 +842,8 @@
 .o_editable.o_is_inline_editable {
   display: inline-block;
 }
-
-.editor_enable [data-oe-readonly]:hover {
-  cursor: default;
+.o_editable:focus {
+  outline: none !important;
 }
 
 /* Prevent the text contents of draggable elements from being selectable. */
@@ -94,17 +854,20 @@
   user-select: none;
 }
 
-/* Prevent firefox handler. */
-.o_editable .btn {
+.o_editable .btn, .btn.o_editable {
   -webkit-user-select: auto;
   -moz-user-select: auto;
   -ms-user-select: auto;
   user-select: auto;
+  cursor: text !important;
 }
 
-/* ---- OpenERP Style ---- {{{ */
-.o_editable:focus {
-  outline: none !important;
+.o_editable .fa {
+  cursor: pointer;
+}
+
+.img-responsive {
+  text-align: center;
 }
 
 .css_editable_display {
@@ -115,15 +878,16 @@
   display: none !important;
 }
 
+.editor_enable [data-oe-readonly]:hover {
+  cursor: default;
+}
 .editor_enable .css_editable_mode_hidden {
   display: none;
 }
-
 .editor_enable .css_non_editable_mode_hidden {
   display: block !important;
 }
-
-.o_editable .media_iframe_video .css_editable_mode_display {
+.editor_enable .media_iframe_video .css_editable_mode_display {
   display: block !important;
 }
 
@@ -165,11 +929,28 @@
   width: 100%;
   min-height: 34px;
   height: 34px;
+  background-color: #222;
+  border-color: #080808;
+  border-width: 0 0 1px;
+  position: fixed;
+  border-radius: 0;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+#web_editor-top-edit .btn-link {
+  color: #b3b3b3;
 }
 #web_editor-top-edit > ul > li {
   margin: 0;
 }
 #web_editor-top-edit form {
+  padding: 0 10px 0 15px;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
   margin: 0;
 }
 #web_editor-top-edit form button, #web_editor-top-edit form a {
@@ -178,7 +959,8 @@
   font-size: 13px;
 }
 
-/* ---- HACK FOR COVERING UP EDITOR BOGUS P INSERTION --- */
+/* }}} */
+/* ---- HACK FOR COVERING UP EDITOR BOGUS P INSERTION --- {{{ */
 .oe_structure.oe_empty > .oe_drop_zone.oe_insert:only-child, [data-oe-type=html] > .oe_drop_zone.oe_insert:only-child {
   position: static;
 }
@@ -187,197 +969,9 @@
   display: none;
 }
 
-/* ---- EDITOR BAR ---- {{{ */
-table.editorbar-panel {
-  cursor: pointer;
-  width: 100%;
-}
-table.editorbar-panel td {
-  border: 1px solid #aaa;
-}
-table.editorbar-panel td.selected {
-  background-color: #b1c9d9;
-}
-
-.link-style .dropdown > .btn {
-  min-width: 160px;
-}
-.link-style .link-style {
-  display: none;
-}
-.link-style li {
-  text-align: center;
-}
-.link-style li label {
-  width: 100px;
-  margin: 0 5px;
-}
-.link-style .col-sm-2 > * {
-  line-height: 2em;
-}
-
-/* ---- TRANSLATIONS ---- {{{ */
-.oe_translate_or {
-  color: white;
-  padding: 0 0 0 1em;
-}
-
-.oe_translate_examples li {
-  margin: 10px;
-  padding: 4px;
-}
-
-.o_translatable_text {
-  outline: 1px solid black;
-}
-
-.o_translatable_field {
-  outline: 1px dashed black;
-}
-
-.o_translatable_text.o_dirty, .o_translatable_field.o_dirty {
-  outline-color: red;
-}
-
-.o_translatable_text.o_dirty:empty {
-  padding: 0 10px;
-}
-
-.o_translatable_todo {
-  background: #ffffb6;
-}
-.o_translatable_todo:hover {
-  background: inherit;
-  cursor: text;
-}
-
-/* ---- RTE ---- {{{ */
-.o_editable .btn, .btn.o_editable {
-  -moz-user-select: auto;
-  -ms-user-select: auto;
-  -webkit-user-select: auto;
-  user-select: auto;
-  cursor: text !important;
-}
-
-.modal-dialog.select-media {
-  width: 80%;
-}
-
-.modal .existing-attachments .pager {
-  margin: 0;
-}
-
-.modal .image-preview {
-  margin-bottom: 0.5em;
-}
-
-.modal-footer {
-  text-align: left;
-}
-
-.modal.nosave .wait {
-  display: inline-block !important;
-  visibility: visible !important;
-}
-.modal.nosave .modal-body .filepicker, .modal.nosave .modal-body .image-preview {
-  display: none;
-}
-.modal.nosave .modal-body .wait {
-  width: 100%;
-}
-.modal.nosave .modal-footer .save {
-  display: none;
-}
-
-.modal .font-icons-icons {
-  font-size: 2em;
-  max-height: 9em;
-  overflow: auto;
-}
-.modal .font-icons-icons .font-icons-icon {
-  display: inline-block;
-  width: 2em;
-  padding: 0.25em;
-  text-align: center;
-  cursor: pointer;
-}
-.modal .font-icons {
-  position: relative;
-  display: block;
-}
-.modal .font-icons:before {
-  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
-  opacity: 0.7;
-  position: absolute;
-  top: 2px;
-  left: 3px;
-  font-size: 2em;
-}
-.modal #icon-search {
-  padding-left: 2.5em;
-}
-.modal .font-icons-selected {
-  background-color: #ddd;
-}
-
-.existing-attachments .pager .disabled {
-  display: none;
-}
-.existing-attachments .existing-attachment-cell {
-  position: relative;
-}
-.existing-attachments .existing-attachment-cell .img {
-  border: 1px solid #848490;
-}
-.existing-attachments .existing-attachment-cell .existing-attachment-remove {
-  position: absolute;
-  top: 0;
-  left: 15px;
-  cursor: pointer;
-  background: white;
-  padding: 2px;
-  border: 1px solid #848490;
-  border-top: none;
-  border-left: none;
-  -moz-border-radius-bottomright: 8px;
-  -webkit-border-bottom-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-.existing-attachments .existing-attachment-cell.media_selected > i, .existing-attachments .existing-attachment-cell.media_selected > img {
-  border-width: 5px;
-  border-color: #00f8f8;
-}
-
 .oe_carlos_danger {
   outline: 1px solid red !important;
   background-color: #ffd9dd !important;
 }
 
-.hover-edition {
-  display: inline-block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1001;
-}
-
-.preview-container {
-  text-align: center;
-  line-height: 100px;
-  height: 100px;
-}
-.preview-container > * {
-  max-height: 100px;
-  line-height: 100px;
-  margin: 0 auto;
-  display: inline-block;
-}
-
-.note-editable .fa {
-  cursor: pointer;
-}
-
-.img-responsive {
-  text-align: center;
-}
+/* }}} */

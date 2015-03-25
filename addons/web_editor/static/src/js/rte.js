@@ -346,7 +346,6 @@ define(['summernote/openerp'], function () {
                 .not('link, script')
                 .not('[data-oe-readonly]')
                 .not('img[data-oe-field="arch"], br[data-oe-field="arch"], input[data-oe-field="arch"]')
-                .not('.oe_snippet_editor')
                 .add('.o_editable');
         },
 

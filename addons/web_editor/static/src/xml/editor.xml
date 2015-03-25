@@ -4,7 +4,7 @@
             <form class="navbar-form text-muted">
                 <button type="button" data-action="save"
                         class="btn btn-primary btn-xs">Save</button>
-                <span>or</span>
+                <span> or </span>
                 <a href="#" data-action="cancel" class="btn btn-link btn-xs">Discard</a>
             </form>
         </div>
@@ -23,7 +23,7 @@
                         <button type="button" class="btn btn-primary save" t-if="!button">Save</button>
                         <button type="button" class="btn btn-primary save" t-if="button"><t t-raw="button"/></button>
                         <button type="button" class="btn hidden wait" disabled="disabled"/>
-                        or
+                        <span> or </span>
                         <a href="#" data-dismiss="modal" aria-hidden="true">Discard</a>
                     </div>
                 </div>
