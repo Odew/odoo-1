@@ -51,18 +51,19 @@ var ControlPanel = Widget.extend({
     },
     start: function() {
         // Retrieve ControlPanel jQuery nodes
-        this.$title_col = this.$('.oe-cp-title');
-        this.$breadcrumbs = this.$('.oe-view-title');
-        this.$searchview = this.$('.oe-cp-search-view');
-        this.$searchview_buttons = this.$('.oe-search-options');
-        this.$buttons = this.$('.oe-cp-buttons');
-        this.$sidebar = this.$('.oe-cp-sidebar');
-        this.$pager = this.$('.oe-cp-pager');
-        this.$switch_buttons = this.$('.oe-cp-switch-buttons');
+        this.$first_row = this.$el.siblings('.o-control-panel-first-row');
+        this.$second_row = this.$el.siblings('.o-control-panel-second-row');
+        this.$title_col = this.$('.o-cp-breadcrumbs-col');
+        this.$breadcrumbs = this.$('.o-cp-breadcrumbs');
+        this.$searchview = this.$('.o-cp-searchview');
+        this.$searchview_buttons = this.$('.o-search-options');
+        this.$buttons = this.$('.o-cp-buttons');
+        this.$sidebar = this.$('.o-cp-sidebar');
+        this.$pager = this.$('.o-cp-pager');
+        this.$switch_buttons = this.$('.o-cp-switch-buttons');
 
         // By default, hide the ControlPanel and remove its contents from the DOM
-        this.$el.hide();
-        this.contents = this.$el.contents().detach();
+        this.toggle_visibility(true);
 
         return this._super();
     },
@@ -78,11 +79,12 @@ var ControlPanel = Widget.extend({
      */
     toggle_visibility: function(hidden) {
         this.$el.toggle(!hidden);
-        if (hidden && !this.contents) {
-            this.contents = this.$el.contents().detach();
-        } else if (this.contents) {
-            this.contents.appendTo(this.$el);
-            this.contents = null;
+        if (hidden) {
+            this.$first_row_content = this.$first_row.contents().detach();
+            this.$second_row_content = this.$second_row.contents().detach();
+        } else {
+            this.$first_row_content.appendTo(this.$first_row);
+            this.$second_row_content.appendTo(this.$second_row);
         }
     },
     /**

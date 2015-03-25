@@ -164,7 +164,7 @@
             <link rel="stylesheet" href="/web/static/src/less/graph_view.less"/>
             <link rel="stylesheet" href="/web/static/src/less/form_view.less"/>
             <link rel="stylesheet" href="/web/static/src/less/list_view.less"/>
-            <link rel="stylesheet" href="/web/static/src/less/controlpanel.less"/>
+            <link rel="stylesheet" href="/web/static/src/less/control_panel.less"/>
         </template>
 
         <template id="web.assets_webclient_manifest">
