@@ -5,6 +5,20 @@
     min-width: @oe-search-options-dropdown-min-width;
 }
 
+
+.o-control-panel-first-row, .o-control-panel-second-row {
+    // FIXME: override bootstrap
+    .btn {
+        border-radius: 0px;
+        border-style: none;
+        color: @odoo-main-text-color;
+    }
+    .btn-primary {
+        text-transform: uppercase;
+        color: white;
+    }
+}
+
 .o-control-panel-first-row {
     padding: 10px 0px 0px 0px;
 
@@ -14,6 +28,10 @@
         font-size: 18px;
         padding-left: 0;
         margin: 0;
+        a {
+            color: @odoo-brand-optional;
+            cursor: pointer;
+        }
     }
 
     .o-cp-searchview {
@@ -251,7 +269,7 @@
         .o-cp-switch-kanban:before {content: "\f009";}
         .o-cp-switch-list:before {content: "";}
         .o-cp-switch-form:before {content: "\f044";}
-        .o-cp-switch-graph:before {content: "\f080";}
+        .o-cp-switch-graph:before {content: "\f1fe";}
         .o-cp-switch-calendar:before {content: "\f073";}
         .o-cp-switch-gantt:before {content: "\f0ae";}
         .o-cp-switch-pivot:before {content: "\f0ce";}
