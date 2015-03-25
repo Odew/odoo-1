@@ -115,6 +115,7 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
                        80);
     },
     view_loading: function(r) {
+
         return this.load_list(r);
     },
     set_default_options: function (options) {
@@ -151,16 +152,6 @@ var ListView = View.extend( /** @lends instance.web.ListView# */ {
                 self.do_activate_record(dataset.index, id, dataset, view);
             }
         });
-    },
-    /**
-     * View startup method, the default behavior is to set the ``oe_list``
-     * class on its root element and to perform an RPC load call.
-     *
-     * @returns {$.Deferred} loading promise
-     */
-    start: function() {
-        this.$el.addClass('oe_list');
-        return this._super();
     },
     /**
      * Returns the style for the provided record in the current view (from the
