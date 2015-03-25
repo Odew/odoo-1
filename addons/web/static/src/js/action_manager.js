@@ -164,8 +164,8 @@ var ActionManager = Widget.extend({
             this.select_action(action, index);
         });
 
-        // Append the main control panel to the DOM (inside the ActionManager jQuery element)
-        this.main_control_panel.appendTo(this.$el);
+        // Insert the main control panel into the DOM
+        this.main_control_panel.insertBefore(this.$el);
     },
     dialog_stop: function (reason) {
         if (this.dialog) {
@@ -229,7 +229,7 @@ var ActionManager = Widget.extend({
         return $.when(this.inner_widget.appendTo(new_widget_fragment)).done(function() {
             // Detach the fragment of the previous action and store it within the action
             if (old_action) {
-                old_action.set_fragment(self.$('> .o-view-manager').detach());
+                old_action.set_fragment(self.$el.contents().detach());
             }
             self.$el.append(new_widget_fragment);
             if (options.clear_breadcrumbs) {
