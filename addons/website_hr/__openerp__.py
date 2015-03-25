@@ -7,6 +7,7 @@
 Our Team Page
 =============
 
+Publish your employees on the website to see their designation and public information.
         """,
     'author': 'OpenERP SA',
     'depends': ['website', 'hr'],
