@@ -1201,7 +1201,7 @@ ListView.List = Class.extend( /** @lends instance.web.ListView.List# */{
             return result;
         }
         var records = this.records;
-        this.$current.find('th.o-list-record-selector input:checked')
+        this.$current.find('td.o-list-record-selector input:checked')
                 .closest('tr').each(function () {
             var record = records.get($(this).data('id'));
             result.ids.push(record.get('id'));
