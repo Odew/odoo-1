@@ -4,6 +4,7 @@ odoo.define('web_kanban.KanbanView', function (require) {
 var core = require('web.core');
 var data = require('web.data');
 var Model = require('web.Model');
+var Pager = require('web.Pager');
 var pyeval = require('web.pyeval');
 var session = require('web.session');
 var utils = require('web.utils');
@@ -30,6 +31,7 @@ var KanbanView = View.extend({
         this.many2manys = [];
         this.fields_keys = [];
         this.records = [];
+        this.limit = options.limit || 40;
     },
 
     view_loading: function(fvg) {
@@ -42,6 +44,7 @@ var KanbanView = View.extend({
         this.search_domain = domain;
         this.search_context = context;
         this.search_group_by = group_by;
+        console.log('nbr of records', this.dataset.size());
         return this.dataset.read_slice(this.fields_keys.concat(['__last_update']), { 'limit': this.limit })
             .done(this.proxy('render'));
     },
@@ -68,6 +71,11 @@ var KanbanView = View.extend({
         } else {
             this.$('.oe_kanban_buttons').replaceWith(this.$buttons);
         }
+    },
+
+    render_pager: function($node) {
+        this.pager = new Pager(this, this.dataset.size(), 1, this.limit);
+        this.pager.appendTo($node);
     },
 
     add_qweb_template: function() {
@@ -159,6 +167,7 @@ var KanbanView = View.extend({
         this.do_switch_view('form');
     },
     render: function(records) {
+        console.log('render', this.dataset.size());
         this.$el.css({display:'flex'});
         _.invoke(this.records, 'destroy');
         this.records = [];
