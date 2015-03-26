@@ -5,9 +5,5 @@
 		
 	<!-- Account Types -->
 
-    <record model="account.account.type" id="account_type_tax">
-      <field name="name">Tax</field>
-    </record>
-
 </data>
 </openerp>
