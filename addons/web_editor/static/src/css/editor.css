@@ -99,6 +99,11 @@
   padding-left: 8px;
   padding-right: 8px;
 }
+.note-popover .btn-group > .btn.active, #oe_manipulators .btn-group > .btn.active, #web_editor-top-edit .btn-group > .btn.active, .note-link-dialog .btn-group > .btn.active, .note-image-dialog .btn-group > .btn.active {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
 .note-popover .btn-group .btn + .btn, .note-popover .btn-group .btn + .btn-group, .note-popover .btn-group + .btn, .note-popover .btn-group + .btn-group, #oe_manipulators .btn-group .btn + .btn, #oe_manipulators .btn-group .btn + .btn-group, #oe_manipulators .btn-group + .btn, #oe_manipulators .btn-group + .btn-group, #web_editor-top-edit .btn-group .btn + .btn, #web_editor-top-edit .btn-group .btn + .btn-group, #web_editor-top-edit .btn-group + .btn, #web_editor-top-edit .btn-group + .btn-group, .note-link-dialog .btn-group .btn + .btn, .note-link-dialog .btn-group .btn + .btn-group, .note-link-dialog .btn-group + .btn, .note-link-dialog .btn-group + .btn-group, .note-image-dialog .btn-group .btn + .btn, .note-image-dialog .btn-group .btn + .btn-group, .note-image-dialog .btn-group + .btn, .note-image-dialog .btn-group + .btn-group {
   margin-left: -1px;
 }
