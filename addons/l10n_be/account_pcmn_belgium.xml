@@ -2778,7 +2778,7 @@
         <record id="trans" model="account.account.template">
             <field name="name">Transferts</field>
             <field name="code">580</field>
-            <field name="user_type" ref="account.data_account_type_liquidity"/>
+            <field name="user_type" ref="account.data_account_type_current_assets"/>
             <field name="chart_template_id" ref="l10nbe_chart_template"/>
         </record>
         <record id="a600" model="account.account.template">
