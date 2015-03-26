@@ -176,7 +176,7 @@ class test_portal(TestMail):
 
         # No specific parameters -> should redirect to Inbox
         action = self.mail_thread.message_redirect_action(cr, self.user_raoul_id, {'params': {}})
-        self.assertEqual(action.get('type'), 'ir.actions.client',
+        self.assertEqual(action.get('type'), 'ir.actions.act_window',
                         'URL redirection: action without parameters should redirect to client action Inbox')
         self.assertEqual(action.get('id'), act_id,
                         'URL redirection: action without parameters should redirect to client action Inbox')
@@ -190,14 +190,14 @@ class test_portal(TestMail):
 
         # Bert has no read access to Pigs -> should redirect to Inbox
         action = self.mail_thread.message_redirect_action(cr, self.user_bert_id, {'params': {'message_id': msg_id}})
-        self.assertEqual(action.get('type'), 'ir.actions.client',
+        self.assertEqual(action.get('type'), 'ir.actions.act_window',
                         'URL redirection: action without parameters should redirect to client action Inbox')
         self.assertEqual(action.get('id'), act_id,
                         'URL redirection: action without parameters should redirect to client action Inbox')
 
         # Chell has no read access to pigs -> should redirect to Portal Inbox
         action = self.mail_thread.message_redirect_action(cr, self.user_chell_id, {'params': {'message_id': msg_id}})
-        self.assertEqual(action.get('type'), 'ir.actions.client',
+        self.assertEqual(action.get('type'), 'ir.actions.act_window',
                         'URL redirection: action without parameters should redirect to client action Inbox')
         self.assertEqual(action.get('id'), port_act_id,
                         'URL redirection: action without parameters should redirect to client action Inbox')
