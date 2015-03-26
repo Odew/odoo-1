@@ -4,6 +4,9 @@
         <record id="a1000" model="account.account.template">
             <field name="tag_ids" eval="[(6,0,[ref('account.demo_capital_account')])]" />
         </record>
+        <record id="a300" model="account.account.template">
+            <field name="tag_ids" eval="[(6,0,[ref('account.demo_stock_account')])]" />
+        </record>
 
                 <!-- Could maybe removed with api change -->
         <record id="account.credit_account" model="account.account">

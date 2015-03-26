@@ -1,5 +1,5 @@
 -
-  Adding credit and debit accounts to the journals if they can be found
+  Setting property field
 -
   !python {model: ir.model.data} : |
       account_id = self.pool.get('account.account').search(cr, uid, [('tag_ids', 'in', [ref('account.demo_stock_account')])])
@@ -10,22 +10,8 @@
           vals = {
               'name': 'property_stock_valuation_account_id',
               'fields_id': fields_id,
+              'value': 'account.account,'+str(ref('account.stk')),
+              'company_id': ref('base.main_company'),
           }
           self._update(cr, uid, 'ir.property', 'stock_account', vals, 'property_stock_valuation_account_id')
 -
-
-ir.model.fields
-
-<?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data noupdate="1">
-
-        <record forcecreate="True" id="property_stock_valuation_account_id" model="ir.property">
-            <field name="name">property_stock_valuation_account_id</field>
-            <field name="fields_id" search="[('model','=','product.category'),('name','=','property_stock_valuation_account_id')]"/>
-            <field eval="'account.account,'+str(ref('account.stk'))" model="account.account" name="value"/>
-            <field name="company_id" ref="base.main_company"/>
-        </record>
-
-    </data>
-</openerp>
