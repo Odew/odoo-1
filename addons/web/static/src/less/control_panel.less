@@ -156,23 +156,42 @@
     }
 
     // Action buttons
-    .o-cp-buttons {
-        // Override bootstrap
-        button.btn-primary {
-            text-transform: uppercase;
-            color: white;
-            background-color: @odoo-brand-optional;
-            &:hover {
-                .o-darken-background(@odoo-brand-optional);
+    .o-cp-buttons-col {
+        text-align: left;
+        .o-cp-buttons {
+            // Override bootstrap
+            button.btn-primary {
+                text-transform: uppercase;
+                color: white;
+                background-color: @odoo-brand-optional;
+                &:hover {
+                    .o-darken-background(@odoo-brand-optional);
+                }
+            }
+            button.btn-default {
+                text-transform: uppercase;
+                color: @odoo-brand-optional;
             }
         }
-        button.btn-default {
-            text-transform: uppercase;
-            color: @odoo-brand-optional;
-        }
     }
-    .oe_list_buttons {.oe_list_save, .oe_list_discard {display: none;}}  // Needed by the webclient
-    // FIXME: Move me to view_list.less
+    .o-list-buttons { // Needed by the webclient
+        .o-list-button-save, .o-list-button-discard {
+            display: none;
+        }
+        &.o-editing { // for list view editable
+            .o-list-button-add {
+                display: none
+            }
+            .o-list-button-save, .o-list-button-discard {
+                display: inline-block
+            }
+        }
+    } // FIXME: Move me to view_list.less
+
+    // Sidebar
+    .o-cp-sidebar {
+        text-align: right;
+    }
 
     // Searchview buttons
     .o-search-options {

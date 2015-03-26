@@ -398,6 +398,11 @@
         <t t-if="error.moreinfo" t-raw="info(error.moreinfo)"/>
     </t>
     <t t-extend="ListView.buttons">
+        <t t-jquery="button.o-list-button-add" t-operation="after">
+            <button type="button" class="btn btn-default btn-sm o-list-button-import">
+                Import
+            </button>
+        </t>
         <t t-jquery="span.oe_alternative">
             this.attr('t-if', 'widget.options.import_enabled');
         </t>

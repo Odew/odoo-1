@@ -68,10 +68,7 @@
 
 /* ----------- INITIAL SETUP ------------ */
 
-.openerp .oe_list_buttons .oe_alternative {
-    visibility: visible;
-}
-.openerp .oe_list_buttons.oe_editing .oe_list_button_import {
+.o-list-buttons.o-editing .o-list-button-import {
     display: none;
 }
 

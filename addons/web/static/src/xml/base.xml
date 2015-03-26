@@ -477,9 +477,11 @@
         <div class="col-md-6 o-cp-searchview" />
     </div>
     <div class="row o-control-panel-second-row">
-        <div class="col-md-6 o-buttons-col">
-            <div class="o-cp-buttons pull-left"></div>
-            <div class="o-cp-sidebar pull-right"></div>
+        <div class="col-md-3 o-cp-buttons-col">
+            <div class="o-cp-buttons"></div>
+        </div>
+        <div class="col-md-3">
+            <div class="o-cp-sidebar"></div>
         </div>
         <div class="col-md-6">
             <div class="btn-group o-search-options pull-left"/>
@@ -714,8 +716,8 @@
 
 <t t-name="ListView.buttons">
     <t t-if="!widget.no_leaf and widget.options.action_buttons !== false and widget.options.addable and widget.is_action_enabled('create')">
-    <div class="oe_list_buttons">
-        <button type="button" class="oe_list_add btn btn-primary btn-sm">
+    <div class="o-list-buttons">
+        <button type="button" class="btn btn-primary btn-sm o-list-button-add">
             <t t-esc="widget.options.addable"/>
         </button>
     </div>
@@ -757,13 +759,13 @@
 </tr>
 
 <t t-extend="ListView.buttons">
-    <t t-jquery="button.oe_list_add" t-operation="after">
-        <button class="btn btn-sm oe_button oe_list_save oe_highlight"
-                type="button">Save</button>
-        <span class="oe_alternative">
-            <span class="oe_fade">or</span>
-            <a href="#" class="oe_bold oe_list_discard">Discard</a>
-        </span>
+    <t t-jquery="button.o-list-button-add" t-operation="after">
+        <button type="button" class="btn btn-primary btn-sm o-list-button-save">
+            Save
+        </button>
+        <button type="button" class="btn btn-default btn-sm o-list-button-discard">
+            Discard
+        </button>
     </t>
 </t>
 
@@ -794,21 +796,21 @@
     <t t-if="widget.options.action_buttons !== false">
         <div class="o-form-buttons-view">
             <button t-if="widget.is_action_enabled('edit')" type="button"
-                    class="btn btn-primary btn-sm o-form-button-edit pull-left" accesskey="E">
+                    class="btn btn-primary btn-sm o-form-button-edit" accesskey="E">
                 Edit
             </button>
             <button t-if="widget.is_action_enabled('create')" type="button" 
-                    class="btn btn-default btn-sm o-form-button-create pull-right" accesskey="C">
+                    class="btn btn-default btn-sm o-form-button-create" accesskey="C">
                 Create
             </button>
         </div>
         <div class="o-form-buttons-edit">
             <button type="button"
-                    class="btn btn-primary btn-sm o-form-button-save pull-left" accesskey="S">
+                    class="btn btn-primary btn-sm o-form-button-save" accesskey="S">
                 Save
             </button>
             <button type="button"
-                    class="btn btn-default btn-sm o-form-button-cancel pull-right" accesskey="D">
+                    class="btn btn-default btn-sm o-form-button-cancel" accesskey="D">
                 Discard
             </button>
         </div>
