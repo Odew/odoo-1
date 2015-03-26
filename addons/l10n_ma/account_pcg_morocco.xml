@@ -1169,109 +1169,109 @@
   <record id="pcg_3411" model="account.account.template">
     <field name="name">Fournisseurs - avances et acomptes versés sur commandes d'exploitation</field>
     <field name="code">3411</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3413" model="account.account.template">
     <field name="name">Fournisseurs - créances pour emballages et matériel à  rendre</field>
     <field name="code">3413</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3417" model="account.account.template">
     <field name="name">Rabais, remises et ristournes à  obtenir - avoirs non encore reçus</field>
     <field name="code">3417</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3418" model="account.account.template">
     <field name="name">Autres fournisseurs débiteurs</field>
     <field name="code">3418</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_34211" model="account.account.template">
     <field name="name">Clients - catégorie A</field>
     <field name="code">34211</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_34212" model="account.account.template">
     <field name="name">Clients - catégorie B</field>
     <field name="code">34212</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3423" model="account.account.template">
     <field name="name">Clients - retenues de garantie</field>
     <field name="code">3423</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3424" model="account.account.template">
     <field name="name">Clients douteux ou litigieux</field>
     <field name="code">3424</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3425" model="account.account.template">
     <field name="name">Clients - effets à  recevoir</field>
     <field name="code">3425</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_34271" model="account.account.template">
     <field name="name">Clients - factures à  établir</field>
     <field name="code">34271</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_34272" model="account.account.template">
     <field name="name">Créances sur travaux non encore facturés</field>
     <field name="code">34272</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3428" model="account.account.template">
     <field name="name">Autres clients et comptes rattachés</field>
     <field name="code">3428</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3431" model="account.account.template">
     <field name="name">Avances et acomptes au personnel</field>
     <field name="code">3431</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3438" model="account.account.template">
     <field name="name">Personnel - autres débiteurs</field>
     <field name="code">3438</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_34511" model="account.account.template">
     <field name="name">Subventions d'investissement à  recevoir</field>
     <field name="code">34511</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_34512" model="account.account.template">
     <field name="name">Subventions d'exploitation à  recevoir</field>
     <field name="code">34512</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_34513" model="account.account.template">
     <field name="name">Subventions d'équilibre à  recevoir</field>
     <field name="code">34513</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3453" model="account.account.template">
     <field name="name">Acomptes sur impôts sur les résultats</field>
     <field name="code">3453</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_34551" model="account.account.template">
@@ -1319,85 +1319,85 @@
   <record id="pcg_3461" model="account.account.template">
     <field name="name">Associés - comptes d'apport en société</field>
     <field name="code">3461</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3462" model="account.account.template">
     <field name="name">Actionnaires - capital souscrit et appelé non versé</field>
     <field name="code">3462</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3463" model="account.account.template">
     <field name="name">Comptes courants des associés débiteurs</field>
     <field name="code">3463</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3464" model="account.account.template">
     <field name="name">Associés - opérations faites en commun</field>
     <field name="code">3464</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3467" model="account.account.template">
     <field name="name">Créances rattachées aux comptes d'associés</field>
     <field name="code">3467</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3468" model="account.account.template">
     <field name="name">Autres comptes d'associés débiteurs</field>
     <field name="code">3468</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3481" model="account.account.template">
     <field name="name">Créances sur cessions d'immobilisations</field>
     <field name="code">3481</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3482" model="account.account.template">
     <field name="name">Créances sur cessions d'éléments d'actif circulant</field>
     <field name="code">3482</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3487" model="account.account.template">
     <field name="name">Créances rattachées aux autres débiteurs</field>
     <field name="code">3487</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3488" model="account.account.template">
     <field name="name">Divers débiteurs</field>
     <field name="code">3488</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3491" model="account.account.template">
     <field name="name">Charges constatées d'avance</field>
     <field name="code">3491</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3493" model="account.account.template">
     <field name="name">Intérêts courus et non échus à  percevoir</field>
     <field name="code">3493</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3495" model="account.account.template">
     <field name="name">Comptes de répartition périodique des charges</field>
     <field name="code">3495</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3497" model="account.account.template">
     <field name="name">Comptes transitoires ou d'attente - débiteurs</field>
     <field name="code">3497</field>
-    <field name="user_type" ref="account.data_account_type_receivable"/>
+    <field name="user_type" ref="account.data_account_type_payable"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_3501" model="account.account.template">
