@@ -55,13 +55,13 @@ class HrEvaluation(models.Model):
     completed_user_input_count = fields.Integer(string='Completed Survey', compute="_compute_completed_user_input")
     state = fields.Selection(EVALUATION_STATE, string='Status', track_visibility='onchange', required=True, readonly=True, copy=False, default='new', index=True)
     manager = fields.Boolean(string='Manager')
-    manager_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_manager_rel', 'hr_evaluation_evaluation_id')
+    manager_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_manager_rel', 'hr_evaluation_id')
     manager_survey_id = fields.Many2one('survey.survey', string='Manager Appraisal', required=False)
     subordinates = fields.Boolean(string='Collaborator')
-    subordinates_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_subordinates_rel', 'hr_evaluation_evaluation_id')
+    subordinates_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_subordinates_rel', 'hr_evaluation_id')
     subordinates_survey_id = fields.Many2one('survey.survey', string="collaborate's Appraisal")
     colleagues = fields.Boolean(string='Colleagues')
-    colleagues_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_colleagues_rel', 'hr_evaluation_evaluation_id')
+    colleagues_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_colleagues_rel', 'hr_evaluation_id')
     colleagues_survey_id = fields.Many2one('survey.survey', string="Employee's Appraisal")
     appraisal_self = fields.Boolean(string='Employee')
     appraisal_employee = fields.Char(related='employee_id.name', string='Employee Name')
@@ -280,16 +280,16 @@ class HrEmployee(models.Model):
 
     evaluation_date = fields.Date(string='Next Appraisal Date', help="The date of the next appraisal is computed by the appraisal plan's dates (first appraisal + periodicity).")
     appraisal_manager = fields.Boolean(string='Manager')
-    appraisal_manager_ids = fields.Many2many('hr.employee', 'appraisal_manager_rel', 'hr_evaluation_evaluation_id')
+    appraisal_manager_ids = fields.Many2many('hr.employee', 'appraisal_manager_rel', 'hr_evaluation_id')
     appraisal_manager_survey_id = fields.Many2one('survey.survey', string='Manager Appraisal')
     appraisal_colleagues = fields.Boolean(string='Colleagues')
-    appraisal_colleagues_ids = fields.Many2many('hr.employee', 'appraisal_colleagues_rel', 'hr_evaluation_evaluation_id')
+    appraisal_colleagues_ids = fields.Many2many('hr.employee', 'appraisal_colleagues_rel', 'hr_evaluation_id')
     appraisal_colleagues_survey_id = fields.Many2one('survey.survey', string="Employee's Appraisal")
     appraisal_self = fields.Boolean(string='Employee')
     appraisal_employee = fields.Char(string='Employee Name')
     appraisal_self_survey_id = fields.Many2one('survey.survey', string='Self Appraisal')
     appraisal_subordinates = fields.Boolean(string='Collaborator')
-    appraisal_subordinates_ids = fields.Many2many('hr.employee', 'appraisal_subordinates_rel', 'hr_evaluation_evaluation_id')
+    appraisal_subordinates_ids = fields.Many2many('hr.employee', 'appraisal_subordinates_rel', 'hr_evaluation_id')
     appraisal_subordinates_survey_id = fields.Many2one('survey.survey', string="collaborate's Appraisal")
     appraisal_repeat = fields.Boolean(string='Periodic Appraisal', default=False)
     appraisal_repeat_number = fields.Integer(string='Repeat Every', default=1)
@@ -327,17 +327,17 @@ class HrEmployee(models.Model):
             employee.write({'evaluation_date': next_date})
             vals = {'employee_id': employee.id,
                     'date_close': current_date,
-                    'appraisal_manager': employee.appraisal_manager,
-                    'appraisal_manager_ids': [(4, manager.id) for manager in employee.appraisal_manager_ids] or [(4, employee.parent_id.id)],
-                    'appraisal_manager_survey_id': employee.appraisal_manager_survey_id.id,
-                    'appraisal_colleagues': employee.appraisal_colleagues,
-                    'appraisal_colleagues_ids': [(4, colleagues.id) for colleagues in employee.appraisal_colleagues_ids],
-                    'appraisal_colleagues_survey_id': employee.appraisal_colleagues_survey_id.id,
+                    'manager': employee.appraisal_manager,
+                    'manager_ids': [(4, manager.id) for manager in employee.appraisal_manager_ids] or [(4, employee.parent_id.id)],
+                    'manager_survey_id': employee.appraisal_manager_survey_id.id,
+                    'colleagues': employee.appraisal_colleagues,
+                    'colleagues_ids': [(4, colleagues.id) for colleagues in employee.appraisal_colleagues_ids],
+                    'colleagues_survey_id': employee.appraisal_colleagues_survey_id.id,
                     'appraisal_self': employee.appraisal_self,
                     'appraisal_employee': employee.appraisal_employee or employee.name,
                     'appraisal_self_survey_id': employee.appraisal_self_survey_id.id,
-                    'appraisal_subordinates': employee.appraisal_subordinates,
-                    'appraisal_subordinates_ids': [(4, subordinates.id) for subordinates in employee.appraisal_subordinates_ids],
-                    'appraisal_subordinates_survey_id': employee.appraisal_subordinates_survey_id.id}
+                    'subordinates': employee.appraisal_subordinates,
+                    'subordinates_ids': [(4, subordinates.id) for subordinates in employee.appraisal_subordinates_ids],
+                    'subordinates_survey_id': employee.appraisal_subordinates_survey_id.id}
             self.env['hr.evaluation'].create(vals)
         return True
