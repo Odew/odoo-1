@@ -214,7 +214,6 @@ class HrEvaluation(models.Model):
                 raise UserError(_("You cannot delete appraisal which is in '%s' state") % (eval_state[appraisal.state]))
         return super(HrEvaluation, self).unlink()
 
-    @api.v7
     def read_group(self, cr, uid, domain, fields, groupby, offset=0, limit=None, context=None, orderby=False, lazy=True):
         """ Override read_group to always display all states. """
         if groupby and groupby[0] == "state":
@@ -268,9 +267,12 @@ class HrEvaluation(models.Model):
 class HrEmployee(models.Model):
     _inherit = "hr.employee"
 
-    @api.one
+    @api.multi
     def _appraisal_count(self):
-        self.appraisal_count = self.env['hr.evaluation'].search_count([('employee_id', '=', self.id)])
+        evaluations = self.env['hr.evaluation'].read_group([('employee_id', 'in', self.ids)], ['employee_id'], ['employee_id'])
+        result = dict([(x['employee_id'][0], x['employee_id_count']) for x in evaluations])
+        for employee in self:
+            employee.appraisal_count = result.get(employee.id, 0)
 
     @api.one
     def _compute_related_partner(self):

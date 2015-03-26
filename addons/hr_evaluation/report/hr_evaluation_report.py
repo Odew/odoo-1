@@ -45,7 +45,7 @@ class HrEvaluationReport(models.Model):
                      s.state,
                      avg(extract('epoch' from age(s.create_date,CURRENT_DATE)))/(3600*24) as  delay_date,
                      avg(extract('epoch' from age(s.date_close,CURRENT_DATE)))/(3600*24) as overpass_delay
-                     from hr_evaluation_evaluation s
+                     from hr_evaluation s
                         left join hr_employee e on (e.id=s.employee_id)
                  GROUP BY
                      s.id,
