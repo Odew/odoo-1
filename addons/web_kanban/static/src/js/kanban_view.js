@@ -44,9 +44,9 @@ var KanbanView = View.extend({
         this.search_domain = domain;
         this.search_context = context;
         this.search_group_by = group_by;
-        console.log('nbr of records', this.dataset.size());
         return this.dataset.read_slice(this.fields_keys.concat(['__last_update']), { 'limit': this.limit })
-            .done(this.proxy('render'));
+            .then(this.proxy('render'))
+            .then(this.proxy('update_pager'));
     },
     /**
      * Render the buttons according to the KanbanView.buttons template and
@@ -76,6 +76,11 @@ var KanbanView = View.extend({
     render_pager: function($node) {
         this.pager = new Pager(this, this.dataset.size(), 1, this.limit);
         this.pager.appendTo($node);
+        this.pager.on('pager_changed', this, function (new_state) {
+            var limit = new_state.current_max - new_state.current_min + 1;
+            this.dataset.read_slice(this.fields_keys.concat(['__last_update']), { 'limit': limit, offset: new_state.current_min - 1 })
+                .done(this.proxy('render'));
+        });
     },
 
     add_qweb_template: function() {
@@ -167,7 +172,6 @@ var KanbanView = View.extend({
         this.do_switch_view('form');
     },
     render: function(records) {
-        console.log('render', this.dataset.size());
         this.$el.css({display:'flex'});
         _.invoke(this.records, 'destroy');
         this.records = [];
@@ -175,11 +179,15 @@ var KanbanView = View.extend({
         var fragment = document.createDocumentFragment();
         for (var i = 0; i < records.length; i++) {
             kanban_record = new kanban_common.KanbanRecord(this, records[i]);
-            // kanban_record.appendTo(this.$el);
             kanban_record.appendTo(fragment);
             this.records.push(kanban_record);
         }
         this.$el.append(fragment);
+    },
+    update_pager: function(record) {
+        if (this.pager) {
+            this.pager.set_state({size: this.dataset.size(), current_min: 1});
+        }
     },
     do_show: function() {
         this.do_push_state({});
