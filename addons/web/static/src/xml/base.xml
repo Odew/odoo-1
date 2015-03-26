@@ -1952,4 +1952,13 @@
     <img t-attf-src="#{_s}/web/static/src/img/icons/#{widget.icon}" t-att-alt="widget.string"/>
 </button>
 
+
+<div t-name="Pager">
+    <span class="o-pager-value"/>
+    <div class="btn-group btn-group-sm">
+        <button class="fa fa-chevron-left btn btn-default o-pager-previous"/>
+        <button class="fa fa-chevron-right btn btn-default o-pager-next"/>
+    </div>
+</div>
+
 </templates>
