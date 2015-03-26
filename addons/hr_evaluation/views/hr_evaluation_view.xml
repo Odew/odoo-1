@@ -270,7 +270,7 @@
             <data>
                 <xpath expr="//templates" position="before">
                     <field name="to_start_appraisal_ids"/>
-                    <field name="appraisal_to_process_count"/>
+                    <field name="to_process_appraisal_ids"/>
                 </xpath>
                 <xpath expr="//div[@name='to_do']" position="attributes">
                     <attribute name="class">col-md-6 col-xs-6</attribute>
@@ -278,12 +278,12 @@
                 <xpath expr="//div[@name='to_do']" position="inside">
                     <div>
                         <a name="%(hr_appraisal_action_from_department)d" type="action">
-                            <t t-esc="record.to_start_appraisal_ids.raw_value or 0"/> Appraisal(s) to Start
+                            <t t-esc="record.to_start_appraisal_ids.raw_value.length or 0"/> Appraisal(s) to Start
                         </a>
                     </div>
                     <div>
                         <a name="action_number_of_answers" type="object">
-                            <t t-esc="record.appraisal_to_process_count.raw_value or 0"/> Appraisal(s) to Process
+                            <t t-esc="record.to_process_appraisal_ids.raw_value.length or 0"/> Appraisal(s) to Process
                         </a>
                     </div>
                 </xpath>
