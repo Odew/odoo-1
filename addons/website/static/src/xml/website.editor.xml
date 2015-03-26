@@ -62,7 +62,7 @@
         </div>
     </t>
 
-    <t t-name="web_editor.dialog.link" t-extend="web_editor.dialog.link">
+    <t t-extend="web_editor.dialog.link">
         <t t-jquery=".list-group-item.form-group">
             this.removeClass('active');
         </t>

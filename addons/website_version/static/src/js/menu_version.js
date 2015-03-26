@@ -25,13 +25,13 @@
                 var view_id = parseInt($('html').attr('data-view-xmlid'));
                 openerp.jsonRpc( '/website_version/all_versions', 'call', {'view_id': view_id}).then(function (result) {
                     self.$el.find(".o_version_choice").remove();
-                    self.$el.find(".first_divider").before(QWeb.render("all_versions", {versions:result}));
+                    self.$el.find(".first_divider").before(QWeb.render("website_version.all_versions", {versions:result}));
 
                 });
                 openerp.jsonRpc( '/website_version/has_experiments', 'call', {'view_id': view_id}).then(function (result) {
                     self.$el.find(".o_experiment").remove();
                     if(result){
-                        self.$el.find(".create_experiment").after(QWeb.render("experiment_menu"));
+                        self.$el.find(".create_experiment").after(QWeb.render("website_version.experiment_menu"));
                     }
                 });
                 
