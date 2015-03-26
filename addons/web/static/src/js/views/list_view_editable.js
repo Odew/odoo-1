@@ -189,12 +189,12 @@ ListView.include(/** @lends instance.web.ListView# */{
             }
         });
         this.on('edit:after', this, function () {
-            self.$el.add(self.$buttons).addClass('oe_editing');
+            self.$el.add(self.$buttons).addClass('o-editing');
             self.$('.ui-sortable').sortable('disable');
         });
         this.on('save:after cancel:after', this, function () {
             self.$('.ui-sortable').sortable('enable');
-            self.$el.add(self.$buttons).removeClass('oe_editing');
+            self.$el.add(self.$buttons).removeClass('o-editing');
         });
     },
     destroy: function () {
@@ -311,10 +311,10 @@ ListView.include(/** @lends instance.web.ListView# */{
         this._super.apply(this, arguments); // Sets this.$buttons
         if (add_button && this.editable()) {
             this.$buttons
-                .off('click', '.oe_list_save')
-                .on('click', '.oe_list_save', this.proxy('save_edition'))
-                .off('click', '.oe_list_discard')
-                .on('click', '.oe_list_discard', function (e) {
+                .off('click', '.o-list-button-save')
+                .on('click', '.o-list-button-save', this.proxy('save_edition'))
+                .off('click', '.o-list-button-discard')
+                .on('click', '.o-list-button-discard', function (e) {
                     e.preventDefault();
                     self.cancel_edition();
                 });

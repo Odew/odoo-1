@@ -17,7 +17,7 @@ var CompareListView = ListView.extend({
             if(self.__parentedParent.$el.find('.oe_generate_po').length == 0){
                 var button = $("<button type='button' class='oe_button oe_highlight oe_generate_po'>Generate PO</button>")
                     .click(this.proxy('generate_purchase_order'));
-                self.__parentedParent.$el.find('.oe_list_buttons').append(button);
+                self.__parentedParent.$el.find('.o-list-buttons').append(button);
             }
         });
     },
