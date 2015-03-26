@@ -241,7 +241,6 @@ var ViewManager = Widget.extend(ControlPanelMixin, {
     },
     /**
      * Renders the control elements (buttons, sidebar, pager) of the current view
-     * This must be done when active_search is resolved (for KanbanViews)
      * Fills this.active_view.control_elements dictionnary with the rendered elements
      */
     render_view_control_elements: function() {

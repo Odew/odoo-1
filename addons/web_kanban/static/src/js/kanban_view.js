@@ -54,23 +54,13 @@ var KanbanView = View.extend({
      * Set this.$buttons with the produced jQuery element
      * @param {jQuery} [$node] a jQuery node where the rendered buttons should be inserted
      * $node may be undefined, in which case the ListView inserts them into this.options.$buttons
-     * or into a div of its template
      */
     render_buttons: function($node) {
         this.$buttons = $(QWeb.render("KanbanView.buttons", {'widget': this}));
-        this.$buttons
-            .on('click', 'button.oe_kanban_button_new', this.do_add_record);
-            // .on('click', '.oe_kanban_add_column', this.do_add_group);
-        // Important: This should be done after do_search is finished so that
-        // this.grouped_by_m2o is set
-        this.$buttons.find('.oe_alternative').toggle(this.grouped_by_m2o);
+        this.$buttons.on('click', 'button.o-kanban-button-new', this.do_add_record);
 
         $node = $node || this.options.$buttons;
-        if ($node) {
-            this.$buttons.appendTo($node);
-        } else {
-            this.$('.oe_kanban_buttons').replaceWith(this.$buttons);
-        }
+        this.$buttons.appendTo($node);
     },
 
     render_pager: function($node) {
@@ -281,23 +271,18 @@ var OldKanbanView = View.extend({
      * Set this.$buttons with the produced jQuery element
      * @param {jQuery} [$node] a jQuery node where the rendered buttons should be inserted
      * $node may be undefined, in which case the ListView inserts them into this.options.$buttons
-     * or into a div of its template
      */
     render_buttons: function($node) {
         this.$buttons = $(QWeb.render("KanbanView.buttons", {'widget': this}));
         this.$buttons
-            .on('click', 'button.oe_kanban_button_new', this.do_add_record)
+            .on('click', 'button.o-kanban-button-new', this.do_add_record)
             .on('click', '.oe_kanban_add_column', this.do_add_group);
         // Important: This should be done after do_search is finished so that
         // this.grouped_by_m2o is set
         this.$buttons.find('.oe_alternative').toggle(this.grouped_by_m2o);
 
         $node = $node || this.options.$buttons;
-        if ($node) {
-            this.$buttons.appendTo($node);
-        } else {
-            this.$('.oe_kanban_buttons').replaceWith(this.$buttons);
-        }
+        this.$buttons.appendTo($node);
     },
     _is_quick_create_enabled: function() {
         if (!this.options.quick_creatable || !this.is_action_enabled('create'))
