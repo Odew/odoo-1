@@ -408,6 +408,7 @@
   top: 1px !important;
   right: auto !important;
   left: 300px !important;
+  margin-top: 0 !important;
   border: 0;
   background: transparent;
   box-shadow: none;
@@ -417,7 +418,6 @@
   text-align: left;
   white-space: normal;
   border-radius: 6px;
-  margin-top: 0;
   max-width: none;
 }
 .note-popover .popover .popover-content, #oe_manipulators .popover .popover-content, #web_editor-top-edit .popover .popover-content {
