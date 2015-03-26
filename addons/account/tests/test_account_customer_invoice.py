@@ -2,7 +2,7 @@ from openerp.addons.account.tests.account_test_users import AccountTestUsers
 import datetime
 
 
-class TestAccountCustomerInvoive(AccountTestUsers):
+class TestAccountCustomerInvoice(AccountTestUsers):
 
     def test_customer_invoice(self):
         # I will create bank detail with using manager access rights
@@ -21,9 +21,10 @@ class TestAccountCustomerInvoive(AccountTestUsers):
         # Create a customer invoice
         self.account_invoice_obj = self.env['account.invoice']
         self.payment_term = self.env.ref('account.account_payment_term_advance')
-        self.journalrec = self.env.ref('account.sales_journal')
+        self.journalrec = self.env['account.journal'].search([('type', '=', 'sale')])[0]
         self.partner3 = self.env.ref('base.res_partner_3')
         account_user_type = self.env.ref('account.data_account_type_liquidity')
+        self.ova = self.env['account.account'].search([('user_type', '=', self.env.ref('account.data_account_type_current_assets').id)])[0]
 
         self.account_rec1_id = self.account_model.sudo(self.account_user.id).create(dict(
             code="cust_acc",
@@ -61,7 +62,7 @@ class TestAccountCustomerInvoive(AccountTestUsers):
             'name':  'Test Tax for Customer Invoice',
             'manual': 1,
             'amount': 9050,
-            'account_id': self.env.ref('account.ova').id,
+            'account_id': self.ova.id,
             'invoice_id': self.account_invoice_customer0.id,
         }
         tax = self.env['account.invoice.tax'].create(invoice_tax_line)
@@ -79,7 +80,7 @@ class TestAccountCustomerInvoive(AccountTestUsers):
         # I check that there is no move attached to the invoice
         self.assertEquals(len(self.account_invoice_customer0.move_id), 0)
 
-        # I create invoice by clicking on Create button
+        # I validate invoice by creating on
         self.account_invoice_customer0.signal_workflow('invoice_open')
 
         # I check that the invoice state is "Open"
