@@ -5,7 +5,7 @@
 		<field name="chart_template_id" ref="ve_chart_template_amd"/>
 		<field name="name">Exento (sale)</field>
 		<field name="amount">0</field>
-		<field name="ammount_type">percent</field>
+		<field name="amount_type">percent</field>
 		<field name="type_tax_use">sale</field>
 		<field name="refund_account_id" ref="account_activa_account_2172003"/>
 		<field name="account_id" ref="account_activa_account_2172003"/>
@@ -15,7 +15,7 @@
 		<field name="chart_template_id" ref="ve_chart_template_amd"/>
 		<field name="name">Exento (purchase)</field>
 		<field name="amount">0</field>
-		<field name="ammount_type">percent</field>
+		<field name="amount_type">percent</field>
 		<field name="type_tax_use">purchase</field>
 		<field name="refund_account_id" ref="account_activa_account_2172003"/>
 		<field name="account_id" ref="account_activa_account_2172003"/>
@@ -25,7 +25,7 @@
 		<field name="chart_template_id" ref="ve_chart_template_amd"/>
 		<field name="name">IVA (12.0%) ventas</field>
 		<field name="amount">12</field>
-		<field name="ammount_type">percent</field>
+		<field name="amount_type">percent</field>
 		<field name="type_tax_use">sale</field>
 		<field name="refund_account_id" ref="account_activa_account_2172003"/>
 		<field name="account_id" ref="account_activa_account_2172003"/>
@@ -34,7 +34,7 @@
 		<field name="chart_template_id" ref="ve_chart_template_amd"/>
 		<field name="name">IVA (8.0%) ventas</field>
 		<field name="amount">8</field>
-		<field name="ammount_type">percent</field>
+		<field name="amount_type">percent</field>
 		<field name="type_tax_use">sale</field>
 		<field name="refund_account_id" ref="account_activa_account_2172003"/>
 		<field name="account_id" ref="account_activa_account_2172003"/>
@@ -43,7 +43,7 @@
 		<field name="chart_template_id" ref="ve_chart_template_amd"/>
 		<field name="name">IVA (22.0%) ventas</field>
 		<field name="amount">22</field>
-		<field name="ammount_type">percent</field>
+		<field name="amount_type">percent</field>
 		<field name="type_tax_use">sale</field>
 		<field name="refund_account_id" ref="account_activa_account_2172003"/>
 		<field name="account_id" ref="account_activa_account_2172003"/>
@@ -52,7 +52,7 @@
 		<field name="chart_template_id" ref="ve_chart_template_amd"/>
 		<field name="name">IVA (12.0%) compras</field>
 		<field name="amount">12</field>
-		<field name="ammount_type">percent</field>
+		<field name="amount_type">percent</field>
 		<field name="type_tax_use">purchase</field>
 		<field name="refund_account_id" ref="account_activa_account_1151004"/>
 		<field name="account_id" ref="account_activa_account_1151004"/>
@@ -61,7 +61,7 @@
 		<field name="chart_template_id" ref="ve_chart_template_amd"/>
 		<field name="name">IVA (8.0%) compras</field>
 		<field name="amount">8</field>
-		<field name="ammount_type">percent</field>
+		<field name="amount_type">percent</field>
 		<field name="type_tax_use">purchase</field>
 		<field name="refund_account_id" ref="account_activa_account_1151004"/>
 		<field name="account_id" ref="account_activa_account_1151004"/>
@@ -70,7 +70,7 @@
 		<field name="chart_template_id" ref="ve_chart_template_amd"/>
 		<field name="name">IVA (22.0%) compras</field>
 		<field name="amount">22</field>
-		<field name="ammount_type">percent</field>
+		<field name="amount_type">percent</field>
 		<field name="type_tax_use">purchase</field>
 		<field name="refund_account_id" ref="account_activa_account_1151004"/>
 		<field name="account_id" ref="account_activa_account_1151004"/>
