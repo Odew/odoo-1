@@ -177,11 +177,7 @@ var FormView = View.extend(common.FieldManagerMixin, {
         }
 
         $node = $node || this.options.$buttons;
-        if ($node) {
-            this.$buttons.appendTo($node);
-        } else {
-            this.$('.oe_form_buttons').replaceWith(this.$buttons);
-        }
+        this.$buttons.appendTo($node);
     },
     /**
      * Instantiate and render the sidebar if a sidebar is requested
