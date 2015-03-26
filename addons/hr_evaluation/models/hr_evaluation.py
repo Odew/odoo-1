@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-import calendar
-import datetime
-import uuid
 from dateutil.relativedelta import relativedelta
 
 from openerp import api, fields, models, _
@@ -9,7 +6,7 @@ from openerp.exceptions import UserError
 
 
 class HrEvaluation(models.Model):
-    _name = "hr_evaluation.evaluation"
+    _name = "hr.evaluation"
     _inherit = ['mail.thread']
     _description = "Employee Appraisal"
     _order = 'date_close, interview_deadline'
@@ -32,10 +29,10 @@ class HrEvaluation(models.Model):
     @api.one
     def _compute_users_input(self):
         survey_ids = [
-            self.appraisal_manager_survey_id.id,
-            self.appraisal_colleagues_survey_id.id,
+            self.manager_survey_id.id,
+            self.colleagues_survey_id.id,
             self.appraisal_self_survey_id.id,
-            self.appraisal_subordinates_survey_id.id
+            self.subordinates_survey_id.id
         ]
         self.user_input_ids = self.env['survey.user_input'].search([
             ('survey_id', 'in', survey_ids),
@@ -49,52 +46,52 @@ class HrEvaluation(models.Model):
     def _compute_completed_user_input(self):
         self.completed_user_input_count = len(self.user_input_ids.filtered(lambda r: r.state == 'done'))
 
+    action_plan = fields.Text(string="Action Plan", help="If the evaluation does not meet the expectations, you can propose an action plan")
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
+    color = fields.Integer(string='Color Index')
+    department_id = fields.Many2one('hr.department', related='employee_id.department_id', string='Department', store=True)
+    date_close = fields.Datetime(string='Appraisal Deadline', index=True, required=True)
     employee_id = fields.Many2one('hr.employee', required=True, string='Employee', index=True)
-    department_id = fields.Many2one('hr.department', related='employee_id.department_id', string='Department')
-    action_plan = fields.Text(help="If the evaluation does not meet the expectations, you can propose an action plan")
+    completed_user_input_count = fields.Integer(string='Completed Survey', compute="_compute_completed_user_input")
     state = fields.Selection(EVALUATION_STATE, string='Status', track_visibility='onchange', required=True, readonly=True, copy=False, default='new', index=True)
-    appraisal_manager_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_manager_rel', 'hr_evaluation_evaluation_id')
-    appraisal_colleagues = fields.Boolean(string='Colleagues')
-    appraisal_manager = fields.Boolean(string='Manager')
-    appraisal_subordinates = fields.Boolean(string='Collaborator')
+    manager = fields.Boolean(string='Manager')
+    manager_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_manager_rel', 'hr_evaluation_evaluation_id')
+    manager_survey_id = fields.Many2one('survey.survey', string='Manager Appraisal', required=False)
+    subordinates = fields.Boolean(string='Collaborator')
+    subordinates_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_subordinates_rel', 'hr_evaluation_evaluation_id')
+    subordinates_survey_id = fields.Many2one('survey.survey', string="collaborate's Appraisal")
+    colleagues = fields.Boolean(string='Colleagues')
+    colleagues_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_colleagues_rel', 'hr_evaluation_evaluation_id')
+    colleagues_survey_id = fields.Many2one('survey.survey', string="Employee's Appraisal")
     appraisal_self = fields.Boolean(string='Employee')
-    appraisal_colleagues_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_colleagues_rel', 'hr_evaluation_evaluation_id')
     appraisal_employee = fields.Char(related='employee_id.name', string='Employee Name')
-    appraisal_subordinates_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_subordinates_rel', 'hr_evaluation_evaluation_id')
+    appraisal_self_survey_id = fields.Many2one('survey.survey', string='Self Appraisal')
     user_input_ids = fields.One2many('survey.user_input', string='suvrey Answers', compute='_compute_users_input')
     user_input_count = fields.Integer(string='Sent Survey', compute='_compute_user_input_count')
-    completed_user_input_count = fields.Integer(string='Completed Survey', compute="_compute_completed_user_input")
     mail_template_id = fields.Many2one('mail.template', string="Email Template For Appraisal", default=lambda self: self.env.ref('hr_evaluation.send_appraisal_template'))
-    color = fields.Integer(string='Color Index')
     meeting_id = fields.Many2one('calendar.event', string='Meeting')
     interview_deadline = fields.Date(string="Final Interview", index=True, track_visibility='onchange')
-    date_close = fields.Datetime(string='Appraisal Deadline', index=True, required=True)
-    appraisal_manager_survey_id = fields.Many2one('survey.survey', string='Manager Appraisal', required=False)
-    appraisal_colleagues_survey_id = fields.Many2one('survey.survey', string="Employee's Appraisal")
-    appraisal_self_survey_id = fields.Many2one('survey.survey', string='Self Appraisal')
-    appraisal_subordinates_survey_id = fields.Many2one('survey.survey', string="collaborate's Appraisal")
-    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
         if self.employee_id:
             self.department_id = self.employee_id.department_id
-            self.appraisal_manager = self.employee_id.appraisal_manager
-            self.appraisal_manager_ids = self.employee_id.appraisal_manager_ids
-            self.appraisal_manager_survey_id = self.employee_id.appraisal_manager_survey_id
-            self.appraisal_colleagues = self.employee_id.appraisal_colleagues
-            self.appraisal_colleagues_ids = self.employee_id.appraisal_colleagues_ids
-            self.appraisal_colleagues_survey_id = self.employee_id.appraisal_colleagues_survey_id
+            self.manager = self.employee_id.appraisal_manager
+            self.manager_ids = self.employee_id.appraisal_manager_ids
+            self.manager_survey_id = self.employee_id.appraisal_manager_survey_id
+            self.colleagues = self.employee_id.appraisal_colleagues
+            self.colleagues_ids = self.employee_id.appraisal_colleagues_ids
+            self.colleagues_survey_id = self.employee_id.appraisal_colleagues_survey_id
             self.appraisal_self = self.employee_id.appraisal_self
             self.appraisal_self_survey_id = self.employee_id.appraisal_self_survey_id
-            self.appraisal_subordinates = self.employee_id.appraisal_subordinates
-            self.appraisal_subordinates_ids = self.employee_id.appraisal_subordinates_ids
-            self.appraisal_subordinates_survey_id = self.employee_id.appraisal_subordinates_survey_id
+            self.subordinates = self.employee_id.appraisal_subordinates
+            self.subordinates_ids = self.employee_id.appraisal_subordinates_ids
+            self.subordinates_survey_id = self.employee_id.appraisal_subordinates_survey_id
 
     @api.multi
     def subscribe_employee(self):
         for appraisal in self:
-            emp_partner_ids = [emp.related_partner_id.id for emp in appraisal.appraisal_manager_ids if emp.related_partner_id]
+            emp_partner_ids = [emp.related_partner_id.id for emp in appraisal.manager_ids if emp.related_partner_id]
             if appraisal.employee_id.related_partner_id:
                 emp_partner_ids.append(appraisal.employee_id.related_partner_id.id)
             if appraisal.employee_id.department_id.manager_id.related_partner_id:
@@ -119,7 +116,7 @@ class HrEvaluation(models.Model):
                 meeting_date = fields.Datetime.to_string(date)
                 appraisal.meeting_id.write({'start_datetime': meeting_date, 'stop_datetime': meeting_date})
             if not appraisal.meeting_id:
-                attendee_ids = [(4, manager.related_partner_id.id) for manager in appraisal.appraisal_manager_ids if manager.related_partner_id]
+                attendee_ids = [(4, manager.related_partner_id.id) for manager in appraisal.manager_ids if manager.related_partner_id]
                 if appraisal.employee_id.related_partner_id:
                     attendee_ids.append((4, appraisal.employee_id.related_partner_id.id))
                 values['name'] = _('Appraisal Meeting For %s') % appraisal.employee_id.name_related
@@ -155,12 +152,12 @@ class HrEvaluation(models.Model):
         @return: returns a list of tuple (survey, employee).
         """
         appraisal_receiver = []
-        if self.appraisal_manager and self.appraisal_manager_ids:
-            appraisal_receiver.append((self.appraisal_manager_survey_id, self.appraisal_manager_ids))
-        if self.appraisal_colleagues and self.appraisal_colleagues_ids:
-            appraisal_receiver.append((self.appraisal_colleagues_survey_id, self.appraisal_colleagues_ids))
-        if self.appraisal_subordinates and self.appraisal_subordinates_ids:
-            appraisal_receiver.append((self.appraisal_subordinates_survey_id, self.appraisal_subordinates_ids))
+        if self.manager and self.manager_ids:
+            appraisal_receiver.append((self.manager_survey_id, self.manager_ids))
+        if self.colleagues and self.colleagues_ids:
+            appraisal_receiver.append((self.colleagues_survey_id, self.colleagues_ids))
+        if self.subordinates and self.subordinates_ids:
+            appraisal_receiver.append((self.subordinates_survey_id, self.subordinates_ids))
         if self.appraisal_self and self.appraisal_employee:
             appraisal_receiver.append((self.appraisal_self_survey_id, self.employee_id))
         return appraisal_receiver
@@ -185,7 +182,7 @@ class HrEvaluation(models.Model):
                         'subject': survey.title,
                         'body': render_template[appraisal.id]['body'],
                         'date_deadline': appraisal.date_close,
-                        'model': 'hr_evaluation.evaluation',
+                        'model': appraisal._name,
                         'res_id': appraisal.id,
                     }
                     wizard = ComposeMessage.create(values)
@@ -256,7 +253,7 @@ class HrEvaluation(models.Model):
     def action_calendar_event(self):
         """ Link to open calendar view for creating employee interview and meeting"""
         self.ensure_one()
-        partner_ids = [manager.related_partner_id.id for manager in self.appraisal_manager_ids if manager.related_partner_id]
+        partner_ids = [manager.related_partner_id.id for manager in self.manager_ids if manager.related_partner_id]
         if self.employee_id.related_partner_id:
             partner_ids.append(self.employee_id.related_partner_id.id)
         action = self.env.ref('calendar.action_calendar_event').read()[0]
@@ -273,7 +270,7 @@ class HrEmployee(models.Model):
 
     @api.one
     def _appraisal_count(self):
-        self.appraisal_count = self.env['hr_evaluation.evaluation'].search_count([('employee_id', '=', self.id)])
+        self.appraisal_count = self.env['hr.evaluation'].search_count([('employee_id', '=', self.id)])
 
     @api.one
     def _compute_related_partner(self):
@@ -340,5 +337,5 @@ class HrEmployee(models.Model):
                     'appraisal_subordinates': employee.appraisal_subordinates,
                     'appraisal_subordinates_ids': [(4, subordinates.id) for subordinates in employee.appraisal_subordinates_ids],
                     'appraisal_subordinates_survey_id': employee.appraisal_subordinates_survey_id.id}
-            self.env['hr_evaluation.evaluation'].create(vals)
+            self.env['hr.evaluation'].create(vals)
         return True

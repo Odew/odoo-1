@@ -5,8 +5,8 @@
     <menuitem name="Periodic Appraisal" parent="hr.menu_hr_configuration" id="menu_eval_hr_config" sequence="4"/>
 
     <record model="ir.ui.view" id="view_hr_evaluation_form">
-        <field name="name">hr_evaluation.evaluation.form</field>
-        <field name="model">hr_evaluation.evaluation</field>
+        <field name="name">hr.evaluation.form</field>
+        <field name="model">hr.evaluation</field>
         <field name="arch" type="xml">
             <form string="Appraisal">
             <header>
@@ -40,14 +40,14 @@
                     </page>
                     <page string="Plan">
                         <group col="4">
-                            <label for="appraisal_manager" string="Send Appraisal Form To"/>
+                            <label for="manager" string="Send Appraisal Form To"/>
                             <group col="3">
                                 <div class="address_format">
-                                    <field name="appraisal_manager" attrs="{'readonly':[('state','not in',('new'))]}"/>
+                                    <field name="manager" attrs="{'readonly':[('state','not in',('new'))]}"/>
                                     <label string="Managers"/>
                                 </div>
-                                <field name="appraisal_manager_ids" nolabel="1" placeholder="Select Appraisal Reviewer..." widget="many2many_tags" attrs="{'invisible':[('appraisal_manager','=',False)], 'required':[('appraisal_manager','=',True)], 'readonly':[('state','not in',('new'))]}"/>
-                                <field name="appraisal_manager_survey_id" nolabel="1" placeholder="Appraisal Form..." attrs="{'invisible':[('appraisal_manager','=',False)], 'required':[('appraisal_manager','=',True)], 'readonly':[('state','not in',('new'))]}"/>
+                                <field name="manager_ids" nolabel="1" placeholder="Select Appraisal Reviewer..." widget="many2many_tags" attrs="{'invisible':[('manager','=',False)], 'required':[('manager','=',True)], 'readonly':[('state','not in',('new'))]}"/>
+                                <field name="manager_survey_id" nolabel="1" placeholder="Appraisal Form..." attrs="{'invisible':[('manager','=',False)], 'required':[('manager','=',True)], 'readonly':[('state','not in',('new'))]}"/>
                                 <div class="address_format">
                                     <field name="appraisal_self" attrs="{'readonly':[('state','not in',('new'))]}"/>
                                     <label string="Employee"/>
@@ -55,17 +55,17 @@
                                 <field name="appraisal_employee" nolabel="1" attrs="{'invisible':[('appraisal_self','=',False)], 'readonly':[('state','not in',('new'))]}"/>
                                 <field name="appraisal_self_survey_id" nolabel="1" placeholder="Appraisal Form..." attrs="{'invisible':[('appraisal_self','=',False)], 'required':[('appraisal_self','=',True)], 'readonly':[('state','not in',('new'))]}"/>
                                 <div class="address_format">
-                                    <field name="appraisal_subordinates" attrs="{'readonly':[('state','not in',('new'))]}"/>
+                                    <field name="subordinates" attrs="{'readonly':[('state','not in',('new'))]}"/>
                                     <label string="Collaborators"/>
                                 </div>
-                                <field name="appraisal_subordinates_ids" nolabel="1" placeholder="Select Appraisal Reviewer..." widget="many2many_tags" attrs="{'invisible':[('appraisal_subordinates','=',False)], 'required':[('appraisal_subordinates','=',True)], 'readonly':[('state','not in',('new'))]}"/>
-                                <field name="appraisal_subordinates_survey_id" nolabel="1" placeholder="Appraisal Form..." attrs="{'invisible':[('appraisal_subordinates','=',False)], 'required':[('appraisal_subordinates','=',True)], 'readonly':[('state','not in',('new'))]}"/>
+                                <field name="subordinates_ids" nolabel="1" placeholder="Select Appraisal Reviewer..." widget="many2many_tags" attrs="{'invisible':[('subordinates','=',False)], 'required':[('subordinates','=',True)], 'readonly':[('state','not in',('new'))]}"/>
+                                <field name="subordinates_survey_id" nolabel="1" placeholder="Appraisal Form..." attrs="{'invisible':[('subordinates','=',False)], 'required':[('subordinates','=',True)], 'readonly':[('state','not in',('new'))]}"/>
                                 <div class="address_format">
-                                    <field name="appraisal_colleagues" attrs="{'readonly':[('state','not in',('new'))]}"/>
+                                    <field name="colleagues" attrs="{'readonly':[('state','not in',('new'))]}"/>
                                     <label string="Colleagues"/>
                                 </div>
-                                <field name="appraisal_colleagues_ids" nolabel="1" placeholder="Select Appraisal Reviewer..." widget="many2many_tags" attrs="{'invisible':[('appraisal_colleagues','=',False)], 'required':[('appraisal_colleagues','=',True)], 'readonly':[('state','not in',('new'))]}"/>
-                                <field name="appraisal_colleagues_survey_id" nolabel="1" placeholder="Appraisal Form..." attrs="{'invisible':[('appraisal_colleagues','=',False)], 'required':[('appraisal_colleagues','=',True)], 'readonly':[('state','not in',('new'))]}"/>
+                                <field name="colleagues_ids" nolabel="1" placeholder="Select Appraisal Reviewer..." widget="many2many_tags" attrs="{'invisible':[('colleagues','=',False)], 'required':[('colleagues','=',True)], 'readonly':[('state','not in',('new'))]}"/>
+                                <field name="colleagues_survey_id" nolabel="1" placeholder="Appraisal Form..." attrs="{'invisible':[('colleagues','=',False)], 'required':[('colleagues','=',True)], 'readonly':[('state','not in',('new'))]}"/>
                             </group>
                         </group>
                     </page>
@@ -80,8 +80,8 @@
     </record>
 
     <record model="ir.ui.view" id="view_hr_evaluation_tree">
-        <field name="name">hr_evaluation.evaluation.tree</field>
-        <field name="model">hr_evaluation.evaluation</field>
+        <field name="name">hr.evaluation.tree</field>
+        <field name="model">hr.evaluation</field>
         <field name="arch" type="xml">
             <tree string="Appraisal">
                 <field name="employee_id" string="Name"/>
@@ -96,7 +96,7 @@
 
    <record id="hr_evaluation.evaluation_search" model="ir.ui.view">
         <field name="name">hr_evaluation.evaluation_search</field>
-        <field name="model">hr_evaluation.evaluation</field>
+        <field name="model">hr.evaluation</field>
         <field name="arch" type="xml">
             <search string="Search Appraisal">
                 <field name="employee_id"/>
@@ -109,14 +109,14 @@
 
     <record id="hr_evaluation.evaluation_kanban" model="ir.ui.view">
         <field name="name">hr_evaluation.evaluation_kanban</field>
-        <field name="model">hr_evaluation.evaluation</field>
+        <field name="model">hr.evaluation</field>
         <field name="arch" type="xml">
             <kanban default_group_by="state" quick_create="0">
                 <field name="employee_id"/>
                 <field name="department_id"/>
                 <field name="interview_deadline"/>
                 <field name="color"/>
-                <field name="appraisal_manager_ids"/>
+                <field name="manager_ids"/>
                 <field name="date_close"/>
                 <field name="state"/>
                 <field name="user_input_count"/>
@@ -154,7 +154,7 @@
                             </div>
                             <div class="oe_kanban_bottom_right_appraisal">
                                 <img t-att-src="kanban_image('hr.employee', 'image_small', record.employee_id.raw_value)" t-att-title="record.employee_id.value" width="24" height="24" class="oe_kanban_avatar pull-right"/>
-                                <t t-foreach="record.appraisal_manager_ids.raw_value.slice(0,12)" t-as="manager">
+                                <t t-foreach="record.manager_ids.raw_value.slice(0,12)" t-as="manager">
                                     <img t-att-src="kanban_image('hr.employee', 'image_small', manager)" t-att-data-manager_ids="manager" width="24" height="24" class="oe_kanban_avatar pull-right"/>
                                 </t>
                             </div>
@@ -169,7 +169,7 @@
 
     <record model="ir.actions.act_window" id="open_view_hr_evaluation_tree">
         <field name="name">Appraisal</field>
-        <field name="res_model">hr_evaluation.evaluation</field>
+        <field name="res_model">hr.evaluation</field>
         <field name="view_type">form</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="context">{"search_default_next_month":1}</field>
@@ -189,7 +189,7 @@
 
     <record model="ir.actions.act_window" id="open_view_hr_evaluation_tree2">
         <field name="name">Appraisal</field>
-        <field name="res_model">hr_evaluation.evaluation</field>
+        <field name="res_model">hr.evaluation</field>
         <field name="view_type">form</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="context">{"search_default_employee_id": [active_id]}</field>
@@ -255,7 +255,7 @@
 
     <record id="hr_appraisal_action_from_department" model="ir.actions.act_window">
             <field name="name">Appraisal to start</field>
-            <field name="res_model">hr_evaluation.evaluation</field>
+            <field name="res_model">hr.evaluation</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="hr_evaluation.evaluation_search"/>

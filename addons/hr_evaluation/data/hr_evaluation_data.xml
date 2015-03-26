@@ -53,14 +53,14 @@
         </record>
         <record id="mt_appraisal_new" model="mail.message.subtype">
             <field name="name">Appraisal Created</field>
-            <field name="res_model">hr_evaluation.evaluation</field>
+            <field name="res_model">hr.evaluation</field>
             <field name="default" eval="True"/>
             <field name="hidden" eval="False"/>
             <field name="description">Appraisal Created</field>
         </record>
         <record id="mt_appraisal_meeting" model="mail.message.subtype">
             <field name="name">Meeting Scheduled</field>
-            <field name="res_model">hr_evaluation.evaluation</field>
+            <field name="res_model">hr.evaluation</field>
             <field name="default" eval="False"/>
             <field name="description">Meeting Scheduled</field>
         </record>

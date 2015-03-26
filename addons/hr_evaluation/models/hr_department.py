@@ -9,7 +9,7 @@ class hr_department(models.Model):
 
     @api.one
     def _compute_appraisal(self):
-        self.evaluation_ids = self.env['hr_evaluation.evaluation'].search([('employee_id.department_id', '=', self.id)])
+        self.evaluation_ids = self.env['hr.evaluation'].search([('employee_id.department_id', '=', self.id)])
 
     def _to_approve_appraisal_filter(self, appraisal):
         current_date = datetime.datetime.now()
@@ -37,4 +37,4 @@ class hr_department(models.Model):
         compute='_compute_appraisal_to_start', string='Appraisal to Start')
     appraisal_to_process_count = fields.Integer(
         compute='_compute_appraisal_process', string='Appraisal Process')
-    evaluation_ids = fields.One2many('hr_evaluation.evaluation', compute='_compute_appraisal')
+    evaluation_ids = fields.One2many('hr.evaluation', compute='_compute_appraisal')

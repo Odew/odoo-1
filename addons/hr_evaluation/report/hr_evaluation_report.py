@@ -25,7 +25,7 @@ class HrEvaluationReport(models.Model):
     _order = 'create_date desc'
 
     _depends = {
-        'hr_evaluation.evaluation': [
+        'hr.evaluation': [
             'create_date', 'interview_deadline', 'date_close', 'employee_id', 'state',
         ],
     }

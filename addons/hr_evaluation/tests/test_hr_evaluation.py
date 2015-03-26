@@ -12,7 +12,7 @@ class TestHrEvaluation(TransactionCase):
     def setUp(self):
         super(TestHrEvaluation, self).setUp()
         self.HrEmployee = self.env['hr.employee']
-        self.HrEvaluation = self.env['hr_evaluation.evaluation']
+        self.HrEvaluation = self.env['hr.evaluation']
         self.main_company = self.env.ref('base.main_company')
 
     def test_hr_evaluation(self):
