@@ -14,4 +14,3 @@
               'company_id': ref('base.main_company'),
           }
           self._update(cr, uid, 'ir.property', 'stock_account', vals, 'property_stock_valuation_account_id')
--
