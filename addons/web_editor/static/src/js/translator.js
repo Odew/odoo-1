@@ -131,25 +131,25 @@
         sanitizeNode: function (node) {
             node.text(node.text());
         },
-        isTextNode: function (node) {
-            return node.nodeType === 3 || node.nodeType === 4;
+        isTranslatableNode: function (node) {
+            return  node.nodeType === 3 || node.nodeType === 4 || !$(node).find("p,div,h1,h2,h3,h4,h5,h6,li,td,th").length;
         },
-        isTranslatable: function (text) {
-            return text && _.str.trim(text) !== '';
+        isTranslatable: function (node) {
+            return node.textContent && !!node.textContent.match(/[a-z]/i);
         },
         setText: function (node, text) {
             node.textContent = node.getAttribute('data-oe-translate-space-before') + _.str.trim(text) + node.getAttribute('data-oe-translate-space-after');
         },
         transNode: function (node, view_id) {
             if (node.childNodes.length === 1
-                    && this.isTextNode(node.childNodes[0])
+                    && this.isTranslatableNode(node.childNodes[0])
                     && !node.getAttribute('data-oe-model')) {
                 this.markTranslatableNode(node, view_id);
             } else {
                 for (var i = 0, l = node.childNodes.length; i < l; i ++) {
                     var n = node.childNodes[i];
-                    if (this.isTextNode(n)) {
-                        if (this.isTranslatable(n.data)) {
+                    if (this.isTranslatableNode(n)) {
+                        if (this.isTranslatable(n)) {
                             var container = document.createElement('span');
                             container.className = "o_translatable_ghost_node";
                             node.insertBefore(container, n);
@@ -168,9 +168,29 @@
             event.preventDefault();
             event.stopPropagation();
         },
+        getTranslateContent: function (node) {
+            var text = "";
+            if (node.nodeType === 3 || node.nodeType === 4) {
+                if (node.data.match(/\S|\u00A0/)) {
+                    text += node.data;
+                }
+            } else {
+                for (var k=0,len=node.childNodes.length; k<len; k++) {
+                    var n = node.childNodes[k];
+                    if (n.nodeType === 3 || n.nodeType === 4) {
+                    }
+                    text += this.getTranslateContent(n);
+                }
+            }
+
+            return text.trim().replace(/[ \t\r\n]+/, " ");
+        },
         markTranslatableNode: function (node, view_id) {
             var is_field = !!$(node).closest("[data-oe-type]").length;
-            var content = node.childNodes[0].data.trim();
+
+            console.log(  this.getTranslateContent(node)  );
+
+            var content = node.childNodes[0].textContent.trim();
             var nid = _.findKey(this.initial_content, function (v, k) { return v === content;});
 
             if (!is_field) {
