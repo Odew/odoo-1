@@ -269,7 +269,7 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//templates" position="before">
-                    <field name="appraisal_to_start_count"/>
+                    <field name="to_start_appraisal_ids"/>
                     <field name="appraisal_to_process_count"/>
                 </xpath>
                 <xpath expr="//div[@name='to_do']" position="attributes">
@@ -278,7 +278,7 @@
                 <xpath expr="//div[@name='to_do']" position="inside">
                     <div>
                         <a name="%(hr_appraisal_action_from_department)d" type="action">
-                            <t t-esc="record.appraisal_to_start_count.raw_value or 0"/> Appraisal(s) to Start
+                            <t t-esc="record.to_start_appraisal_ids.raw_value or 0"/> Appraisal(s) to Start
                         </a>
                     </div>
                     <div>
