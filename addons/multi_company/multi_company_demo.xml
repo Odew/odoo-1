@@ -136,8 +136,6 @@
             <field name="name">Sales Journal - (Odoo IN)</field>
             <field name="code">SAJ-Odoo IN</field>
             <field name="type">sale</field>
-            <field name="default_credit_account_id" ref="account.a_sale"/>
-            <field name="default_debit_account_id" ref="account.a_sale"/>
             <field name="analytic_journal_id" ref="analytic.cose_journal_sale"/>
             <field name="company_id" ref="res_company_oerp_in"/>
             <field name="refund_sequence" eval="True"/>
@@ -147,8 +145,6 @@
             <field name="name">Expenses Journal - (Odoo IN)</field>
             <field name="code">EXJ-Odoo IN</field>
             <field name="type">purchase</field>
-            <field name="default_debit_account_id" ref="account.a_expense"/>
-            <field name="default_credit_account_id" ref="account.a_expense"/>
             <field name="analytic_journal_id" ref="account.exp"/>
             <field name="company_id" ref="res_company_oerp_in"/>
             <field name="refund_sequence" eval="True"/>
@@ -179,8 +175,6 @@
             <field name="name">Sales Journal - (Odoo US)</field>
             <field name="code">SAJ-Odoo US</field>
             <field name="type">sale</field>
-            <field name="default_credit_account_id" ref="account.a_sale"/>
-            <field name="default_debit_account_id" ref="account.a_sale"/>
             <field name="analytic_journal_id" ref="analytic.cose_journal_sale"/>
             <field name="company_id" ref="res_company_oerp_us"/>
             <field name="refund_sequence" eval="True"/>
@@ -190,8 +184,6 @@
             <field name="name">Expenses Journal - (Odoo US)</field>
             <field name="code">EXJ-Odoo US</field>
             <field name="type">purchase</field>
-            <field name="default_debit_account_id" ref="account.a_expense"/>
-            <field name="default_credit_account_id" ref="account.a_expense"/>
             <field name="analytic_journal_id" ref="account.exp"/>
             <field name="company_id" ref="res_company_oerp_us"/>
             <field name="refund_sequence" eval="True"/>
@@ -223,8 +215,6 @@
             <field name="name">Sales Journal - (Odoo BE)</field>
             <field name="code">SAJ-Odoo BE</field>
             <field name="type">sale</field>
-            <field name="default_credit_account_id" ref="account.a_sale"/>
-            <field name="default_debit_account_id" ref="account.a_sale"/>
             <field name="analytic_journal_id" ref="analytic.cose_journal_sale"/>
             <field name="company_id" ref="res_company_oerp_be"/>
             <field name="refund_sequence" eval="True"/>
@@ -234,8 +224,6 @@
             <field name="name">Expenses Journal - (Odoo BE)</field>
             <field name="code">EXJ-Odoo BE</field>
             <field name="type">purchase</field>
-            <field name="default_debit_account_id" ref="account.a_expense"/>
-            <field name="default_credit_account_id" ref="account.a_expense"/>
             <field name="analytic_journal_id" ref="account.exp"/>
             <field name="company_id" ref="res_company_oerp_be"/>
             <field name="refund_sequence" eval="True"/>

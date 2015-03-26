@@ -27,6 +27,7 @@
             <field name="code">X1011</field>
             <field name="name">Purchased Stocks - (test)</field>
             <field name="user_type" ref="account.data_account_type_current_assets"/>
+            <field name="tag_ids" eval="[(6,0,[ref('account.demo_stock_account')])]"/>
         </record>
         <record id="a_recv" model="account.account">
             <field name="code">X1012</field>

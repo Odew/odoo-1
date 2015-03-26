@@ -43,7 +43,7 @@ Dashboard / Reports for Warehouse Management includes:
     'category': 'Hidden',
     'sequence': 16,
     'demo': [
-        'stock_account_demo.xml'
+        'stock_account_demo.yml'
     ],
     'data': [
         'security/stock_account_security.xml',

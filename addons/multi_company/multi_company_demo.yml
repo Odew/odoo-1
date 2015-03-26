@@ -1,0 +1,39 @@
+-
+  Adding credit and debit accounts to the journals if they can be found
+-
+  !python {model: ir.model.data} : |
+      account_id = self.pool.get('account.account').search(cr, uid, [('user_type', '=', ref('account.data_account_type_revenue')), ('tag_ids', 'in', [ref('account.account_tag_operating')])])
+      if not account_id:
+          account_id = self.pool.get('account.account').search(cr, uid, [('user_type', '=', ref('account.data_account_type_revenue'))])
+      if account_id:
+          vals = {
+              'default_credit_account_id': account_id[0],
+              'default_debit_account_id': account_id[0],
+          }
+          self._update(cr, uid, 'account.journal', 'multi_company', vals, 'sales_journal_multi_in')
+          self._update(cr, uid, 'account.journal', 'multi_company', vals, 'sales_journal_multi_us')
+          self._update(cr, uid, 'account.journal', 'multi_company', vals, 'sales_journal_multi_be')
+      account_id = self.pool.get('account.account').search(cr, uid, [('user_type', '=', ref('account.data_account_type_expense')), ('tag_ids', 'in', [ref('account.account_tag_operating')])])
+      if not account_id:
+          account_id = self.pool.get('account.account').search(cr, uid, [('user_type', '=', ref('account.data_account_type_expense'))])
+      if account_id:
+          vals = {
+              'default_credit_account_id': account_id[0],
+              'default_debit_account_id': account_id[0],
+          }
+          self._update(cr, uid, 'account.journal', 'multi_company', vals, 'expenses_journal_multi_in')
+          self._update(cr, uid, 'account.journal', 'multi_company', vals, 'expenses_journal_multi_us')
+          self._update(cr, uid, 'account.journal', 'multi_company', vals, 'expenses_journal_multi_be')
+      account_id = self.pool.get('account.account').search(cr, uid, [('user_type', '=', ref('account.data_account_type_liquidity'))])
+      if account_id:
+          vals = {
+              'default_credit_account_id': account_id[0],
+              'default_debit_account_id': account_id[0],
+          }
+          self._update(cr, uid, 'account.journal', 'multi_company', vals, 'bank_journal_multi_in')
+          self._update(cr, uid, 'account.journal', 'multi_company', vals, 'cash_journal_multi_in')
+          self._update(cr, uid, 'account.journal', 'multi_company', vals, 'bank_journal_multi_us')
+          self._update(cr, uid, 'account.journal', 'multi_company', vals, 'cash_journal_multi_us')
+          self._update(cr, uid, 'account.journal', 'multi_company', vals, 'bank_journal_multi_be')
+          self._update(cr, uid, 'account.journal', 'multi_company', vals, 'cash_journal_multi_be')
+-
