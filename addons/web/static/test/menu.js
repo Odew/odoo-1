@@ -44,7 +44,7 @@ Tour.register({
         {
             title:     "click on Settings",
             element:   '.oe_application_menu_placeholder a[data-menu]:contains(Settings)',
-            waitNot:   '.oe_loading:visible, button.oe_form_button:contains(Apply).already_tested',
+            waitNot:   '.oe_loading:visible, button.o-form-button:contains(Apply).already_tested',
         },
 
         //  add technical features to admin user
@@ -64,7 +64,7 @@ Tour.register({
         },
         {
             title:     "click on Edit button",
-            element:   'button.oe_form_button_edit',
+            element:   'button.o-form-button-edit',
         },
         {
             title:     "click on Technical Features",
@@ -76,7 +76,7 @@ Tour.register({
         {
             title:     "click on Save User",
             waitFor:   'td:contains(Technical Features) + td input:checked:not(:disabled):visible',
-            element:   'button.oe_form_button_save',
+            element:   'button.o-form-button-save',
         },
 
         //  add technical features to demo user
@@ -96,7 +96,7 @@ Tour.register({
         },
         {
             title:     "click on Edit button",
-            element:   'button.oe_form_button_edit',
+            element:   'button.o-form-button-edit',
         },
         {
             title:     "click on Technical Features",
@@ -116,7 +116,7 @@ Tour.register({
         {
             title:     "click on Save User",
             waitFor:   'td:contains(Technical Features) + td input:checked:not(:disabled):visible',
-            element:   'button.oe_form_button_save',
+            element:   'button.o-form-button-save',
             onload: function () {
                 openmenu();
             },
