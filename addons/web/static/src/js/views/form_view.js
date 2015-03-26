@@ -134,7 +134,7 @@ var FormView = View.extend(common.FieldManagerMixin, {
         // Add bounce effect on button 'Edit' when click on readonly page view.
         this.$el.find(".oe_form_group_row,.oe_form_field,label,h1,.oe_title,.oe_notebook_page, .oe_list_content").on('click', function (e) {
             if(self.get("actual_mode") == "view") {
-                var $button = self.$buttons.find(".oe_form_button_edit");
+                var $button = self.$buttons.find(".o-form-button-edit");
                 $button.openerpBounce();
                 e.stopPropagation();
                 core.bus.trigger('click', e);
@@ -163,13 +163,13 @@ var FormView = View.extend(common.FieldManagerMixin, {
 
         // Show or hide the buttons according to the view mode
         this.toggle_buttons();
-        this.$buttons.on('click', '.oe_form_button_create',
+        this.$buttons.on('click', '.o-form-button-create',
                          this.guard_active(this.on_button_create));
-        this.$buttons.on('click', '.oe_form_button_edit',
+        this.$buttons.on('click', '.o-form-button-edit',
                          this.guard_active(this.on_button_edit));
-        this.$buttons.on('click', '.oe_form_button_save',
+        this.$buttons.on('click', '.o-form-button-save',
                          this.guard_active(this.on_button_save));
-        this.$buttons.on('click', '.oe_form_button_cancel',
+        this.$buttons.on('click', '.o-form-button-cancel',
                          this.guard_active(this.on_button_cancel));
 
         if (this.options.footer_to_buttons) {
@@ -249,8 +249,8 @@ var FormView = View.extend(common.FieldManagerMixin, {
     toggle_buttons: function() {
         var view_mode = this.get("actual_mode") === "view";
         if (this.$buttons) {
-            this.$buttons.find('.oe_form_buttons_view').toggle(view_mode);
-            this.$buttons.find('.oe_form_buttons_edit').toggle(!view_mode);
+            this.$buttons.find('.o-form-buttons-view').toggle(view_mode);
+            this.$buttons.find('.o-form-buttons-edit').toggle(!view_mode);
         }
     },
     /**

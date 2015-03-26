@@ -667,7 +667,7 @@ var FieldOne2Many = common.AbstractField.extend({
                 }
             } else if (view_type === "form") {
                 if (self.get("effective_readonly")) {
-                    $(".oe_form_buttons", controller.$el).children().remove();
+                    $(".o-form-buttons", controller.$el).children().remove();
                 }
                 controller.on("load_record", self, function(){
                      once.resolve();
@@ -1065,7 +1065,7 @@ var One2ManyFormView = FormView.extend({
     load_form: function(data) {
         this._super(data);
         var self = this;
-        this.$buttons.find('button.oe_form_button_create').click(function() {
+        this.$buttons.find('button.o-form-button-create').click(function() {
             self.save().done(self.on_button_new);
         });
     },

@@ -790,25 +790,28 @@
     <div class="o-form-view"/>
 </t>
 
-<div t-name="FormView.buttons" class="oe_form_buttons">
+<div t-name="FormView.buttons" class="o-form-buttons">
     <t t-if="widget.options.action_buttons !== false">
-        <div class="oe_form_buttons_view">
-            <button t-if="widget.is_action_enabled('edit')"
-                    type="button"
-                    class="oe_form_button_edit btn btn-default btn-sm" accesskey="E">
+        <div class="o-form-buttons-view">
+            <button t-if="widget.is_action_enabled('edit')" type="button"
+                    class="btn btn-primary btn-sm o-form-button-edit pull-left" accesskey="E">
                 Edit
             </button>
-            <button t-if="widget.is_action_enabled('create')"
-                    type="button" class="oe_form_button_create btn btn-default btn-sm"
-                    accesskey="C">
+            <button t-if="widget.is_action_enabled('create')" type="button" 
+                    class="btn btn-default btn-sm o-form-button-create pull-right" accesskey="C">
                 Create
             </button>
         </div>
-        <span class="oe_form_buttons_edit">
-            <button type="button" class="oe_form_button_save btn btn-primary btn-sm" accesskey="S">Save</button>
-            <span class="oe_fade">or</span>
-            <a href="#" class="oe_bold oe_form_button_cancel" accesskey="D">Discard</a>
-        </span>
+        <div class="o-form-buttons-edit">
+            <button type="button"
+                    class="btn btn-primary btn-sm o-form-button-save pull-left" accesskey="S">
+                Save
+            </button>
+            <button type="button"
+                    class="btn btn-default btn-sm o-form-button-cancel pull-right" accesskey="D">
+                Discard
+            </button>
+        </div>
     </t>
 </div>
 <t t-name="FormView.pager" t-if="widget.options.pager !== false" t-call="ViewPager">
@@ -1551,7 +1554,7 @@
     </t>
     <t t-if="!widget.options.no_create">
     <button type="button" class="oe_button oe_selectcreatepopup-search-create">Create</button>
-    or </t><a class="oe_selectcreatepopup-search-close oe_bold oe_form_button_cancel" href="javascript:void(0)">Cancel</a>
+    or </t><a class="oe_selectcreatepopup-search-close oe_bold o-form-button-cancel" href="javascript:void(0)">Cancel</a>
 </t>
 <t t-name="AbstractFormPopup.buttons">
     <t t-if="! readonly">
@@ -1564,7 +1567,7 @@
         </t>
         or
     </t>
-    <a class="oe_abstractformpopup-form-close oe_bold oe_form_button_cancel" href="javascript:void(0)">
+    <a class="oe_abstractformpopup-form-close oe_bold o-form-button-cancel" href="javascript:void(0)">
         <t t-if="! readonly">
             Discard
         </t>
@@ -1575,8 +1578,8 @@
 </t>
 
 <t t-name="One2Many.formview" t-extend="FormView">
-    <t t-jquery=".oe_form_buttons" t-operation="inner">
-        <button type="button" class="oe_button oe_form_button_create">Add</button>
+    <t t-jquery=".o-form-buttons" t-operation="inner">
+        <button type="button" class="oe_button o-form-button-create">Add</button>
     </t>
 </t>
 <t t-name="One2Many.listview" t-extend="ListView">

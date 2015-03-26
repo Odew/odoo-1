@@ -1244,7 +1244,7 @@ var FieldBinaryImage = FieldBinary.extend({
         var $img = $(QWeb.render("FieldBinaryImage-img", { widget: this, url: url }));
         $($img).click(function(e) {
             if(self.view.get("actual_mode") == "view") {
-                var $button = $(".oe_form_button_edit");
+                var $button = $(".o-form-button-edit");
                 $button.openerpBounce();
                 e.stopPropagation();
             }

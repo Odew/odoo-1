@@ -881,13 +881,13 @@ var CalendarView = View.extend({
                 
                 $('.delme').click(
                     function() {
-                        $('.oe_form_button_cancel').trigger('click');
+                        $('.o-form-button-cancel').trigger('click');
                         self.remove_event(id);
                     }
                 );
                 $('.editme').click(
                     function() {
-                        $('.oe_form_button_cancel').trigger('click');
+                        $('.o-form-button-cancel').trigger('click');
                         self.dataset.index = self.dataset.get_id_index(id);
                         self.do_switch_view('form', null, { mode: "edit" });
                     }
