@@ -16,16 +16,39 @@
         <notebook position="inside">
 	  <page string="Plaid" attrs="{'invisible': [('type', '!=', 'bank')]}">
 	    <button name="launch_plaid_wizard"
-		    string="select"
+		    string="Select account"
 		    type="object"/>
+	    <button name="launch_plaid_update_wizard"
+		    string="Update the connection"
+		    type="object"
+		    attrs="{'invisible': [('plaid_id', '=', False)]}"/>
 	    <button name="launch_synch"
-		    string="Retrieve data"
-		    type="object"/>
+		    string="Update bank statement"
+		    type="object"
+		    attrs="{'invisible': [('plaid_id', '=', False)]}"/>
 	    <group>
 		<field name="plaid_id" readonly="1"/>
 	    </group>
 	  </page>
         </notebook>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="plaid_account_form">
+      <field name="name">Plaid account form</field>
+      <field name="model">plaid.account</field>
+      <field name="arch" type="xml">
+	<form>
+	  <group col="4">
+	    <field name="name"/>
+	    <field name="institution"/>
+	    <field name="last_update"/>
+	  </group>
+	  <group col="4">
+	    <field name="balance_current"/>
+	    <field name="balance_available"/>
+	  </group>
+	</form>
       </field>
     </record>
 
@@ -43,18 +66,14 @@
 	    <field name="have_pin" invisible="1"/>
 	    <field name="have_mfa" invisible="1"/>
 	    <field name="goal" invisible="1"/>
-	    <field name="name" attrs="{'readonly': [('goal', '=', 'sync')]}"
+	    <field name="name" attrs="{'readonly': [('goal', '=', 'update')]}"
 		   widget='selection'/>
-	    <field name="username"
+	    <field name="username" 
 		   attrs="{'invisible': ['|', ('name', '=', False), ('have_username', '=', False)]}"/>
-	    <field name="passwd"
+	    <field name="passwd" password="True"
 		   attrs="{'invisible': ['|', ('name', '=', False), ('have_passwd', '=', False)]}"/>
 	    <field name="pin"
 		   attrs="{'invisible': ['|', ('name', '=', False), ('have_pin', '=', False)]}"/>
-	    <field name="mfa"
-		   domain="[('institution', '=', name)]"
-		   attrs="{'invisible': ['|', ('name', '=', False), ('have_mfa', '=', False)]}"
-		   widget='selection'/>
 	  </group>
 	  <footer>
 	    <button string="Login" type="object" name="plaid_login"/>
@@ -106,7 +125,10 @@
       <field name="model">plaid.code.wizard</field>
       <field name="arch" type="xml">
 	<form string="MFA">
-	  <field name="type" widget='selection'/>
+	  <label for="type" string="Send to" class="oe_inline"/>
+	  <field name="type" widget='selection'
+		 domain="[('wizard.id', '=', active_id)]"
+		 class="oe_inline"/>
 	  <footer>
 	    <button string="Select" type="object" name="select"/>
 	    <button string="Cancel" class="oe_link" special="cancel"/>
@@ -116,12 +138,13 @@
     </record>
 
     <record model="ir.ui.view" id="plaid_select_account_wizard">
-      <field name="name">Plaid select code Wizard</field>
+      <field name="name">Plaid select account Wizard</field>
       <field name="model">plaid.select.account.wizard</field>
       <field name="arch" type="xml">
 	<form string="Select Account">
 	  <group>
-	    <field name="name" widget='selection'/>
+	    <field name="name" widget='selection'
+		   domain="[('wizard.id', '=', active_id)]"/>
 	  </group>
 	  <footer>
 	    <button string="Select" type="object" name="select"/>
@@ -130,7 +153,54 @@
 	</form>
       </field>
     </record>
-    <!-- menu categories -->
+
+    <record model="ir.ui.view" id="plaid_credentials_view">
+      <field name="name">Plaid credentials</field>
+      <field name="model">plaid.credentials</field>
+      <field name="arch" type="xml">
+	<form string="Plaid credentials">
+	  <group>
+	    <field name="plaid_id"/>
+	    <field name="plaid_secret"/>
+	    <field name="company"/>
+	  </group>
+	  <div class="oe_chatter">
+	    <field name="message_follower_ids" widget="mail_followers"/>
+	    <field name="message_ids" widget="mail_thread"/>
+	  </div>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_plaid_credentials" model="ir.actions.act_window">
+      <field name="name">Action plaid credentials</field>
+      <field name="res_model">plaid.credentials</field>
+      <field name='view_type'>form</field>
+      <field name='view_mode'>tree,form</field>
+    </record>
+    <record model="ir.ui.view" id="plaid_credentials_option_config">
+      <field name="model">account.config.settings</field>
+      <field name="inherit_id" ref="account.view_account_config_settings"/>
+      <field name="arch" type="xml">
+        <xpath expr="//div[@name='plaid_credentials']" position="inside">
+          <button name='%(action_plaid_credentials)d' type="action"
+                  string="Configre your plaid credentials" class="oe_link"/>
+        </xpath>
+      </field>
+    </record>
+
+    <record id="ir_cron_plaid_synch" model="ir.cron">
+      <field name="name">Plaid Synchronization</field>
+      <field name="active" eval="True"/>
+      <field name="user_id" ref="base.user_root"/>
+      <field name="interval_number">2</field>
+      <field name="interval_type">hours</field>
+      <field name="numbercall">-1</field>
+      <field name="doall" eval="False"/>
+      <field name="model">account.journal</field>
+      <field name="function">launch_synch_cron</field>
+      <field name="args">()</field>
+    </record>
     <!--
     <menuitem name="Menu 1" id="account_plaid.menu_1" parent="account_plaid.menu_root"/>
     <menuitem name="Menu 2" id="account_plaid.menu_2" parent="account_plaid.menu_root"/>

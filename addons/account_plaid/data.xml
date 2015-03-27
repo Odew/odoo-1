@@ -7,15 +7,7 @@
       <field name="username">User ID</field>
       <field name="passwd">Password</field>
       <field name="plaid_id">5301a93ac140de84910000e0</field>
-      <field name="mfa" eval="True"/>
-    </record>
-    <record id="plaid_mfa_bofa1" model="plaid.mfa">
-      <field name="name">code</field>
-      <field name="institution" ref="plaid_institution_bofa"/>
-    </record>
-    <record id="plaid_mfa_bofa2" model="plaid.mfa">
-      <field name="name">question(3)</field>
-      <field name="institution" ref="plaid_institution_bofa"/>
+      <field name="mfa_code" eval="True"/>
     </record>
 
     <record id="plaid_institution_chase" model="plaid.institution">
@@ -24,15 +16,7 @@
       <field name="username">User ID</field>
       <field name="passwd">Password</field>
       <field name="plaid_id">5301a99504977c52b60000d0</field>
-      <field name="mfa" eval="True"/>
-    </record>
-    <record id="plaid_mfa_chase1" model="plaid.mfa">
-      <field name="name">code</field>
-      <field name="institution" ref="plaid_institution_chase"/>
-    </record>
-    <record id="plaid_mfa_chase2" model="plaid.mfa">
-      <field name="name">question(3)</field>
-      <field name="institution" ref="plaid_institution_chase"/>
+      <field name="mfa_code" eval="True"/>
     </record>
 
     <record id="plaid_institution_wells" model="plaid.institution">
@@ -41,7 +25,7 @@
       <field name="username">Username</field>
       <field name="passwd">Password</field>
       <field name="plaid_id">5301aa096b3f822b440001cb</field>
-      <field name="mfa" eval="False"/>
+      <field name="mfa_code" eval="False"/>
     </record>
 
     <record id="plaid_institution_citi" model="plaid.institution">
@@ -50,15 +34,7 @@
       <field name="username">User ID</field>
       <field name="passwd">Password</field>
       <field name="plaid_id">5301aa306b3f82a00500018b</field>
-      <field name="mfa" eval="True"/>
-    </record>
-    <record id="plaid_mfa_citi1" model="plaid.mfa">
-      <field name="name">code</field>
-      <field name="institution" ref="plaid_institution_citi"/>
-    </record>
-    <record id="plaid_mfa_citi2" model="plaid.mfa">
-      <field name="name">question(3)</field>
-      <field name="institution" ref="plaid_institution_citi"/>
+      <field name="mfa_code" eval="False"/>
     </record>
 
     <record id="plaid_institution_us" model="plaid.institution">
@@ -67,11 +43,7 @@
       <field name="username">Personal ID</field>
       <field name="passwd">Password</field>
       <field name="plaid_id">531ea6327de8211c80000440</field>
-      <field name="mfa" eval="False"/>
-    </record>
-    <record id="plaid_mfa_us1" model="plaid.mfa">
-      <field name="name">question(3)</field>
-      <field name="institution" ref="plaid_institution_us"/>
+      <field name="mfa_code" eval="False"/>
     </record>
 
     <record id="plaid_institution_usaa" model="plaid.institution">
@@ -81,11 +53,7 @@
       <field name="passwd">Password</field>
       <field name="pin">PIN</field>
       <field name="plaid_id">531ea6602ad939b68700047c</field>
-      <field name="mfa" eval="False"/>
-    </record>
-    <record id="plaid_mfa_usaa1" model="plaid.mfa">
-      <field name="name">question(3)</field>
-      <field name="institution" ref="plaid_institution_usaa"/>
+      <field name="mfa_code" eval="False"/>
     </record>
 
     <record id="plaid_institution_capone360" model="plaid.institution">
@@ -94,7 +62,7 @@
       <field name="username">Username or Customer Number</field>
       <field name="passwd">PIN</field>
       <field name="plaid_id">53c5c8631f9bda09c7000222</field>
-      <field name="mfa" eval="False"/>
+      <field name="mfa_code" eval="False"/>
     </record>
 
     <record id="plaid_institution_amex" model="plaid.institution">
@@ -103,7 +71,7 @@
       <field name="username">user ID</field>
       <field name="passwd">Password</field>
       <field name="plaid_id">5301a9d704977c52b60000db</field>
-      <field name="mfa" eval="False"/>
+      <field name="mfa_code" eval="False"/>
     </record>
     
     <record id="plaid_institution_schwab" model="plaid.institution">
@@ -112,7 +80,7 @@
       <field name="username">Login ID</field>
       <field name="passwd">Password</field>
       <field name="plaid_id">53b34fab1a73941962000186</field>
-      <field name="mfa" eval="False"/>
+      <field name="mfa_code" eval="False"/>
     </record>
 
     <record id="plaid_institution_fidelity" model="plaid.institution">
@@ -121,7 +89,7 @@
       <field name="username">username</field>
       <field name="passwd">Password</field>
       <field name="plaid_id">53cee1d8c003c2747b000051</field>
-      <field name="mfa" eval="False"/>
+      <field name="mfa_code" eval="False"/>
     </record>
 
     <record id="plaid_institution_pnc" model="plaid.institution">
@@ -130,7 +98,7 @@
       <field name="username">User ID</field>
       <field name="passwd">Password</field>
       <field name="plaid_id">54acb2eb9d5b8617e0d5aa86</field>
-      <field name="mfa" eval="False"/>
+      <field name="mfa_code" eval="False"/>
     </record>
 
     <record id="plaid_institution_svb" model="plaid.institution">
@@ -139,7 +107,7 @@
       <field name="username">User ID</field>
       <field name="passwd">Password</field>
       <field name="plaid_id">54dd7c23b237e70e61c3cb08</field>
-      <field name="mfa" eval="False"/>
+      <field name="mfa_code" eval="False"/>
     </record>
   </data>
 </openerp>
