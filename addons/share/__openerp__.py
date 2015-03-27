@@ -45,7 +45,7 @@ synchronization with other companies.
     'data': [
         'security/share_security.xml',
         'security/ir.model.access.csv',
-        'res_users_view.xml',
+        'views/res_users_view.xml',
         'wizard/share_wizard_view.xml',
         'views/share.xml',
     ],
