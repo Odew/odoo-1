@@ -370,7 +370,7 @@ var DiagramView = View.extend({
         var self = this;
 
         this.$buttons = $(QWeb.render("DiagramView.buttons", {'widget': this}));
-        this.$buttons.on('click', '.oe_diagram_button_new', function() {
+        this.$buttons.on('click', '.o-diagram-new-button', function() {
             self.add_node();
         });
 
