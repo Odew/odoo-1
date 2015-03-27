@@ -477,10 +477,8 @@
         <div class="col-md-6 o-cp-searchview" />
     </div>
     <div class="row o-control-panel-second-row">
-        <div class="col-md-3 o-cp-buttons-col">
+        <div class="col-md-6 o-cp-buttons-col">
             <div class="o-cp-buttons"></div>
-        </div>
-        <div class="col-md-3">
             <div class="o-cp-sidebar"></div>
         </div>
         <div class="col-md-6">
