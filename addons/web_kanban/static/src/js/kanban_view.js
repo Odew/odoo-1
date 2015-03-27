@@ -36,6 +36,7 @@ var KanbanView = View.extend({
         this.fields_keys = [];
         this.records = [];
         this.limit = options.limit || 40;
+        this.grouped = false;
     },
 
     view_loading: function(fvg) {
