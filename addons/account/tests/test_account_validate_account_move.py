@@ -36,7 +36,7 @@ class TestAccountValidateAccount(TestMail):
         validate_account_move = self.env['validate.account.move'].with_context(active_ids=move.id).create({})
                 
         #click on validate Button
-        validate_account_move.validate_move();
+        validate_account_move.with_context({'active_ids': [move.id]}).validate_move()
 
         #check that the move state is now "Posted"
         self.assertTrue((move.state == 'posted'), "Initially account move state is Posted")
