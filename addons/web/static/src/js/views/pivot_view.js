@@ -220,11 +220,11 @@ var PivotView = View.extend({
     },
     on_button_click: function (event) {
         var $target = $(event.target);
-        if ($target.hasClass('oe-pivot-flip')) { return this.flip();}
-        if ($target.hasClass('oe-pivot-expand-all')) {return this.expand_all();}
-        if ($target.parents('.oe-measure-list').length) {
-            var parent = $target.parent(),
-                field = parent.data('field');
+        if ($target.hasClass('o-pivot-flip-button')) { return this.flip(); }
+        if ($target.hasClass('o-pivot-expand-button')) { return this.expand_all(); }
+        if ($target.parents('.o-pivot-measures-list').length) {
+            var parent = $target.parent();
+            var field = parent.data('field');
             parent.toggleClass('selected');
             event.stopPropagation();
             return this.toggle_measure(field);
