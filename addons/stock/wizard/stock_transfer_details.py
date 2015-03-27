@@ -103,9 +103,23 @@ class stock_transfer_details(models.TransientModel):
             packop.unlink()
 
         # Execute the transfer of the picking
+        Move = self.env['stock.move']
         self.picking_id.do_transfer()
-
+        self.split_moves()
+        for move in self.picking_id.move_lines:
+            if move.origin_returned_move_id and move.move_dest_id:
+                destination_move = move.move_dest_id
+                Move.merge_split_move(destination_move)
         return True
+
+    def split_moves(self):
+        Move = self.env['stock.move']
+        for move in self.picking_id.move_lines:
+            if move.origin_returned_move_id and move.origin_returned_move_id.move_dest_id and not move.move_dest_id:
+                destination_move = move.origin_returned_move_id.move_dest_id
+                if move.product_uom_qty < destination_move.product_uom_qty and destination_move.state not in ('done', 'cancel'):
+                    Move.split(destination_move, move.product_uom_qty)
+                destination_move.action_assign()
 
     @api.multi
     def wizard_view(self):

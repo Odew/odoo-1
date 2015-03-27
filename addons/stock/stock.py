@@ -2209,7 +2209,6 @@ class stock_move(osv.osv):
         """ Checks if serial number is assigned to stock move or not and raise an error if it had to.
         """
         self.check_tracking_product(cr, uid, move.product_id, lot_id, move.location_id, move.location_dest_id, context=context)
-        
 
     def action_assign(self, cr, uid, ids, context=None):
         """ Checks the product type and accordingly writes the state.
@@ -2277,6 +2276,7 @@ class stock_move(osv.osv):
         if to_assign_moves:
             self.force_assign(cr, uid, to_assign_moves, context=context)
 
+
     def action_cancel(self, cr, uid, ids, context=None):
         """ Cancels the moves and if all moves are cancelled it cancels the picking.
         @return: True
@@ -2300,6 +2300,9 @@ class stock_move(osv.osv):
                     elif move.move_dest_id.state == 'waiting':
                         #If waiting, the chain will be broken and we are not sure if we can still wait for it (=> could take from stock instead)
                         self.write(cr, uid, [move.move_dest_id.id], {'state': 'confirmed'}, context=context)
+                else:
+                    if move.origin_returned_move_id and move.origin_returned_move_id.move_dest_id:
+                        self.action_assign(cr, uid, move.origin_returned_move_id.move_dest_id.id, context=context)
                 if move.procurement_id:
                     # Does the same as procurement check, only eliminating a refresh
                     procs_to_check.append(move.procurement_id.id)
@@ -2343,6 +2346,12 @@ class stock_move(osv.osv):
                     vals['state'] = 'confirmed'
             if vals:
                 self.write(cr, uid, [move.id], vals, context=context)
+
+    def _get_move_children(self, cr, uid, ids, domain=[], context=None):
+        if not ids:
+            return []
+        ids = self.search(cr, uid, [('split_from', 'in', ids)] + domain, context=context)
+        return ids + self._get_move_children(cr, uid, ids, domain=domain, context=context)
 
     def action_done(self, cr, uid, ids, context=None):
         """ Process completely the moves given as ids and if all moves are done, it will finish the picking.
@@ -2414,8 +2423,12 @@ class stock_move(osv.osv):
                 quant_obj.quants_move(cr, uid, quants, move, move.location_dest_id, lot_id=move.restrict_lot_id.id, owner_id=move.restrict_partner_id.id, context=context)
 
             # If the move has a destination, add it to the list to reserve
-            if move.move_dest_id and move.move_dest_id.state in ('waiting', 'confirmed'):
-                move_dest_ids.add(move.move_dest_id.id)
+            if move.move_dest_id:
+                if move.move_dest_id.state in ('waiting', 'confirmed'):
+                    move_dest_ids.add(move.move_dest_id.id)
+                split_move_ids = self._get_move_children(cr, uid, [move.move_dest_id.id], context=context)
+                for split_move in split_move_ids:
+                    move_dest_ids.add(split_move)
 
             if move.procurement_id:
                 procurement_ids.append(move.procurement_id.id)
@@ -2492,6 +2505,56 @@ class stock_move(osv.osv):
 
         self.action_done(cr, uid, res, context=context)
         return res
+
+    def merge_split_move(self, cr, uid, move, context=None):
+        """ Merge splited move with origin of move of related."""
+        uom_obj = self.pool.get('product.uom')
+        merge_ids = []
+        total_qty = 0.0
+        res_qty = 0.0
+        if move.id and move.reserved_quant_ids or move.state == 'assigned':
+            merge_ids.append(move.id)
+        split_move_ids = self._get_move_children(cr, uid, [move.id], domain=['|', ('state','=','assigned'), ('reserved_quant_ids', '!=', False)], context=context)
+        merge_ids.extend(split_move_ids)
+        for move in self.browse(cr, uid, merge_ids, context=context):
+            total_qty += move.product_uom_qty
+            for res in move.reserved_quant_ids:
+                res_qty += res.qty
+        merge_ids.sort()
+        if merge_ids:
+            self.do_unreserve(cr, uid, merge_ids, context=context)
+            merge = self.browse(cr, uid, merge_ids[0], context=context)
+            remaining_qty = total_qty - res_qty
+            #HALF-UP rounding as only rounding errors will be because of propagation of error from default UoM
+            uom_qty = uom_obj._compute_qty_obj(cr, uid, merge.product_id.uom_id, total_qty, merge.product_uom, rounding_method='HALF-UP', context=context)
+            uos_qty = uom_qty * merge.product_uos_qty / merge.product_uom_qty
+            merge_ids.remove(merge.id)
+            move_to_update = self._get_chain_move(cr, uid, merge, context=context)
+            # unlinked move to merge.
+            for move in self.browse(cr, uid, merge_ids, context=context):
+                 self._unlink_chain_move(cr, uid, move, context=context)
+            # Update main move.
+            self.write(cr, uid, move_to_update, {'product_uom_qty': uom_qty, 'product_uos_qty': uos_qty}, context=context)
+            self.split(cr, uid, merge, remaining_qty , context=context)
+            self.action_assign(cr, uid, [merge.id], context=context)
+        return True
+
+    def _unlink_chain_move(self, cr, uid, move, context=None):
+        linked_move = False
+        if move.move_dest_id:
+            linked_move = move.move_dest_id
+        self.write(cr, uid, [move.id], {'state': 'draft'}, context=context)
+        self.unlink(cr, uid, [move.id], context=context)
+        if linked_move:
+            self._unlink_chain_move(cr, uid, linked_move, context=context)
+        return True
+
+    def _get_chain_move(self, cr, uid, move, context=None):
+        result = [move.id]
+        while move.move_dest_id:
+            result.append(move.move_dest_id.id)
+            move = move.move_dest_id
+        return result
 
     def split(self, cr, uid, move, qty, restrict_lot_id=False, restrict_partner_id=False, context=None):
         """ Splits qty from move move into a new move
