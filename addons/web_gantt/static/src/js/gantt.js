@@ -65,6 +65,10 @@ var GanttView = View.extend({
             });
         });
     },
+    do_show: function () {
+        this.do_push_state({});
+        return this._super();
+    },
     reload: function() {
         if (this.last_domains !== undefined)
             return this.do_search(this.last_domains, this.last_contexts, this.last_group_bys);
