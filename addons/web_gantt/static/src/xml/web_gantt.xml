@@ -2,9 +2,13 @@
 
 <templates>
     <t t-name="GanttView">
-            <div t-att-id="widget.chart_id" class="oe_gantt"/>
+        <div t-att-id="widget.chart_id" class="o-gantt-view"/>
     </t>
-    <t t-name="GanttView-create-button">
-        <!-- <button class="oe_button oe_gantt_button_create">Create</button> -->
+
+    <t t-name="GanttView.buttons">
+        <button t-if="widget.is_action_enabled('create')" type="button"
+                class="btn btn-primary btn-sm" accesskey="C">
+            Create
+        </button>
     </t>
 </templates>
