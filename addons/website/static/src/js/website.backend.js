@@ -52,7 +52,7 @@ instance.web.form.FieldTextHtmlFrame = widget.extend({
             if ($("body").hasClass("o_form_FieldTextHtml_fullscreen")) {
                 self.$iframe.css('height', $("body").hasClass('o_form_FieldTextHtml_fullscreen') ? (document.body.clientHeight - self.$iframe.offset().top) + 'px' : '');
             } else {
-                self.$iframe.css("height", (self.$body.find("#oe_snippets").length ? 500 : 300) + "px");
+                self.$iframe.css("height", (self.editor ? 500 : (self.$body.height()+20)) + "px");
             }
         };
         $(window).on('resize', self.resize);
@@ -89,17 +89,15 @@ instance.web.form.FieldTextHtmlFrame = widget.extend({
         return src;
     },
     initialize_content: function() {
-        if (!this.get("effective_readonly")) {
-            this.$iframe = this.$el.find('iframe');
-            this.document = null;
-            this.$body = $();
-            this.$content = $();
-            this.dirty = false;
-            this.editor = false;
-            window.openerp[this.callback+"_set_value"] = null;
+        this.$iframe = this.$el.find('iframe');
+        this.document = null;
+        this.$body = $();
+        this.$content = $();
+        this.dirty = false;
+        this.editor = false;
+        window.openerp[this.callback+"_set_value"] = null;
 
-            this.$iframe.attr("src", this.get_url());
-        }
+        this.$iframe.attr("src", this.get_url());
     },
     on_content_loaded: function () {
         var self = this;
@@ -137,16 +135,12 @@ instance.web.form.FieldTextHtmlFrame = widget.extend({
     },
     render_value: function() {
         var value = (this.get('value') || "").replace(/^<p[^>]*>\s*<\/p>$/, '');
-        if (!this.get("effective_readonly")) {
-            if (!this.$content) {
-                return;
-            }
-            if(window.openerp[this.callback+"_set_value"]) {
-                window.openerp[this.callback+"_set_value"](value || '', this.view.get_fields_values(), this.name);
-                this.resize();
-            }
-        } else {
-            this.$el.html(value);
+        if (!this.$content) {
+            return;
+        }
+        if(window.openerp[this.callback+"_set_value"]) {
+            window.openerp[this.callback+"_set_value"](value || '', this.view.get_fields_values(), this.name);
+            this.resize();
         }
     },
     is_false: function() {
