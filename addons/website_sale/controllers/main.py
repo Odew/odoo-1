@@ -280,7 +280,7 @@ class website_sale(http.Controller):
         }
         return request.website.render("website_sale.product", values)
 
-    @http.route(['/shop/product/comment/<int:product_template_id>'], type='http', auth="public", methods=['POST'], website=True)
+    @http.route(['/shop/product/comment/<int:product_template_id>'], type='http', auth="public", website=True)
     def product_comment(self, product_template_id, **post):
         if not request.session.uid:
             return login_redirect()
@@ -292,7 +292,7 @@ class website_sale(http.Controller):
                 type='comment',
                 subtype='mt_comment',
                 context=dict(context, mail_create_nosubscribe=True))
-        return werkzeug.utils.redirect(request.httprequest.referrer + "#comments")
+        return werkzeug.utils.redirect('/shop/product/%s#comments' % product_template_id)
 
     @http.route(['/shop/pricelist'], type='http', auth="public", website=True)
     def pricelist(self, promo, **post):
@@ -582,7 +582,7 @@ class website_sale(http.Controller):
             orm_partner.write(cr, SUPERUSER_ID, [partner_id], billing_info, context=context)
         else:
             # create partner
-            billing_info['team_id'] = request.registry.get('ir.model.data').xmlid_to_res_id(cr, uid, 'website.salesteam_website_sales') 
+            billing_info['team_id'] = request.registry.get('ir.model.data').xmlid_to_res_id(cr, uid, 'website.salesteam_website_sales')
             partner_id = orm_partner.create(cr, SUPERUSER_ID, billing_info, context=context)
 
         # create a new shipping partner
