@@ -2,6 +2,7 @@ odoo.define('mail.mail', function (require) {
 "use strict";
 
 var mail_utils = require('mail.utils');
+var ControlPanelMixin = require('web.ControlPanelMixin');
 var core = require('web.core');
 var data = require('web.data');
 var form_common = require('web.form_common');
@@ -1800,7 +1801,7 @@ var WallSidebar = Widget.extend({
  */
 
 
-var MailWall = Widget.extend({
+var MailWall = Widget.extend(ControlPanelMixin, {
     template: 'mail.wall',
 
     /**
@@ -1855,6 +1856,11 @@ var MailWall = Widget.extend({
         // render sidebar
         var wall_sidebar = new WallSidebar(this);
         wall_sidebar.appendTo(this.$el.find('.oe_mail_wall_aside'));
+        var status = {
+            breadcrumbs: this.getParent().get_breadcrumbs(),
+        };
+        // debugger;
+        this.update_control_panel(status);
     },
 
     /**
