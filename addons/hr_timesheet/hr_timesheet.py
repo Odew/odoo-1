@@ -27,17 +27,12 @@ class hr_employee(models.Model):
     _inherit = "hr.employee"
 
     @api.model    
-    # Reads the provided data file to return the default journal id for new employees    
     def _get_default_analytic_journal(self):
         return self.env.ref('hr_timesheet.analytic_journal', raise_if_not_found=False) or self.env['account.analytic.journal']
 
     @api.model
-    # Reads the provided data file to return the default product id for new employees 
     def _get_default_employee_product(self):
-        try:
-            return self.env.ref('product.product_product_consultant')
-        except ValueError:
-            return self.env['product.product']
+        return self.env.ref('product.product_product_consultant', raise_if_not_found=False) or self.env['account.analytic.journal']
 
     product_id = fields.Many2one('product.product', 'Product', help="If you want to reinvoice working time of employees, link this employee to a service to determinate the cost price of the job.", default=_get_default_employee_product)
     journal_id = fields.Many2one('account.analytic.journal', 'Analytic Journal',default=_get_default_analytic_journal)
@@ -79,93 +74,78 @@ class account_analytic_line(models.Model):
 
     @api.model
     def _get_employee_product(self, user_id=None):
-        emp = self.env['hr.employee'].search([('user_id', '=', self.user_id.id or user_id  or self.env.uid)])
-        if emp and emp[0].product_id.id:
-            return emp[0].product_id.id
+        emp = self.env['hr.employee'].search([('user_id', '=', user_id  or self.env.uid)], limit=1)
+        if emp and emp.product_id.id:
+            return emp.product_id.id
         else:
             raise exceptions.ValidationError("This user or employee is not associated to a valid Product")
     @api.model
     def _get_employee_unit(self, user_id=None):
-            emp = self.env['hr.employee'].search([('user_id', '=', self.user_id.id or user_id or self.env.uid)])
-            if emp and emp[0].product_id.uom_id.id:
-                return emp[0].product_id.uom_id.id
-            else:
-                raise exceptions.ValidationError("This user or employee is not associated to a valid Product Amount Type")    
+        emp = self.env['hr.employee'].search([('user_id', '=', user_id or self.env.uid)], limit=1)
+        if emp and emp.product_id.uom_id.id:
+            return emp.product_id.uom_id.id
+        else:
+            raise exceptions.ValidationError("This user or employee is not associated to a valid Product Amount Type")    
 
     @api.model
     def _get_general_account(self, user_id=None):
-        emp = self.env['hr.employee'].search([('user_id', '=', self.user_id.id or user_id or self.env.uid)])
-        if emp and emp[0].product_id.categ_id.property_account_expense_categ.id:
-            return emp[0].product_id.categ_id.property_account_expense_categ.id
+        emp = self.env['hr.employee'].search([('user_id', '=', user_id or self.env.uid)], limit=1)
+        if emp and emp.product_id.categ_id.property_account_expense_categ.id:
+            return emp.product_id.categ_id.property_account_expense_categ.id
         else:
             raise exceptions.ValidationError("This user or employee is not associated to a valid Product Financial Account")
 
     @api.model
     def _get_analytic_journal(self, user_id=None):
-        emp = self.env['hr.employee'].search([('user_id','=',self.user_id.id or user_id or self.env.uid)])
-        if emp and emp[0].journal_id.id:
-            return emp[0].journal_id.id
+        emp = self.env['hr.employee'].search([('user_id','=',user_id or self.env.uid)], limit=1)
+        if emp and emp.journal_id.id:
+            return emp.journal_id.id
         else:
             raise exceptions.ValidationError("This user or employee is not associated to a valid Journal ID")
 
     is_timesheet = fields.Boolean()
    
+    @api.one
     @api.constrains('user_id')
     def check_user_id(self):
         if self.is_timesheet:
-            emp = self.env['hr.employee'].search([('user_id','=',self.user_id.id or self.env.uid)])
+            emp = self.env['hr.employee'].search([('user_id','=',self.user_id.id)], limit=1)
             if not emp:
                 raise exceptions.ValidationError("There is no employee defined for user " + self.user_id.name)
             else:
-                if not emp[0].journal_id.id:
-                    raise exceptions.ValidationError("The employee " + emp[0].name + " is not associated to a valid Analytic Journal. Please define one for him or select another user.")
-                elif not emp[0].product_id:
-                    raise exceptions.ValidationError("The employee " + emp[0].name + " is not associated to a valid Product. Please define one for him or select another user.")
-                elif not emp[0].product_id.uom_id.id:
-                    raise exceptions.ValidationError("The employee " + emp[0].name + " is not associated to a valid Product Unit of Measure. Please define one for him or select another user.")
-                elif not emp[0].product_id.categ_id.property_account_expense_categ.id:
-                    raise exceptions.ValidationError("The employee " + emp[0].name + " is not associated to a valid Financial Account. Please define one for him or select another user.")
+                if not emp.journal_id.id:
+                    raise exceptions.ValidationError("The employee " + emp.name + " is not associated to a valid Analytic Journal. Please define one for him or select another user.")
+                elif not emp.product_id:
+                    raise exceptions.ValidationError("The employee " + emp.name + " is not associated to a valid Product. Please define one for him or select another user.")
+                elif not emp.product_id.uom_id.id:
+                    raise exceptions.ValidationError("The employee " + emp.name + " is not associated to a valid Product Unit of Measure. Please define one for him or select another user.")
+                elif not emp.product_id.categ_id.property_account_expense_categ.id:
+                    raise exceptions.ValidationError("The employee " + emp.name + " is not associated to a valid Financial Account. Please define one for him or select another user.")
 
     @api.onchange('user_id')
     def V8_on_change_user_id(self):
-        if self.is_timesheet:
             new_values = self.on_change_user_id(self.user_id.id, self.is_timesheet)
-            self.journal_id = new_values["value"]['journal_id']
-            self.product_id = new_values["value"]['product_id']
-            self.product_uom_id = new_values["value"]['uom_id']
-            self.general_account_id = new_values["value"]['general_account_id']
-
-            # New API style
-            #     emp = self.env['hr.employee'].search([('user_id','=',self.user_id.id or self.env.uid)])
-            #     if not emp:
-            #         model, action_id = self.env['ir.model.data'].get_object_reference('hr', 'open_view_employee_list_my')
-            #         msg = _("Employee is not created for this user. Please create one from configuration panel.")
-            #         raise exceptions.RedirectWarning(msg, action_id, _('Go to the configuration panel'))
-            #     else:
-            #         self.journal_id = self._get_analytic_journal()
-            #         self.product_id = self._get_employee_product()
-            #         self.product_uom_id = self._get_employee_unit()
-            #         self.general_account_id = self._get_general_account()
+            if new_values.get("value", {}):
+                for key, value in new_values.iteritems():
+                    setattr(self,key,value)
 
     def on_change_user_id(self, cr, uid, ids, user_id, is_timesheet=False, context=None):
-        if is_timesheet:
-            if not user_id:
-                return {}
-            else:
-                res = {"value": {
-                    'journal_id' : self._get_analytic_journal(cr,uid, user_id, context=context),
-                    'product_id' : self._get_employee_product(cr,uid, user_id, context=context),
-                    'uom_id' : self._get_employee_unit(cr,uid, user_id, context=context),
-                    'general_account_id' : self._get_general_account(cr,uid, user_id, context=context)
-                    }
-                }
-                return res
+        if not is_timesheet or not user_id:
+            return {}
+        res = {"value": {
+            'journal_id' : self._get_analytic_journal(cr,uid, user_id, context=context),
+            'product_id' : self._get_employee_product(cr,uid, user_id, context=context),
+            'uom_id' : self._get_employee_unit(cr,uid, user_id, context=context),
+            'general_account_id' : self._get_general_account(cr,uid, user_id, context=context)
+            }
+        }
+        return res
 
     @api.onchange('date')
     def on_change_date(self):
         if self.is_timesheet:
             if self._origin.date and (self._origin.date != self.date):
-                raise exceptions.Warning('Changing the date will let this entry appear in the timesheet of the new date.')
+                raise exceptions.Warning(_('Changing the date will let this entry appear in the timesheet of the new date.'))
 
 class account_analytic_account(models.Model):
     _inherit = 'account.analytic.account'

@@ -139,11 +139,10 @@ class hr_timesheet_sheet(osv.osv):
             if sheet.employee_id.id not in employee_ids: employee_ids.append(sheet.employee_id.id)
         return hr_employee.attendance_action_change(cr, uid, employee_ids, context=context)
     
-    def _count_all(self, cr, uid, ids, field_name, arg, context=None):
+    def _count_attendances(self, cr, uid, ids, field_name, arg, context=None):
         Attendance = self.pool['hr.attendance']
         return {
             sheet_id: {
-                'timesheet_activity_count': self.pool['account.analytic.line'].search_count(cr,uid, [('sheet_id','=', sheet_id)], context=context),
                 'attendance_count': Attendance.search_count(cr,uid, [('sheet_id', '=', sheet_id)], context=context)
             }
             for sheet_id in ids
@@ -180,8 +179,7 @@ class hr_timesheet_sheet(osv.osv):
         'account_ids': fields.one2many('hr_timesheet_sheet.sheet.account', 'sheet_id', 'Analytic accounts', readonly=True),
         'company_id': fields.many2one('res.company', 'Company'),
         'department_id':fields.many2one('hr.department','Department'),
-        'timesheet_activity_count': fields.function(_count_all, type='integer', string='Timesheet Activities', multi=True),
-        'attendance_count': fields.function(_count_all, type='integer', string="Attendances", multi=True),
+        'attendance_count': fields.function(_count_attendances, type='integer', string="Attendances"),
     }
 
     def _default_date_from(self, cr, uid, context=None):

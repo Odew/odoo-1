@@ -51,7 +51,6 @@ up a management by affair.
     'demo': ['hr_timesheet_demo.xml'],
     'test': [
         'test/hr_timesheet_users.yml',
-        # 'test/hr_timesheet_demo.yml',
     ],
     'installable': True,
     'auto_install': False,

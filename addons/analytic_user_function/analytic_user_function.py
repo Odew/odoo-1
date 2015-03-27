@@ -64,7 +64,7 @@ class account_analytic_account(osv.osv):
     }
 
 
-class hr_analytic_timesheet(osv.osv):
+class account_analytic_line(osv.osv):
     _inherit = "account.analytic.line"
     # Look in account, if no value for the user => look in parent until there is no more parent to look
     # Take the first found... if nothing found => return False
@@ -117,7 +117,7 @@ class hr_analytic_timesheet(osv.osv):
         return res
 
     def on_change_user_id(self, cr, uid, ids, user_id, is_timesheet, context, unit_amount=0, account_id=None):
-        res = super(hr_analytic_timesheet, self).on_change_user_id(cr, uid, ids, user_id, is_timesheet, context=context)
+        res = super(account_analytic_line, self).on_change_user_id(cr, uid, ids, user_id, is_timesheet, context=context)
 
         if account_id:
             #get the browse record related to user_id and account_id
@@ -150,4 +150,4 @@ class hr_analytic_timesheet(osv.osv):
         for grid in account.user_product_ids:
             if grid.user_id.id==user_id:
                 return grid.price
-        return super(hr_analytic_timesheet, self)._get_invoice_price(cr, uid, account, product_id, user_id, qty, context)
+        return super(account_analytic_line, self)._get_invoice_price(cr, uid, account, product_id, user_id, qty, context)
