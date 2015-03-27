@@ -23,7 +23,7 @@ class TestAccountCustomerInvoice(AccountTestUsers):
         self.payment_term = self.env.ref('account.account_payment_term_advance')
         self.journalrec = self.env['account.journal'].search([('type', '=', 'sale')])[0]
         self.partner3 = self.env.ref('base.res_partner_3')
-        account_user_type = self.env.ref('account.data_account_type_liquidity')
+        account_user_type = self.env.ref('account.data_account_type_receivable')
         self.ova = self.env['account.account'].search([('user_type', '=', self.env.ref('account.data_account_type_current_assets').id)])[0]
 
         self.account_rec1_id = self.account_model.sudo(self.account_user.id).create(dict(
