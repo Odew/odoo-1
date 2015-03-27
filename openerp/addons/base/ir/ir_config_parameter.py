@@ -27,7 +27,7 @@ import datetime
 
 from openerp import SUPERUSER_ID
 from openerp.osv import osv, fields
-from openerp.tools import misc, config
+from openerp.tools import misc, config, ormcache
 
 """
 A dictionary holding some configuration parameters to be initialized when the database is created.
@@ -68,7 +68,6 @@ class ir_config_parameter(osv.osv):
                 value, groups = func()
                 self.set_param(cr, SUPERUSER_ID, key, value, groups=groups)
 
-
     def get_param(self, cr, uid, key, default=False, context=None):
         """Retrieve the value for a given key.
 
@@ -77,14 +76,19 @@ class ir_config_parameter(osv.osv):
         :return: The value of the parameter, or ``default`` if it does not exist.
         :rtype: string
         """
-        ids = self.search(cr, uid, [('key','=',key)], context=context)
-        if not ids:
+        result = self._get_param(cr, uid, key)
+        if result is None:
             return default
-        param = self.browse(cr, uid, ids[0], context=context)
-        value = param.value
-        return value
+        return result
 
-    def set_param(self, cr, uid, key, value, groups=[], context=None):
+    @ormcache(skiparg=2) # cache on (uid, key)
+    def _get_param(self, cr, uid, key):
+        params = self.search_read(cr, uid, [('key', '=', key)], fields=['value'], limit=1)
+        if not params:
+            return None
+        return params[0]['value']
+
+    def set_param(self, cr, uid, key, value, groups=(), context=None):
         """Sets the value of a parameter.
 
         :param string key: The key of the parameter value to set.
@@ -94,6 +98,7 @@ class ir_config_parameter(osv.osv):
                  not exist.
         :rtype: string
         """
+        self._get_param.clear_cache(self)
         ids = self.search(cr, uid, [('key','=',key)], context=context)
 
         gids = []
