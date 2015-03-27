@@ -203,7 +203,7 @@ web_editor.EditorBar = openerp.Widget.extend({
             method: 'save',
             args: [$el.data('oe-id'), markup,
                    $el.data('oe-xpath') || null,
-                   web_editor.get_context()],
+                   openerp.web_editor.get_context()],
         });
     },
     cancel: function () {

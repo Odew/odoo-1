@@ -636,6 +636,8 @@
                             $parent.prepend($toInsert);
                         }
 
+                        $toInsert.closest(".o_editable").trigger("content_changed");
+
                         var $target = false;
                         $target = $toInsert;
 

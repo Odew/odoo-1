@@ -3,19 +3,18 @@
     var _t = openerp._t;
     
     var website = openerp.website;
+    var web_editor = openerp.web_editor;
     var QWeb = openerp.qweb;
-    openerp.web_editor.add_template_file('/website_version/static/src/xml/version_templates.xml');
+    web_editor.add_template_file('/website_version/static/src/xml/version_templates.xml');
     
+    var _get_context = web_editor.get_context;
+    web_editor.get_context = function (dict) {
+        return _.extend({ 'version_id': $("#version-menu-button").data("version_id")|0 }, _get_context(dict));
+    };
+
     website.EditorVersion = openerp.Widget.extend({
         start: function() {
             var self = this;
-
-            $('html').data('version_id', this.$el.find("#version-menu-button").data("version_id"));
-            var _get_context = website.get_context;
-            website.get_context = function (dict) {
-                return _.extend({ 'version_id': $('html').data('version_id') }, _get_context(dict));
-            };
-
             self.$el.on('click', 'a[data-action]', function(ev) {
                 ev.preventDefault();
                 self[$(this).data('action')](ev);
@@ -40,7 +39,7 @@
         },
         
         duplicate_version: function(event) {
-            var version_id = $('html').data('version_id');
+            var version_id = web_editor.get_context().version_id;
             var wizardA = $(openerp.qweb.render("website_version.new_version",{'default_name': moment().format('L')}));
             wizardA.appendTo($('body')).modal({"keyboard" :true});
             wizardA.on('click','.o_create', function(){
@@ -62,6 +61,7 @@
                         wizard.on('hidden.bs.modal', function () {$(this).remove();});
                     }).fail(function(){
                         var wizard = $(openerp.qweb.render("website_version.message",{message:_t("This name already exists.")}));
+                        wizard.addClass("o_error");
                         wizard.appendTo($('body')).modal({"keyboard" :true});
                         wizard.on('hidden.bs.modal', function () {$(this).remove();});
                     });
@@ -71,7 +71,7 @@
         },
         
         change_version: function(event) {
-            var version_id = parseInt($(event.target).parent().data("version_id"));
+            var version_id = parseInt($(event.target).closest("li").data("version_id"));
             if(! version_id){
                 version_id = 0;//By default master
             }
@@ -81,8 +81,7 @@
         },
 
         delete_version: function(event) {
-            console.log(event);
-            var version_id = parseInt($(event.currentTarget).parent().data("version_id"));
+            var version_id = parseInt($(event.target).closest("li").data("version_id"));
             var name = $(event.currentTarget).parent().children(':last-child').text();
             openerp.jsonRpc( '/website_version/check_version', 'call', { 'version_id':version_id }).then(function (result) {
                     if (result){
@@ -109,10 +108,9 @@
         },
 
         publish_version: function(event) {
-            var version_id = parseInt($('html').data('version_id'));
+            var version_id = web_editor.get_context().version_id;
             var name = $('#version-menu-button').attr('data-version_name');
             openerp.jsonRpc( '/website_version/diff_version', 'call', { 'version_id':version_id}).then(function (result) {
-                console.log(result);
                 var wizardA = $(openerp.qweb.render("website_version.publish_message",{message:_.str.sprintf("Publish Version %s", name), list:result}));
                 wizardA.appendTo($('body')).modal({"keyboard" :true});
                 wizardA.on('click','.o_confirm', function(){
@@ -154,7 +152,7 @@
         },
 
         diff_version: function(event) {
-            var version_id = parseInt($('html').data('version_id'));
+            var version_id = web_editor.get_context().version_id;
             var name = $('#version-menu-button').data('version_name');
             openerp.jsonRpc( '/website_version/diff_version', 'call', { 'version_id':version_id}).then(function (result) {
                 var wizard = $(openerp.qweb.render("website_version.diff",{list:result, version_name:name}));
@@ -235,7 +233,7 @@
                     }
                     else{
                         openerp.jsonRpc( '/website_version/set_google_access', 'call', {'ga_key':ga_key, 'view_id':view_id, 'client_id':client_id, 'client_secret':client_secret}).then(function (result) {
-                            var context = website.get_context();
+                            var context = web_editor.get_context();
                             openerp.jsonRpc( '/website_version/google_access', 'call', {
                                 fromurl: window.location.href,
                                 local_context: context

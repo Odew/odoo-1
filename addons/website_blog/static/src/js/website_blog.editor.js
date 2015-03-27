@@ -13,7 +13,7 @@
                 select: "Select Blog",
                 init: function (field) {
                     return website.session.model('blog.blog')
-                            .call('name_search', [], { context: website.get_context() });
+                            .call('name_search', [], { context: web_editor.get_context() });
                 },
             }).then(function (cat_id) {
                 document.location = '/blog/' + cat_id + '/post/new';

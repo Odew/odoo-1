@@ -7,6 +7,7 @@
     }
 
     var website = openerp.website;
+    var web_editor = openerp.web_editor;
     web_editor.add_template_file('/website_gengo/static/src/xml/website.gengo.xml');
 
     website.TopBar.include({
@@ -19,7 +20,7 @@
             this._super.apply(this, arguments);
             var self = this;
             var gengo_langs = ["ar_SY","id_ID","nl_NL","fr_CA","pl_PL","zh_TW","sv_SE","ko_KR","pt_PT","en_US","ja_JP","es_ES","zh_CN","de_DE","fr_FR","fr_BE","ru_RU","it_IT","pt_BR","pt_BR","th_TH","nb_NO","ro_RO","tr_TR","bg_BG","da_DK","en_GB","el_GR","vi_VN","he_IL","hu_HU","fi_FI"];
-            if (gengo_langs.indexOf(website.get_context()['lang']) != -1){   
+            if (gengo_langs.indexOf(web_editor.get_context()['lang']) != -1){   
                 self.$('.gengo_post,.gengo_wait,.gengo_inprogress,.gengo_info').remove();
                 self.$('button[data-action=save]')
                 .after(openerp.qweb.render('website.ButtonGengoTranslator'));
@@ -66,7 +67,7 @@
                         });
                         openerp.jsonRpc('/website/set_translations', 'call', {
                             'data': trans,
-                            'lang': website.get_context()['lang'],
+                            'lang': web_editor.get_context()['lang'],
                         }).then(function () {
                             $('.o_translatable_todo').addClass('o_translatable_inprogress').removeClass('o_translatable_todo');
                             self.$el.find('.gengo_wait').addClass("hidden");
@@ -95,7 +96,7 @@
             });
             openerp.jsonRpc('/website/get_translated_length', 'call', {
                 'translated_ids': translated_ids,
-                'lang': website.get_context()['lang'],
+                'lang': web_editor.get_context()['lang'],
             }).done(function(res){
                 var dialog = new website.GengoTranslatorStatisticDialog(res);
                 dialog.appendTo($(document.body));

@@ -23,7 +23,7 @@
        Helpers
        ---------------------------------------------------- */
     var get_context = web_editor.get_context;
-    web_editor.get_context = website.get_context = function (dict) {
+    web_editor.get_context = web_editor.get_context = function (dict) {
         var html = document.documentElement;
         return _.extend({
             'website_id': html.getAttribute('data-website-id')|0
@@ -286,7 +286,7 @@
                     website.id = $('html').data('website-id');
                     website.session = new openerp.Session();
                     return openerp.jsonRpc('/website/translations', 'call', {
-                            'lang': website.get_context().lang
+                            'lang': web_editor.get_context().lang
                         }).then(function(trans) {
                             openerp._t.database.set_bundle(trans);
                         });

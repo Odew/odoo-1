@@ -10,7 +10,7 @@ openerp.web_editor_ = web_editor;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-web_editor.get_context = function (dict) {
+openerp.web_editor.get_context = function (dict) {
     var html = document.documentElement;
     return _.extend({
         'lang': (html.getAttribute('lang') || '').replace('-', '_'),

@@ -4,7 +4,7 @@
     openerp.jsonRpc('/web/dataset/call', 'call', {
             'model': 'ir.ui.view',
             'method': 'read_template',
-            'args': ['website.theme_customize', openerp.website.get_context()]
+            'args': ['website.theme_customize', openerp.web_editor.get_context()]
         }).done(function (data) {
         openerp.qweb.add_template(data);
     });

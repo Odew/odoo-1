@@ -32,6 +32,10 @@
                 .addClass("oe_empty")
                 .attr("data-oe-placeholder", _t("Press The Top-Left Edit Button"));
 
+            if (location.search.indexOf("enable_editor") >= 0 && !web_editor.no_editor) {
+                this.$el.hide();
+            }
+
             return this._super();
         },
         edit: function () {
@@ -46,6 +50,7 @@
                 this.$el.hide();
                 web_editor.editor_bar = new web_editor.EditorBar(this);
                 web_editor.editor_bar.prependTo(document.body);
+
             }
         }
     });
@@ -94,7 +99,7 @@
                 args: [],
                 kwargs: {
                     ids: [parseInt(view_id, 10)],
-                    context: website.get_context()
+                    context: web_editor.get_context()
                 }
             }).then( function() {
                 window.location.reload();
@@ -211,13 +216,13 @@ define(['summernote/openerp'], function () {
         },
         page_exists: function (term) {
             return this.call('page_exists', [null, term], {
-                context: website.get_context(),
+                context: web_editor.get_context(),
             });
         },
         fetch_pages: function (term) {
             return this.call('search_pages', [null, term], {
                 limit: 9,
-                context: website.get_context(),
+                context: web_editor.get_context(),
             });
         },
     });

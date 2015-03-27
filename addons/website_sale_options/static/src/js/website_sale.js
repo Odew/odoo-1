@@ -10,7 +10,7 @@ $(document).ready(function () {
             openerp.jsonRpc("/shop/modal", 'call', {
                     'product_id': product_id,
                     kwargs: {
-                       context: openerp.website.get_context()
+                       context: openerp.web_editor.get_context()
                     },
                 }).then(function (modal) {
                     var $modal = $(modal);

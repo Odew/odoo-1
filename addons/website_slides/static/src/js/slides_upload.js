@@ -4,9 +4,10 @@ $(document).ready(function () {
     "use strict";
 
     var website = openerp.website;
+    var web_editor = openerp.web_editor;
     var _t = openerp._t;
 
-    openerp.web_editor.add_template_file('/website_slides/static/src/xml/website_slides.xml');
+    web_editor.add_template_file('/website_slides/static/src/xml/website_slides.xml');
 
     website.slide.Dialog = openerp.Widget.extend({
         template: 'website.slide.upload',
@@ -242,7 +243,7 @@ $(document).ready(function () {
                         kwargs: {
                             fields: ['name'],
                             domain: [['channel_id', '=', self.channel_id]],
-                            context: website.get_context()
+                            context: web_editor.get_context()
                         }
                     });
                 }));
@@ -263,7 +264,7 @@ $(document).ready(function () {
                     args: [],
                     kwargs: {
                         fields: ['name'],
-                        context: website.get_context()
+                        context: web_editor.get_context()
                     }
                 });
             }));

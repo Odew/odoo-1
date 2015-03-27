@@ -14,7 +14,7 @@
                 select: _t("Newsletter"),
                 init: function (field) {
                     return website.session.model('mail.mass_mailing.list')
-                            .call('name_search', ['', []], { context: website.get_context() });
+                            .call('name_search', ['', []], { context: web_editor.get_context() });
                 },
             }).then(function (mailing_list_id) {
                 self.$target.attr("data-list-id", mailing_list_id);
@@ -42,13 +42,13 @@
                 select: _t("Newsletter"),
                 init: function () {
                     return website.session.model('mail.mass_mailing.list')
-                            .call('name_search', [], { context: website.get_context() });
+                            .call('name_search', [], { context: web_editor.get_context() });
                 },
             }).then(function (mailing_list_id) {
                 openerp.jsonRpc('/web/dataset/call', 'call', {
                     model: 'mail.mass_mailing.list',
                     method: 'read',
-                    args: [[parseInt(mailing_list_id)], ['popup_content'], website.get_context()],
+                    args: [[parseInt(mailing_list_id)], ['popup_content'], web_editor.get_context()],
                 }).then(function (data) {
                     self.$target.find(".o_popup_content_dev").empty();
                     if (data && data[0].popup_content) {

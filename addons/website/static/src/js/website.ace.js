@@ -5,7 +5,8 @@
     var hash = "#advanced-view-editor";
 
     var website = openerp.website;
-    openerp.web_editor.add_template_file('/website/static/src/xml/website.ace.xml');
+    var web_editor = openerp.web_editor;
+    web_editor.add_template_file('/website/static/src/xml/website.ace.xml');
 
     website.Ace = openerp.Widget.extend({
         launchAce: function (e) {
@@ -207,7 +208,7 @@
             openerp.jsonRpc('/web/dataset/call', 'call', {
                 model: 'ir.ui.view',
                 method: 'read',
-                args: [[viewId], ['arch'], website.get_context()],
+                args: [[viewId], ['arch'], web_editor.get_context()],
             }).then(function(result) {
                 var editingSession = self.buffers[viewId] = new ace.EditSession(result[0].arch);
                 editingSession.setMode("ace/mode/xml");
@@ -281,7 +282,7 @@
                 openerp.jsonRpc('/web/dataset/call', 'call', {
                     model: 'ir.ui.view',
                     method: 'write',
-                    args: [[session.id], { 'arch':  xml.xml }, website.get_context()],
+                    args: [[session.id], { 'arch':  xml.xml }, web_editor.get_context()],
                 }).then(function () {
                     def.resolve();
                 }).fail(function (source, error) {

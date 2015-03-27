@@ -19,7 +19,7 @@
         },
         edit_menu: function() {
             var self = this;
-            var context = website.get_context();
+            var context = web_editor.get_context();
             var def = $.Deferred();
             if ($("[data-content_menu_id]").length) {
                 var select = new website.contentMenu.SelectEditMenuDialog();
@@ -73,7 +73,7 @@
         },
         delete_page: function() {
             var self = this;
-            var context = website.get_context();
+            var context = web_editor.get_context();
             self.mo_id = self.getMainObject().id;
 
             openerp.jsonRpc('/web/dataset/call_kw', 'call', {
@@ -237,7 +237,7 @@
             var new_menu = this.$('.oe_menu_editor').nestedSortable('toArray', {startDepthCount: 0});
             var levels = [];
             var data = [];
-            var context = website.get_context();
+            var context = web_editor.get_context();
             // Resequence, re-tree and remove useless data
             new_menu.forEach(function (menu) {
                 if (menu.item_id) {
