@@ -261,6 +261,15 @@ class website_sale(http.Controller):
         to_currency = pricelist.currency_id
         compute_currency = lambda price: pool['res.currency']._compute(cr, uid, from_currency, to_currency, price, context=context)
 
+        # get the rating attached to a mail.message, and the rating stats of the product
+        Rating = pool['rating.rating']
+        rating_ids = Rating.search(cr, uid, [('message_id', 'in', product.website_message_ids.ids)], context=context)
+        ratings = Rating.browse(cr, uid, rating_ids, context=context)
+        rating_message_values = dict([(record.message_id.id, record.rating) for record in ratings])
+
+        rating_product = product.rating_get_stats()
+        rating_product['avg'] = '%.2f' % (rating_product['avg'])
+
         if not context.get('pricelist'):
             context['pricelist'] = int(self.get_pricelist())
             product = template_obj.browse(cr, uid, int(product), context=context)
@@ -276,7 +285,9 @@ class website_sale(http.Controller):
             'categories': categs,
             'main_object': product,
             'product': product,
-            'get_attribute_value_ids': self.get_attribute_value_ids
+            'get_attribute_value_ids': self.get_attribute_value_ids,
+            'rating_message_values' : rating_message_values,
+            'rating_product' : rating_product
         }
         return request.website.render("website_sale.product", values)
 
@@ -286,12 +297,19 @@ class website_sale(http.Controller):
             return login_redirect()
         cr, uid, context = request.cr, request.uid, request.context
         if post.get('comment'):
-            request.registry['product.template'].message_post(
+            message_id = request.registry['product.template'].message_post(
                 cr, uid, product_template_id,
                 body=post.get('comment'),
                 type='comment',
                 subtype='mt_comment',
                 context=dict(context, mail_create_nosubscribe=True))
+            if post.get('rating'):
+                rating = request.registry['rating.rating'].create(cr, uid, {
+                        'rating' : float(post.get('rating')),
+                        'res_model' : 'product.template',
+                        'res_id' : product_template_id,
+                        'message_id' : message_id,
+                    }, context=context)
         return werkzeug.utils.redirect(request.httprequest.referrer + "#comments")
 
     @http.route(['/shop/pricelist'], type='http', auth="public", website=True)
@@ -582,7 +600,7 @@ class website_sale(http.Controller):
             orm_partner.write(cr, SUPERUSER_ID, [partner_id], billing_info, context=context)
         else:
             # create partner
-            billing_info['team_id'] = request.registry.get('ir.model.data').xmlid_to_res_id(cr, uid, 'website.salesteam_website_sales') 
+            billing_info['team_id'] = request.registry.get('ir.model.data').xmlid_to_res_id(cr, uid, 'website.salesteam_website_sales')
             partner_id = orm_partner.create(cr, SUPERUSER_ID, billing_info, context=context)
 
         # create a new shipping partner
