@@ -60,7 +60,7 @@ The validation can be configured in the company:
     'demo': [
         'hr_timesheet_sheet_demo.xml',
     ],
-    'test':['test/test_hr_timesheet_sheet.yml'],
+    'test':['../account/test/account_minimal_test.xml', 'test/test_hr_timesheet_sheet.yml'],
     'installable': True,
     'auto_install': False,
     'application': True,

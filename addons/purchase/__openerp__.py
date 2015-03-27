@@ -69,6 +69,8 @@ Dashboard / Reports for Purchase Management will include:
         'views/report_purchasequotation.xml',
     ],
     'test': [
+        '../account/test/account_minimal_test.xml',
+        'test/stock_valuation_account.xml',
         'test/ui/purchase_users.yml',
         'test/process/run_scheduler.yml',
         'test/fifo_price.yml',
