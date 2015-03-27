@@ -6,6 +6,25 @@
 }
 
 .o-control-panel-first-row, .o-control-panel-second-row {
+    // Dropdowns
+    li {
+        position: relative;
+        a {
+            padding: 3px 25px;
+        }
+        &.selected {
+            > a {
+                font-weight: bold;
+                &:before {
+                    font-family: FontAwesome;
+                    position: absolute;
+                    left: 6px;
+                    content: "\f00c";
+                }
+            }
+        }
+    }
+
     // FIXME: override bootstrap
     .btn {
         border-radius: 0px;
@@ -203,14 +222,6 @@
         .open-menu a:before {
             .o-caret-up;
             margin-right: 5px;
-        }
-
-        .selected > a{
-            font-weight: bold;
-            &:before {
-                font-family: FontAwesome;
-                content: "\f00c";
-            }
         }
 
         // Filters

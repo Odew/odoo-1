@@ -44,7 +44,7 @@ var GraphView = View.extend({
         if ($node) {
             var context = {measures: _.pairs(_.omit(this.measures, '__count__'))};
             this.$buttons = $(QWeb.render('GraphView.buttons', context));
-            this.$measure_list = this.$buttons.find('.oe-measure-list');
+            this.$measure_list = this.$buttons.siblings('.o-graph-measures-list');
             this.update_measure();
             this.$buttons.find('button').tooltip();
             this.$buttons.click(this.on_button_click.bind(this));
@@ -117,14 +117,13 @@ var GraphView = View.extend({
     },
     on_button_click: function (event) {
         var $target = $(event.target);
-        if ($target.hasClass('oe-bar-mode')) {this.widget.set_mode('bar');}
-        if ($target.hasClass('oe-line-mode')) {this.widget.set_mode('line');}
-        if ($target.hasClass('oe-pie-mode')) {this.widget.set_mode('pie');}
-        if ($target.parents('.oe-measure-list').length) {
-            var parent = $target.parent(),
-                field = parent.data('field');
+        if ($target.hasClass('o-graph-bar-button')) {this.widget.set_mode('bar');}
+        if ($target.hasClass('o-graph-line-button')) {this.widget.set_mode('line');}
+        if ($target.hasClass('o-graph-pie-button')) {this.widget.set_mode('pie');}
+        if ($target.parents('.o-graph-measures-list').length) {
+            var parent = $target.parent();
+            var field = parent.data('field');
             this.active_measure = field;
-            parent.toggleClass('selected');
             event.stopPropagation();
             this.update_measure();
             this.widget.set_measure(this.active_measure);
