@@ -875,7 +875,7 @@ class AccountChartTemplate(models.Model):
         self.ensure_one()
         company = self.env.user.company_id
         accounts = self.env['account.account'].search([('company_id', '=', company.id), ('deprecated', '=', False), ('name', 'not ilike', 'Automated Test'),
-            ('name', 'not ilike', '(test)')], limit=1)
+            ('name', 'not ilike', '(test)'), ('internal_type', '!=', 'liquidity')], limit=1)
         # If we don't have any accounts, install this chart of account
         if not accounts:
             self._load_template(company)
