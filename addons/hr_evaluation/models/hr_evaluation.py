@@ -27,18 +27,6 @@ class HrEvaluation(models.Model):
         return super(HrEvaluation, self)._track_subtype(init_values)
 
     @api.one
-    def _compute_users_input(self):
-        survey_ids = [
-            self.manager_survey_id.id,
-            self.colleagues_survey_id.id,
-            self.appraisal_self_survey_id.id,
-            self.subordinates_survey_id.id
-        ]
-        self.user_input_ids = self.env['survey.user_input'].search([
-            ('survey_id', 'in', survey_ids),
-            ('type', '=', 'link'), ('survey_res_id', '=', self.id), ('survey_model', '=', self._name)])
-
-    @api.one
     def _compute_user_input_count(self):
         self.user_input_count = len(self.user_input_ids)
 
@@ -66,7 +54,7 @@ class HrEvaluation(models.Model):
     appraisal_self = fields.Boolean(string='Employee')
     appraisal_employee = fields.Char(related='employee_id.name', string='Employee Name')
     appraisal_self_survey_id = fields.Many2one('survey.survey', string='Self Appraisal')
-    user_input_ids = fields.One2many('survey.user_input', string='suvrey Answers', compute='_compute_users_input')
+    user_input_ids = fields.One2many('survey.user_input', 'survey_res_id', string='suvrey Answers', auto_join=True, domain=lambda self: [('survey_model', '=', self._name)])
     user_input_count = fields.Integer(string='Sent Survey', compute='_compute_user_input_count')
     mail_template_id = fields.Many2one('mail.template', string="Email Template For Appraisal", default=lambda self: self.env.ref('hr_evaluation.send_appraisal_template'))
     meeting_id = fields.Many2one('calendar.event', string='Meeting')
