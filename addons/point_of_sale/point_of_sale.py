@@ -673,11 +673,29 @@ class pos_order(osv.osv):
                 raise UserError(_('In order to delete a sale, it must be new or cancelled.'))
         return super(pos_order, self).unlink(cr, uid, ids, context=context)
 
+    def get_fiscal_id(self, cr, uid, ids, company_id, partner_id, delivery_id, fiscal_position, context=None):
+        r = {'value': {'fiscal_position': False}}
+        if not fiscal_position:
+            if not company_id:
+                company_id = self.pool.get('res.users')._get_company(cr, uid, context=context)
+            fiscal_position = self.pool['account.fiscal.position'].get_fiscal_position(cr, uid, company_id, partner_id, delivery_id, context=context)
+            if fiscal_position:
+                r['value']['fiscal_position'] = fiscal_position
+        return r
+
     def onchange_partner_id(self, cr, uid, ids, part=False, context=None):
         if not part:
-            return {'value': {}}
-        pricelist = self.pool.get('res.partner').browse(cr, uid, part, context=context).property_product_pricelist.id
-        return {'value': {'pricelist_id': pricelist}}
+            return {'value': {'fiscal_position': False}}
+        res_partner = self.pool.get('res.partner')
+
+        part = res_partner.browse(cr, uid, part, context=context)
+        addr = res_partner.address_get(cr, uid, [part.id], ['delivery', 'invoice', 'contact'])
+
+        pricelist = part.property_product_pricelist and part.property_product_pricelist.id or False
+        val = {'pricelist_id': pricelist}
+        fislca_position = self.get_fiscal_id(cr, uid, ids, False, part.id, addr['delivery'], False,  context=context)
+        val.update(fislca_position['value'])
+        return {'value': val}
 
     def _amount_all(self, cr, uid, ids, name, args, context=None):
         cur_obj = self.pool.get('res.currency')
