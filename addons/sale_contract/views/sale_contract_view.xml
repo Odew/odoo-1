@@ -27,6 +27,8 @@
                      <attribute name="on_change">on_change_contract_type(contract_type, date_start)</attribute>
                 </xpath>
                 <xpath expr='//field[@name="partner_id"]' position='after'>
+                    <field name="payment_method_id" attrs="{'invisible': ['|',('contract_type','!=','subscription'), ('type','!=','contract')]}"/>
+                    <field name="payment_mandatory" attrs="{'invisible': [('contract_type','!=','subscription')]}"/>
                     <field name="pricelist_id"
                            class="oe_inline"
                            attrs="{'required': [('invoice_on_timesheets', '=', True)], 'invisible': [('contract_type','=','prepaid')]}"
@@ -163,7 +165,6 @@
                     </page>
                     <page id="recurring_lines" string="Subscription" attrs="{'invisible': ['|',('contract_type','!=','subscription'),('type','in',['view','normal'])]}">
                         <div>
-                            
                             <field name="recurring_invoice_line_ids">
                                 <tree string="Account Analytic Lines" editable="bottom">
                                     <field name="product_id" on_change="product_id_change(product_id, uom_id, quantity, False, parent.partner_id, False, parent.pricelist_id, parent.company_id)"/>
