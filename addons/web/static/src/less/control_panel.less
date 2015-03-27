@@ -175,22 +175,19 @@
     }
 
     // Action buttons
-    .o-cp-buttons-col {
-        text-align: left;
-        .o-cp-buttons {
-            // Override bootstrap
-            button.btn-primary {
-                text-transform: uppercase;
-                color: white;
-                background-color: @odoo-brand-optional;
-                &:hover {
-                    .o-darken-background(@odoo-brand-optional);
-                }
+   .o-cp-buttons {
+        // Override bootstrap
+        button.btn-primary {
+            text-transform: uppercase;
+            color: white;
+            background-color: @odoo-brand-optional;
+            &:hover {
+                .o-darken-background(@odoo-brand-optional);
             }
-            button.btn-default {
-                text-transform: uppercase;
-                color: @odoo-brand-optional;
-            }
+        }
+        button.btn-default {
+            text-transform: uppercase;
+            color: @odoo-brand-optional;
         }
     }
     .o-list-buttons { // Needed by the webclient

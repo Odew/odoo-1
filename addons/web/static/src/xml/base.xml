@@ -477,11 +477,9 @@
         <div class="col-md-6 o-cp-searchview" />
     </div>
     <div class="row o-control-panel-second-row">
-        <div class="col-md-3 o-cp-buttons-col">
-            <div class="o-cp-buttons"></div>
-        </div>
-        <div class="col-md-3">
-            <div class="o-cp-sidebar"></div>
+        <div class="col-md-6">
+            <div class="o-cp-buttons pull-left"></div>
+            <div class="o-cp-sidebar pull-right"></div>
         </div>
         <div class="col-md-6">
             <div class="btn-group o-search-options pull-left"/>
