@@ -5,8 +5,10 @@
 </t>
 
 <t t-name="DiagramView.buttons">
-    <div t-if="widget.is_action_enabled('create')" class="oe_diagram_buttons">
-        <button type="button" id="new_node" class="oe_diagram_button_new btn btn-default btn-sm">New Node</button>
+    <div t-if="widget.is_action_enabled('create')">
+        <button type="button" class="btn btn-primary btn-sm o-diagram-new-button">
+            New Node
+        </button>
     </div>
 </t>
 
