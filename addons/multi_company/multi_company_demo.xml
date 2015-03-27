@@ -154,8 +154,6 @@
             <field name="name">Bank Journal - (Odoo IN)</field>
             <field name="code">BNK-Odoo IN</field>
             <field name="type">bank</field>
-            <field name="default_debit_account_id" ref="account.cash"/>
-            <field name="default_credit_account_id" ref="account.cash"/>
             <field name="analytic_journal_id" ref="analytic.sit"/>
             <field name="company_id" ref="res_company_oerp_in"/>
         </record>
@@ -164,8 +162,6 @@
             <field name="name">Cash Journal - (Odoo IN)</field>
             <field name="code">CSH-Odoo IN</field>
             <field name="type">cash</field>
-            <field name="default_debit_account_id" ref="account.cash"/>
-            <field name="default_credit_account_id" ref="account.cash"/>
             <field name="analytic_journal_id" ref="analytic.sit"/>
             <field name="company_id" ref="res_company_oerp_in"/>
         </record>
@@ -193,8 +189,6 @@
             <field name="name">Bank Journal - (Odoo US)</field>
             <field name="code">BNK-Odoo US</field>
             <field name="type">bank</field>
-            <field name="default_debit_account_id" ref="account.cash"/>
-            <field name="default_credit_account_id" ref="account.cash"/>
             <field name="analytic_journal_id" ref="analytic.sit"/>
             <field name="company_id" ref="res_company_oerp_us"/>
         </record>
@@ -203,8 +197,6 @@
             <field name="name">Cash Journal - (Odoo US)</field>
             <field name="code">CSH-Odoo US</field>
             <field name="type">cash</field>
-            <field name="default_debit_account_id" ref="account.cash"/>
-            <field name="default_credit_account_id" ref="account.cash"/>
             <field name="analytic_journal_id" ref="analytic.sit"/>
             <field name="company_id" ref="res_company_oerp_us"/>
         </record>
@@ -233,8 +225,6 @@
             <field name="name">Bank Journal - (Odoo BE)</field>
             <field name="code">BNK-Odoo BE</field>
             <field name="type">bank</field>
-            <field name="default_debit_account_id" ref="account.cash"/>
-            <field name="default_credit_account_id" ref="account.cash"/>
             <field name="analytic_journal_id" ref="analytic.sit"/>
             <field name="company_id" ref="res_company_oerp_be"/>
         </record>
@@ -243,8 +233,6 @@
             <field name="name">Cash Journal - (Odoo BE)</field>
             <field name="code">CSH-Odoo BE</field>
             <field name="type">cash</field>
-            <field name="default_debit_account_id" ref="account.cash"/>
-            <field name="default_credit_account_id" ref="account.cash"/>
             <field name="analytic_journal_id" ref="analytic.sit"/>
             <field name="company_id" ref="res_company_oerp_be"/>
         </record>
