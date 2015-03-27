@@ -196,8 +196,16 @@ var GanttView = View.extend({
         gantt.attachEvent("onTaskEndResize", function(task) {
             self.on_task_changed(task);
         });
+        // horrible hack to make sure that something is in the dom with the required id.  The problem is that
+        // the view manager render the view in a document fragment.
+        var $div_with_id = $('<div>').attr('id', this.chart_id).css({
+            position:'absolute', 
+            top:16, bottom:16, right: 16, left: 16
+        });
+        $div_with_id.prependTo(document.body);
         gantt.create(this.chart_id);
-        
+        this.$el.append($div_with_id);
+
         // bind event to display task when we click the item in the tree
         $(".taskNameItem", self.$el).click(function(event) {
             var task_info = task_ids[event.target.id];
