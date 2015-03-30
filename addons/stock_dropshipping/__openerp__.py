@@ -44,7 +44,7 @@ internal transfer document is needed.
     'data': ['stock_dropshipping.xml'],
     'test': [
         '../account/test/account_minimal_test.xml',
-        'test/stock_valuation_account.xml',
+        '../stock_account/test/stock_valuation_account.xml',
         'test/cancellation_propagated.yml',
         'test/crossdock.yml',
         'test/dropship.yml',

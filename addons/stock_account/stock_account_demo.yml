@@ -10,7 +10,7 @@
           vals = {
               'name': 'property_stock_valuation_account_id',
               'fields_id': fields_id,
-              'value': 'account.account,'+str(ref('account.stk')),
+              'value': 'account.account,'+str(account_id[0]),
               'company_id': ref('base.main_company'),
           }
           self._update(cr, uid, 'ir.property', 'stock_account', vals, 'property_stock_valuation_account_id')

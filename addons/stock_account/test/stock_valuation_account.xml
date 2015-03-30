@@ -2,6 +2,8 @@
 <openerp>
     <data noupdate="1">
 
+        <!-- Used in other modules for the tests, NOT in this one -->
+
         <record forcecreate="True" id="property_stock_valuation_account_id" model="ir.property">
             <field name="name">property_stock_valuation_account_id</field>
             <field name="fields_id" search="[('model','=','product.category'),('name','=','property_stock_valuation_account_id')]"/>
