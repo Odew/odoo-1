@@ -27,3 +27,14 @@ class OgoneController(http.Controller):
         cr, uid, context = request.cr, SUPERUSER_ID, request.context
         request.registry['payment.transaction'].form_feedback(cr, uid, post, 'ogone', context=context)
         return werkzeug.utils.redirect(post.pop('return_url', '/'))
+
+    @http.route(['/payment/ogone/s2s/create'], type='http', auth='public')
+    def ogone_s2s_create(self, **post):
+        import pudb
+        pu.db
+        acquirer_id = int(post.get('acquirer_id'))
+        acquirer = request.env['payment.acquirer'].browse(acquirer_id)
+        new_id = acquirer.s2s_process(post)
+        if post.get('return_success') and new_id:
+            return werkzeug.utils.redirect(post.get('return_success'))
+        return werkzeug.utils.redirect('/')

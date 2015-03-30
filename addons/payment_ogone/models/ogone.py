@@ -11,11 +11,12 @@ from urllib import urlencode
 import urllib2
 import urlparse
 
+from openerp import SUPERUSER_ID
 from openerp.addons.payment.models.payment_acquirer import ValidationError
 from openerp.addons.payment_ogone.controllers.main import OgoneController
 from openerp.addons.payment_ogone.data import ogone
 from openerp.osv import osv, fields
-from openerp.tools import float_round
+from openerp.tools import float_round, DEFAULT_SERVER_DATE_FORMAT
 from openerp.tools.float_utils import float_compare
 
 _logger = logging.getLogger(__name__)
@@ -182,6 +183,31 @@ class PaymentAcquirerOgone(osv.Model):
         acquirer = self.browse(cr, uid, id, context=context)
         return self._get_ogone_urls(cr, uid, acquirer.environment, context=context)['ogone_standard_order_url']
 
+    def ogone_s2s_form_validate(self, cr, uid, id, data, context=None):
+        error = dict()
+        error_message = []
+
+        mandatory_fields = ["cc_number", "cc_cvc", "cc_holder_name", "cc_expiry", "cc_brand"]
+        # Validation
+        for field_name in mandatory_fields:
+            if not data.get(field_name):
+                error[field_name] = 'missing'
+
+        return False if error else True
+
+    def ogone_s2s_form_process(self, cr, uid, data, context=None):
+        values = {
+            'cc_number': data.get('cc_number'),
+            'cc_cvc': int(data.get('cc_cvc')),
+            'cc_holder_name': data.get('cc_holder_name'),
+            'cc_expiry': data.get('cc_expiry'),
+            'cc_brand': data.get('cc_brand'),
+            'acquirer_id': int(data.get('acquirer_id')),
+            'partner_id': int(data.get('partner_id'))
+        }
+        pm_id = self.pool['payment.method'].create(cr, SUPERUSER_ID, values, context=context)
+        return pm_id
+
 
 class PaymentTxOgone(osv.Model):
     _inherit = 'payment.transaction'
@@ -234,9 +260,10 @@ class PaymentTxOgone(osv.Model):
         if alias:
             method_obj = self.pool['payment.method']
             domain = [('acquirer_ref', '=', alias)]
+            cardholder = data.get('CN')
             if not method_obj.search_count(cr, uid, domain, context=context):
                 _logger.info('Ogone: saving alias %s for partner %s' % (data.get('CARDNO'), tx.partner_id))
-                ref = method_obj.create(cr, uid, {'name': data.get('CARDNO'),
+                ref = method_obj.create(cr, uid, {'name': data.get('CARDNO') + (' - '+cardholder if cardholder else ''),
                                                   'partner_id': tx.partner_id.id,
                                                   'acquirer_id': tx.acquirer_id.id,
                                                   'acquirer_ref': alias
@@ -315,7 +342,7 @@ class PaymentTxOgone(osv.Model):
             'CURRENCY': tx.currency_id.name,
             'OPERATION': 'SAL',
             'ECI': 2,   # Recurring (from MOTO)
-            'ALIAS': tx.acquirer_reference,
+            'ALIAS': tx.partner_reference,
             'RTIMEOUT': 30,
         }
 
@@ -337,13 +364,13 @@ class PaymentTxOgone(osv.Model):
 
         return self.ogone_s2s_validate(cr, uid, tx, tree, context=context)
 
-    def ogone_s2s_validate(self, cr, uid, tx, tree, context=None):
-        status = tree.get('STATUS', '0')
+    def ogone_s2s_validate(self, cr, uid, tx, tree, tries=2, context=None):
+        status = int(tree.get('STATUS', '0'))
         if status in self._ogone_valid_tx_status:
             tx.write({
                 'state': 'done',
-                'date_validate': datetime.date.today().strftime(tools.DEFAULT_SERVER_DATE_FORMAT),
-                'acquirer_reference': tree.get['PAYID'],
+                'date_validate': datetime.date.today().strftime(DEFAULT_SERVER_DATE_FORMAT),
+                'acquirer_reference': tree.get('PAYID'),
             })
             return True
         elif status in self._ogone_cancel_tx_status:
@@ -356,6 +383,10 @@ class PaymentTxOgone(osv.Model):
                 'state': 'pending',
                 'acquirer_reference': tree.get('PAYID'),
             })
+        elif status in self._ogone_wait_tx_status and tries > 0:
+            time.sleep(1500)
+            tx_status = self._ogone_s2s_get_tx_status(cr, uid, tx.id, tree.get('PAYID'), context=context)
+            return self.ogone_s2s_validate(cr, uid, tx, tx_status, payid, tries - 1, context=context)
         else:
             error = 'Ogone: feedback error: %(error_str)s\n\n%(error_code)s: %(error_msg)s' % {
                 'error_str': tree.get('NCERROR'),
@@ -370,14 +401,14 @@ class PaymentTxOgone(osv.Model):
             })
             return False
 
-    def _ogone_s2s_get_tx_status(self, cr, uid, tx, context=None):
+    def _ogone_s2s_get_tx_status(self, cr, uid, id, payid, context=None):
         # TODO: create tx with s2s type
         tx = self.browse(cr, uid, id, context=context)
         account = tx.acquirer_id
         reference = tx.reference or "ODOO-%s-%s" % (datetime.datetime.now().strftime('%Y%m%d_%H%M%S'), tx.partner_id.id)
 
-        data = {
-            'PAYID': tx.acquirer_reference,
+        query_data = {
+            'PAYID': payid,
             'PSPID': account.ogone_pspid,
             'USERID': account.ogone_userid,
             'PSWD': account.ogone_password,
@@ -397,7 +428,7 @@ class PaymentTxOgone(osv.Model):
             _logger.exception('Invalid xml response from ogone')
             raise
 
-        return self.ogone_s2s_validate(cr, uid, tx, tree, context=context)
+        return tree
 
 
 class PaymentMethod(osv.Model):
@@ -450,10 +481,10 @@ class PaymentMethod(osv.Model):
                     error_str = 'CHECK ERROR: %s' % (error_node.ERROR.text or '',)
 
             if error_code:
-                error_msg = OGONE_ERROR_MAP.get(error_code)
+                error_msg = tree.get(error_code)
                 error = '%s\n\n%s: %s' % (error_str, error_code, error_msg)
                 _logger.error(error)
                 raise Exception(error)      # TODO specific exception
 
-            return {'acquirer_ref': alias, 'name': 'XXXXXXXXXXXX%s' % values['cc_number'][-4:]}
+            return {'acquirer_ref': alias, 'name': 'XXXXXXXXXXXX%s - %s' % (values['cc_number'][-4:],values['cc_holder_name'])}
         return {}
