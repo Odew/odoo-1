@@ -139,17 +139,17 @@
             <t t-call-assets="web.assets_backend" t-css="false" />
             <script type="text/javascript" src="/account/static/src/js/account_report_widgets.js"></script>
             <script type="text/javascript" id='oe-account-inline-script'>
-                (function () {
+                odoo.define('account.FinancialReport', function (require) {
                     'use strict';
-
+                    
+                    var ReportWidget = require('account.ReportWidget');
+                    
                     $(document).ready(function() {
-                        var _t = openerp._t;
-                        var reportWidgets = new openerp.account.ReportWidgets();
-                        reportWidgets.setElement($('.oe_account_report_widgets'));
-                        reportWidgets.start();
+                        var report_widget = new ReportWidget();
+                        report_widget.setElement($('.oe_account_report_widgets'));
+                        report_widget.start();
                     });
-
-                })();
+                });
             </script>
             <link rel="stylesheet" href="/account/static/src/css/account_financial_report.css" />
             <link href="/web/static/lib/bootstrap/css/bootstrap.css" rel="stylesheet"/>

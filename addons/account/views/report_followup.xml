@@ -119,16 +119,17 @@
     </xpath>
     <xpath expr="//script[@id='oe-account-inline-script']" position='replace'>
         <script type="text/javascript" id='oe-account-inline-script'>
-            (function () {
+            odoo.define('account.FollowupReport', function (require) {
                 'use strict';
-
+                
+                var FollowupReportWidget = require('account.FollowupReportWidget');
+                
                 $(document).ready(function() {
-                    var _t = openerp._t;
-                    var reportWidgets = new openerp.account.FollowupReportWidgets();
-                    reportWidgets.setElement($('.oe_account_report_widgets'));
-                    reportWidgets.start();
+                    var followup_report_widget = new FollowupReportWidget();
+                    followup_report_widget.setElement($('.oe_account_report_widgets'));
+                    followup_report_widget.start();
                 });
-            })();
+            });
         </script>
     </xpath>
     <xpath expr="//div[@class='dropdown oe-account-export-dropdown']" position="replace">

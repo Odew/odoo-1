@@ -1,4 +1,14 @@
-openerp.account.FollowupReportWidgets = openerp.account.ReportWidgets.extend({
+odoo.define('account.FollowupReportWidget', function (require) {
+'use strict';
+
+var core = require('web.core');
+var Model = require('web.Model');
+var formats = require('web.formats');
+var ReportWidget = require('account.ReportWidget');
+
+var QWeb = core.qweb;
+
+var FollowupReportWidget = ReportWidget.extend({
     events: _.defaults({
         'click .change_exp_date': 'displayExpNoteModal',
         'click #savePaymentDate': 'changeExpDate',
@@ -10,18 +20,17 @@ openerp.account.FollowupReportWidgets = openerp.account.ReportWidgets.extend({
         'click .oe-account-set-next-action': 'setNextAction',
         'click #saveNextAction': 'saveNextAction',
         'click .oe-account-followup-set-next-action': 'setNextAction',
-    }, openerp.account.ReportWidgets.prototype.events),
+    }, ReportWidget.prototype.events),
     saveNextAction: function(e) {
         e.stopPropagation();
         e.preventDefault();
         var note = $("#nextActionNote").val().replace(/\r?\n/g, '<br />').replace(/\s+/g, ' ');
         var target_id = $("#nextActionModal #target_id").val();
         var date = $("#nextActionDate").val();
-        date = openerp.web.parse_value(date, {type:'date'})
-        var contextModel = new openerp.Model('account.report.context.followup');
-        return contextModel.call('change_next_action', [[parseInt(target_id)], date, note]).then(function (result) {
+        date = formats.parse_value(date, {type:'date'})
+        return new Model('account.report.context.followup').call('change_next_action', [[parseInt(target_id)], date, note]).then(function (result) {
             $('#nextActionModal').modal('hide');
-            $('div.page.' + target_id).find('.oe-account-next-action').html(openerp.qweb.render("nextActionDate", {'note': note, 'date': date}));
+            $('div.page.' + target_id).find('.oe-account-next-action').html(QWeb.render("nextActionDate", {'note': note, 'date': date}));
         });
     },
     setNextAction: function(e) {
@@ -55,8 +64,7 @@ openerp.account.FollowupReportWidgets = openerp.account.ReportWidgets.extend({
         e.preventDefault();
         var checkbox = $(e.target).is(":checked")
         var target_id = $(e.target).parents('tr').data('id');
-        var model = new openerp.Model('account.move.line');
-        model.call('write', [[parseInt(target_id)], {'blocked': checkbox}])
+        return new Model('account.move.line').call('write', [[parseInt(target_id)], {'blocked': checkbox}])
     },
     onKeyPress: function(e) {
         var report_name = $("div.page").data("report-name");
@@ -72,14 +80,12 @@ openerp.account.FollowupReportWidgets = openerp.account.ReportWidgets.extend({
     },
     donePartner: function(e) {
         var partner_id = $(e.target).data("partner");
-        var model = new openerp.Model('res.partner');
-        return model.call('update_next_action', [[parseInt(partner_id)]]).then(function (result) {
+        return new Model('res.partner').call('update_next_action', [[parseInt(partner_id)]]).then(function (result) {
             window.open('?partner_done=' + partner_id, '_self');
         });
     },
     skipPartner: function(e) {
         var partner_id = $(e.target).data("partner");
-        var model = new openerp.Model('res.partner');
         window.open('?partner_skipped=' + partner_id, '_self');
     },
     printFollowupLetter: function(e) {
@@ -97,10 +103,9 @@ openerp.account.FollowupReportWidgets = openerp.account.ReportWidgets.extend({
         e.stopPropagation();
         e.preventDefault();
         var context_id = $(e.target).parents("div.page").attr("data-context");
-        var contextModel = new openerp.Model('account.report.context.followup');
-        return contextModel.call('send_email', [[parseInt(context_id)]]).then (function (result) {
+        return new Model('account.report.context.followup').call('send_email', [[parseInt(context_id)]]).then (function (result) {
             if (result == true) {
-                window.$("div.page:first").prepend(openerp.qweb.render("emailSent"));
+                window.$("div.page:first").prepend(QWeb.render("emailSent"));
                 if ($(e.target).data('primary') == '1') {
                     $(e.target).parents('#action-buttons').addClass('oe-account-followup-clicked');
                     $(e.target).toggleClass('btn-primary btn-default');
@@ -108,7 +113,7 @@ openerp.account.FollowupReportWidgets = openerp.account.ReportWidgets.extend({
                 }
             }
             else {
-                window.$("div.page:first").prepend(openerp.qweb.render("emailNotSent"));
+                window.$("div.page:first").prepend(QWeb.render("emailNotSent"));
             }
         });
     },
@@ -127,8 +132,7 @@ openerp.account.FollowupReportWidgets = openerp.account.ReportWidgets.extend({
         e.stopPropagation();
         e.preventDefault();
         var note = $("#internalNote").val().replace(/\r?\n/g, '<br />').replace(/\s+/g, ' ');
-        var amlModel = new openerp.Model('account.move.line');
-        return amlModel.call('write', [[parseInt($("#paymentDateModal #target_id").val())], {expected_pay_date: openerp.web.parse_value($("#expectedDate").val(), {type:'date'}), internal_note: note}]).then(function (result) {
+        return new Model('account.move.line').call('write', [[parseInt($("#paymentDateModal #target_id").val())], {expected_pay_date: formats.parse_value($("#expectedDate").val(), {type:'date'}), internal_note: note}]).then(function (result) {
             $('#paymentDateModal').modal('hide');
             location.reload(true);
         });
@@ -153,4 +157,8 @@ openerp.account.FollowupReportWidgets = openerp.account.ReportWidgets.extend({
         $(document).on("keypress", this, this.onKeyPress);
         return this._super();
     },
-})
+
+});
+
+return FollowupReportWidget;
+});

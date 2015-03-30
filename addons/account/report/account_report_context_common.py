@@ -24,6 +24,7 @@ from xlwt import Workbook, easyxf
 from openerp.exceptions import Warning
 from datetime import timedelta, datetime
 import calendar
+import json
 
 
 class AccountReportFootnotesManager(models.TransientModel):
@@ -56,20 +57,18 @@ class AccountReportContextCommon(models.TransientModel):
 
     @api.model
     def get_context_by_report_name(self, name):
-        return self.env[self.get_context_name_by_report_name(name)]
+        report_match = json.loads(self.get_context_name_by_report_name())
+        return self.env[report_match.get(name)]
 
     @api.model
-    def get_context_name_by_report_name(self, name):
-        if name == 'financial_report':
-            return 'account.financial.report.context'
-        if name == 'generic_tax_report':
-            return 'account.report.context.tax'
-        if name == 'followup_report':
-            return 'account.report.context.followup'
-        if name == 'bank_reconciliation':
-            return 'account.report.context.bank.reconciliation'
-        if name == 'general_ledger':
-            return 'account.context.general.ledger'
+    def get_context_name_by_report_name(self):
+        return json.dumps({
+            'financial_report': 'account.financial.report.context',
+            'generic_tax_report': 'account.report.context.tax',
+            'followup_report': 'account.report.context.followup',
+            'bank_reconciliation': 'account.report.context.bank.reconciliation',
+            'general_ledger': 'account.context.general.ledger',
+            })
 
     @api.model
     def get_full_report_name_by_report_name(self, name):

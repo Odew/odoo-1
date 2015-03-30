@@ -1,12 +1,19 @@
-openerp.account_followup = openerp.account_followup || {}
+odoo.define('account_followup.FollowupReportWidget', function (require) {
+'use strict';
 
-openerp.account_followup.FollowupReportWidgets = openerp.account.FollowupReportWidgets.extend({
+var core = require('web.core');
+var FollowupWidget = require('account.FollowupReportWidget');
+var Model = require('web.Model');
+
+var QWeb = core.qweb;
+
+var FollowupReportWidget = FollowupWidget.extend({
     events: _.defaults({
         'click .changeTrust': 'changeTrust',
         'click .followup-action': 'doManualAction',
-    }, openerp.account.FollowupReportWidgets.prototype.events),
+    }, FollowupWidget.prototype.events),
     start: function() {
-        openerp.qweb.add_template("/account_followup/static/src/xml/account_followup_report.xml");
+        QWeb.add_template("/account_followup/static/src/xml/account_followup_report.xml");
         return this._super();
     },
     onKeyPress: function(e) {
@@ -37,8 +44,7 @@ openerp.account_followup.FollowupReportWidgets = openerp.account.FollowupReportW
                 color = 'red'
                 break;
         }
-        var model = new openerp.Model('res.partner');
-        return model.call('write', [[parseInt(partner_id)], {'trust': newTrust}]).then(function (result) {
+        return new Model('res.partner').call('write', [[parseInt(partner_id)], {'trust': newTrust}]).then(function (result) {
             $(e.target).parents('span.dropdown').find('i.oe-account_followup-trust').attr('style', 'color: ' + color + '; font-size: 0.8em;')
         });
     },
@@ -46,13 +52,17 @@ openerp.account_followup.FollowupReportWidgets = openerp.account.FollowupReportW
         e.stopPropagation();
         e.preventDefault();
         var context_id = $(e.target).parents("div.page").data("context");
-        var contextModel = new openerp.Model('account.report.context.followup');
-        return contextModel.call('do_manual_action', [[parseInt(context_id)]]).then (function (result) {
+        return new Model('account.report.context.followup').call('do_manual_action', [[parseInt(context_id)]]).then (function (result) {
             if ($(e.target).data('primary') == '1') {
                 $(e.target).parents('#action-buttons').addClass('oe-account-followup-clicked');
                 $(e.target).toggleClass('btn-primary btn-default');
                 $(e.target).data('primary', '0');
             }
         });
-    }
+    },
+
+});
+
+return FollowupReportWidget;
+
 });
