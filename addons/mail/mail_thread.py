@@ -579,15 +579,18 @@ class mail_thread(osv.AbstractModel):
         ir_attachment_obj.unlink(cr, uid, attach_ids, context=context)
         return True
 
-    def check_mail_message_access(self, cr, uid, mids, operation, model_obj=None, context=None):
+    @api.model
+    def check_mail_message_access(self, mids, operation, model_name=None):
         """ mail.message check permission rules for related document. This method is
             meant to be inherited in order to implement addons-specific behavior.
             A common behavior would be to allow creating messages when having read
             access rule on the document, for portal document such as issues. """
-        if not model_obj:
-            model_obj = self
-        if hasattr(self, '_mail_post_access'):
-            create_allow = self._mail_post_access
+        if model_name:
+            DocModel = self.env[model_name]
+        else:
+            DocModel = self
+        if hasattr(DocModel, '_mail_post_access'):
+            create_allow = DocModel._mail_post_access
         else:
             create_allow = 'write'
 
@@ -600,8 +603,8 @@ class mail_thread(osv.AbstractModel):
         else:
             check_operation = operation
 
-        model_obj.check_access_rights(cr, uid, check_operation)
-        model_obj.check_access_rule(cr, uid, mids, check_operation, context=context)
+        DocModel.check_access_rights(check_operation)
+        DocModel.browse(mids).check_access_rule(check_operation)
 
     def _get_inbox_action_xml_id(self, cr, uid, context=None):
         """ When redirecting towards the Inbox, choose which action xml_id has
@@ -1312,7 +1315,7 @@ class mail_thread(osv.AbstractModel):
                     }
         """
         msg_dict = {
-            'type': 'email',
+            'message_type': 'email',
         }
         if not isinstance(message, Message):
             if isinstance(message, unicode):
@@ -1538,7 +1541,7 @@ class mail_thread(osv.AbstractModel):
         return m2m_attachment_ids
 
     @api.cr_uid_ids_context
-    def message_post(self, cr, uid, thread_id, body='', subject=None, type='notification',
+    def message_post(self, cr, uid, thread_id, body='', subject=None, message_type='notification',
                      subtype=None, parent_id=False, attachments=None, context=None,
                      content_subtype='html', **kwargs):
         """ Post a new message in an existing thread, returning the new
@@ -1582,7 +1585,7 @@ class mail_thread(osv.AbstractModel):
             model = context.get('thread_model', False) if self._name == 'mail.thread' else self._name
             if model and model != self._name and hasattr(self.pool[model], 'message_post'):
                 del context['thread_model']
-                return self.pool[model].message_post(cr, uid, thread_id, body=body, subject=subject, type=type, subtype=subtype, parent_id=parent_id, attachments=attachments, context=context, content_subtype=content_subtype, **kwargs)
+                return self.pool[model].message_post(cr, uid, thread_id, body=body, subject=subject, message_type=message_type, subtype=subtype, parent_id=parent_id, attachments=attachments, context=context, content_subtype=content_subtype, **kwargs)
 
         #0: Find the message's author, because we need it for private discussion
         author_id = kwargs.get('author_id')
@@ -1634,7 +1637,7 @@ class mail_thread(osv.AbstractModel):
 
         # _mail_flat_thread: automatically set free messages to the first posted message
         if self._mail_flat_thread and model and not parent_id and thread_id:
-            message_ids = mail_message.search(cr, uid, ['&', ('res_id', '=', thread_id), ('model', '=', model), ('type', '=', 'email')], context=context, order="id ASC", limit=1)
+            message_ids = mail_message.search(cr, uid, ['&', ('res_id', '=', thread_id), ('model', '=', model), ('message_type', '=', 'email')], context=context, order="id ASC", limit=1)
             if not message_ids:
                 message_ids = message_ids = mail_message.search(cr, uid, ['&', ('res_id', '=', thread_id), ('model', '=', model)], context=context, order="id ASC", limit=1)
             parent_id = message_ids and message_ids[0] or False
@@ -1657,7 +1660,7 @@ class mail_thread(osv.AbstractModel):
             'res_id': model and thread_id or False,
             'body': body,
             'subject': subject or False,
-            'type': type,
+            'message_type': message_type,
             'parent_id': parent_id,
             'attachment_ids': attachment_ids,
             'subtype_id': subtype_id,
@@ -1676,7 +1679,7 @@ class mail_thread(osv.AbstractModel):
             # done with SUPERUSER_ID, because on some models users can post only with read access, not necessarily write access
             self.write(cr, SUPERUSER_ID, [thread_id], {'message_last_post': fields.datetime.now()}, context=context)
         message = mail_message.browse(cr, uid, msg_id, context=context)
-        if message.author_id and model and thread_id and type != 'notification' and not context.get('mail_create_nosubscribe'):
+        if message.author_id and model and thread_id and message_type != 'notification' and not context.get('mail_create_nosubscribe'):
             self.message_subscribe(cr, uid, [thread_id], [message.author_id.id], context=context)
         return msg_id
 
@@ -1814,7 +1817,7 @@ class mail_thread(osv.AbstractModel):
                 msg_ids = message_obj.search(cr, SUPERUSER_ID, [
                     ('model', '=', self._name),
                     ('res_id', '=', record_id),
-                    ('type', '=', 'email')], limit=1, context=context)
+                    ('message_type', '=', 'email')], limit=1, context=context)
                 if not msg_ids:
                     msg_ids = message_obj.search(cr, SUPERUSER_ID, [
                         ('model', '=', self._name),

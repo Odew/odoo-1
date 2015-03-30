@@ -172,17 +172,17 @@ class TestMailMessage(TestMail):
 
     def test_mail_message_access_read_crash_portal(self):
         with self.assertRaises(except_orm):
-            self.message.sudo(self.user_portal).read(['body', 'type', 'subtype_id'])
+            self.message.sudo(self.user_portal).read(['body', 'message_type', 'subtype_id'])
 
     def test_mail_message_access_read_ok_portal(self):
         self.message.write({'subtype_id': self.ref('mail.mt_comment'), 'res_id': self.group_public.id})
-        self.message.sudo(self.user_portal).read(['body', 'type', 'subtype_id'])
+        self.message.sudo(self.user_portal).read(['body', 'message_type', 'subtype_id'])
 
     def test_mail_message_access_read_notification(self):
         self.env['mail.notification'].create({'message_id': self.message.id, 'partner_id': self.user_employee.partner_id.id})
         self.message.sudo(self.user_employee).read()
         # Test: Bert downloads attachment, ok because he can read message
-        self.env['mail.message'].sudo(self.user_employee).download_attachment(self.message.id, self.attachment.id)
+        self.message.sudo(self.user_employee).download_attachment(self.attachment.id)
 
     def test_mail_message_access_read_author(self):
         self.message.write({'author_id': self.user_employee.partner_id.id})

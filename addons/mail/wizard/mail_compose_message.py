@@ -292,7 +292,7 @@ class mail_compose_message(osv.TransientModel):
                             context = dict(context,
                                            mail_notify_force_send=False,  # do not send emails directly but use the queue instead
                                            mail_create_nosubscribe=True)  # add context key to avoid subscribing the author
-                        active_model_pool.message_post(cr, uid, [res_id], type='comment', subtype=subtype, context=context, **mail_values)
+                        active_model_pool.message_post(cr, uid, [res_id], message_type='comment', subtype=subtype, context=context, **mail_values)
 
                 if wizard.composition_mode == 'mass_mail':
                     self.pool['mail.mail'].send(cr, uid, batch_mail_mail_ids, auto_commit=auto_commit, context=context)

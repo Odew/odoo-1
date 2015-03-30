@@ -227,7 +227,7 @@ class TestMailgateway(TestMail):
                          'message_process: newly created group should have the incoming email as first message')
         self.assertIn('Please call me as soon as possible this afternoon!', msg.body,
                       'message_process: newly created group should have the incoming email as first message')
-        self.assertEqual(msg.type, 'email',
+        self.assertEqual(msg.message_type, 'email',
                          'message_process: newly created group should have an email as first message')
         self.assertEqual(msg.subtype_id, self.env.ref('mail.mt_comment'),
                          'message_process: newly created group should not have a log first message but an email')
