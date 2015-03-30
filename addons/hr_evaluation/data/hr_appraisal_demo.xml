@@ -6,16 +6,16 @@
             <field name="state">new</field>
             <field name="date_close" eval="time.strftime('%Y-%m-%d %H:%M:%S')"/>
             <field name="mail_template_id" ref="send_appraisal_template"/>
-            <field name="manager_survey_id" ref="hr_evaluation.opinion_form"/>
+            <field name="manager_survey_id" ref="hr_appraisal.opinion_form"/>
             <field name="colleagues" eval="True"/>
             <field name="colleagues_ids" eval="[(6,0,[ref('hr.employee_al')])]"/>
-            <field name="colleagues_survey_id" ref="hr_evaluation.opinion_form"/>
+            <field name="colleagues_survey_id" ref="hr_appraisal.opinion_form"/>
             <field name="appraisal_self" eval="True"/>
             <field name="appraisal_employee">Pieter Parker</field>
-            <field name="appraisal_self_survey_id" ref="hr_evaluation.appraisal_form"/>
+            <field name="appraisal_self_survey_id" ref="hr_appraisal.appraisal_form"/>
             <field name="subordinates" eval="True"/>
             <field name="subordinates_ids" eval="[(6,0,[ref('hr.employee_qdp')])]"/>
-            <field name="subordinates_survey_id" ref="hr_evaluation.opinion_form"/>
+            <field name="subordinates_survey_id" ref="hr_appraisal.opinion_form"/>
         </record>
     </data>
 </odoo>

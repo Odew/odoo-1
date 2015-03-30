@@ -31,7 +31,7 @@
 
         <record id="send_appraisal_template" model="mail.template">
             <field name="name">Appraisal Survey - Send by Email</field>
-            <field name="model_id" ref="hr_evaluation.model_hr_appraisal" />
+            <field name="model_id" ref="hr_appraisal.model_hr_appraisal" />
             <field name="auto_delete" eval="True" />
             <field name="subject">Appraisal Regarding</field>
             <field name="email_to">${ctx['email']}</field>
