@@ -366,7 +366,8 @@ class TinyPoFile(object):
                 return self.next()
 
             if not line.startswith('msgid'):
-                raise Exception("malformed file: bad line: %s" % line)
+                _logger.info(_('Malformed file: Bad line: %s') % (line), exc_info=True)
+                raise openerp.exceptions.UserError(_('Malformed file \n\n Bad line: %s') % (line))
             source = unquote(line[6:])
             line = self.lines.pop(0).strip()
             if not source and self.first:
@@ -381,7 +382,8 @@ class TinyPoFile(object):
 
             while not line.startswith('msgstr'):
                 if not line:
-                    raise Exception('malformed file at %d'% self.cur_line())
+                    _logger.info(_('Malformed file at %d') % (self.cur_line()), exc_info=True)
+                    raise openerp.exceptions.UserError(_('Malformed file at %d') % (self.cur_line()))
                 source += unquote(line)
                 line = self.lines.pop(0).strip()
 
