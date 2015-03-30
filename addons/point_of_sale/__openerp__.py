@@ -87,6 +87,7 @@ Main Features
         'account_statement_demo.xml',
     ],
     'test': [
+        '../account/test/account_minimal_test.xml',
         'test/00_register_open.yml',
         'test/01_order_to_payment.yml',
         'test/02_order_to_invoice.yml',
