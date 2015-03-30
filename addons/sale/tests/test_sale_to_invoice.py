@@ -41,7 +41,7 @@ class TestSale(TestMail):
         group_id = IrModelData.xmlid_to_res_id('account.group_account_invoice') or False
         product_id = IrModelData.xmlid_to_res_id('product.product_category_3') or False
         company_id = IrModelData.xmlid_to_res_id('base.main_company') or False
-        journal_id = journal_obj.search([('name', '=', 'Bank Bank Account (test)')])[0]
+        journal_id = journal_obj.search([('type', '=', 'bank')])[0]
         account_id = journal_id.default_credit_account_id.id
         date = time.strftime("%Y/%m/%d")
 
