@@ -1945,6 +1945,7 @@ core.form_widget_registry
 
 return {
     FieldMany2ManyTags: FieldMany2ManyTags,
+    FieldOne2Many: FieldOne2Many,
 };
 
 });

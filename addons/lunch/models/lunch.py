@@ -30,20 +30,17 @@ class lunch_order(models.Model):
         if self.state == 'new':
             self.alerts = '\n'.join(alert_msg)
 
-    def _default_get_previous_order_ids(self):
+    @api.depends('state')
+    def _compute_get_previous_order_ids(self):
         prev_order = self.env['lunch.order.line'].search([('user_id', '=', self.env.uid)], limit=20 ,order='id desc')
 
         # If we return return prev_order.ids, we will have duplicates (identical orders).
         # Therefore, this following part removes duplicates based on product_id and note.
 
-        return {
+        self.previous_order_ids =  {
             (order.product_id, order.note): order.id
             for order in prev_order
         }.values()
-
-    @api.depends('state')
-    def _compute_get_previous_order_ids(self):
-        self.previous_order_ids = self._default_get_previous_order_ids()
 
     @api.one
     @api.depends('order_line_ids')
@@ -126,8 +123,7 @@ class lunch_order(models.Model):
                              compute='_compute_order_state')
     alerts = fields.Text(compute='_compute_alerts_get', string="Alerts")
     previous_order_ids = fields.One2many(comodel_name='lunch.order.line',
-                                         compute='_compute_get_previous_order_ids',
-                                         default=_default_get_previous_order_ids)
+                                         compute='_compute_get_previous_order_ids')
     company_id = fields.Many2one('res.company', related='user_id.company_id', store=True)
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id', readonly=True, store=True)
 
