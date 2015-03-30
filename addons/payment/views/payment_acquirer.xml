@@ -19,11 +19,13 @@
                                 <field name="provider"/>
                                 <field name="company_id"/>
                                 <field name="website_published"/>
+                                <field name="s2s_support"/>
                                 <field name="environment"/>
                                 <field name="validation"/>
                                 <field name="auto_confirm"/>
                             </group>
                             <group>
+                                <field name="journal_id"/>
                                 <field name="fees_active"/>
                                 <field name="fees_dom_fixed"
                                     attrs="{'invisible': [('fees_active', '=', False)]}"/>
@@ -58,6 +60,7 @@
                                     </ul>
                                 </div>
                             </div>
+                            <field name="s2s_view_template_id"/>
                         </group>
                     </sheet>
                 </form>

@@ -71,6 +71,7 @@ class PaymentAcquirer(osv.Model):
             string='Process Method',
             help='Static payments are payments like transfer, that require manual steps.'),
         'view_template_id': fields.many2one('ir.ui.view', 'Form Button Template', required=True),
+        's2s_view_template_id': fields.many2one('ir.ui.view', 'S2S Form Template'),
         'environment': fields.selection(
             [('test', 'Test'), ('prod', 'Production')],
             string='Environment', oldname='env'),
@@ -89,6 +90,8 @@ class PaymentAcquirer(osv.Model):
         'fees_int_fixed': fields.float('Fixed international fees'),
         'fees_int_var': fields.float('Variable international fees (in percents)'),
         'sequence': fields.integer('Sequence', help="Determine the display order"),
+        's2s_support': fields.boolean('Support S2S Transactions'),
+        'journal_id': fields.many2one('account.journal', 'Journal', help="Account journal used for payment if you use automatic payment."),
     }
 
     _defaults = {
@@ -278,6 +281,34 @@ class PaymentAcquirer(osv.Model):
 
         # because render accepts view ids but not qweb -> need to use the xml_id
         return self.pool['ir.ui.view'].render(cr, uid, acquirer.view_template_id.xml_id, qweb_context, engine='ir.qweb', context=context)
+
+    def s2s_render(self, cr, uid, id, partner_id, qweb_context=dict(), context=None):
+        acquirer = self.browse(cr, uid, id, context=context)
+        qweb_context.update({'id': id, 'partner_id': partner_id})
+        cust_method_name = '%s_s2s_form_generate_values' % (acquirer.provider)
+        if hasattr(self, cust_method_name):
+            method = getattr(self, cust_method_name)
+            qweb_context.update(method(cr, uid, id, qweb_context, context=context))
+        return self.pool['ir.ui.view'].render(cr, uid, acquirer.s2s_view_template_id.xml_id, qweb_context, engine='ir.qweb', context=context)
+
+    def s2s_process(self, cr, uid, id, data, context=None):
+        acquirer = self.browse(cr, uid, id, context=context)
+        cust_method_name = '%s_s2s_form_process' % (acquirer.provider)
+        if not self.s2s_validate(cr, uid, id, data, context=context):
+            return False
+        if hasattr(self, cust_method_name):
+            method = getattr(self, cust_method_name)
+            return method(cr, uid, data, context=context)
+        return True
+
+    def s2s_validate(self, cr, uid, id, data, context=None):
+        error, error_message = {}, []
+        acquirer = self.browse(cr, uid, id, context=context)
+        cust_method_name = '%s_s2s_form_validate' % (acquirer.provider)
+        if hasattr(self, cust_method_name):
+            method = getattr(self, cust_method_name)
+            return method(cr, uid, id, data, context=context)
+        return True
 
     def _wrap_payment_block(self, cr, uid, html_block, amount, currency_id, context=None):
         payment_header = _('Pay safely online')
