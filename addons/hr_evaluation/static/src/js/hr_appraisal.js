@@ -31,7 +31,7 @@ KanbanView.include({
         on_groups_started: function() {
             var self = this;
             self._super.apply(self, arguments);
-            if (self.dataset.model === 'hr.evaluation') {
+            if (self.dataset.model === 'hr.appraisal') {
                 self.appraisal_display_members_names();
             }
         }

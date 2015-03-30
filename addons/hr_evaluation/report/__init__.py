@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-import hr_evaluation_report
+import hr_appraisal_report

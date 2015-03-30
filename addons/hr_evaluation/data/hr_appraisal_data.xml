@@ -13,25 +13,25 @@
             <field name="type">notification</field>
             <field name="subtype_id" ref="mail.mt_comment"/>
             <field name="subject">Employee Appraisals application installed!</field>
-            <field name="body"><![CDATA[<p>Manage employee reviews: you can define an appraisal campaign with several steps, with specific evaluation surveys according to hierarchy levels. Evaluations filled by employees may be exported as pdf files.</p>]]></field>
+            <field name="body"><![CDATA[<p>Manage employee reviews: you can define an appraisal campaign with several steps, with specific appraisal surveys according to hierarchy levels. Appraisals filled by employees may be exported as pdf files.</p>]]></field>
         </record>
 
 
-        <record forcecreate="True" id="ir_cron_scheduler_evaluation" model="ir.cron">
+        <record forcecreate="True" id="ir_cron_scheduler_appraisal" model="ir.cron">
            <field name="name">Run Employee Appraisal</field>
-           <field eval="True" name="active" />
-           <field name="user_id" ref="base.user_root" />
+           <field eval="True" name="active"/>
+           <field name="user_id" ref="base.user_root"/>
            <field name="interval_number">1</field>
            <field name="interval_type">days</field>
            <field name="numbercall">-1</field>
-           <field eval="'hr.employee'" name="model" />
-           <field eval="'run_employee_evaluation'" name="function" />
+           <field eval="'hr.employee'" name="model"/>
+           <field eval="'run_employee_appraisal'" name="function" />
            <field eval="'(False,)'" name="args" />
         </record>
 
         <record id="send_appraisal_template" model="mail.template">
             <field name="name">Appraisal Survey - Send by Email</field>
-            <field name="model_id" ref="hr_evaluation.model_hr_evaluation" />
+            <field name="model_id" ref="hr_evaluation.model_hr_appraisal" />
             <field name="auto_delete" eval="True" />
             <field name="subject">Appraisal Regarding</field>
             <field name="email_to">${ctx['email']}</field>
@@ -53,14 +53,14 @@
         </record>
         <record id="mt_appraisal_new" model="mail.message.subtype">
             <field name="name">Appraisal Created</field>
-            <field name="res_model">hr.evaluation</field>
+            <field name="res_model">hr.appraisal</field>
             <field name="default" eval="True"/>
             <field name="hidden" eval="False"/>
             <field name="description">Appraisal Created</field>
         </record>
         <record id="mt_appraisal_meeting" model="mail.message.subtype">
             <field name="name">Meeting Scheduled</field>
-            <field name="res_model">hr.evaluation</field>
+            <field name="res_model">hr.appraisal</field>
             <field name="default" eval="False"/>
             <field name="description">Meeting Scheduled</field>
         </record>

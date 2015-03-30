@@ -3,9 +3,9 @@ from openerp import fields, models
 from openerp import tools
 
 
-class HrEvaluationReport(models.Model):
-    _name = "hr.evaluation.report"
-    _description = "Evaluations Statistics"
+class HrAppraisalReport(models.Model):
+    _name = "hr.appraisal.report"
+    _description = "Appraisal Statistics"
     _auto = False
 
     create_date = fields.Date(string='Create Date', readonly=True)
@@ -25,15 +25,15 @@ class HrEvaluationReport(models.Model):
     _order = 'create_date desc'
 
     _depends = {
-        'hr.evaluation': [
+        'hr.appraisal': [
             'create_date', 'interview_deadline', 'date_close', 'employee_id', 'state',
         ],
     }
 
     def init(self, cr):
-        tools.drop_view_if_exists(cr, 'hr_evaluation_report')
+        tools.drop_view_if_exists(cr, 'hr_appraisal_report')
         cr.execute("""
-            create or replace view hr_evaluation_report as (
+            create or replace view hr_appraisal_report as (
                  select
                      min(s.id) as id,
                      date(s.create_date) as create_date,

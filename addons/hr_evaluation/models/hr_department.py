@@ -13,5 +13,5 @@ class hr_department(models.Model):
         action_hr_evaluation['domain'] = str([('id', 'in', self.to_process_appraisal_ids.ids)])
         return action_hr_evaluation
 
-    to_process_appraisal_ids = fields.One2many('hr.evaluation', 'department_id', domain=['&', ('state', '=', 'pending'), '|', ('date_close', '<=', fields.Datetime.now()), ('user_input_ids.state', '=', 'done')], string='Appraisal to Process')
-    to_start_appraisal_ids = fields.One2many('hr.evaluation', 'department_id', domain=[('state', '=', 'new')], string='Appraisal to Start')
+    to_process_appraisal_ids = fields.One2many('hr.appraisal', 'department_id', domain=['&', ('state', '=', 'pending'), '|', ('date_close', '<=', fields.Datetime.now()), ('user_input_ids.state', '=', 'done')], string='Appraisal to Process')
+    to_start_appraisal_ids = fields.One2many('hr.appraisal', 'department_id', domain=[('state', '=', 'new')], string='Appraisal to Start')

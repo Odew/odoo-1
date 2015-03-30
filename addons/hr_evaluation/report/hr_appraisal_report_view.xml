@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_evaluation_report_pivot" model="ir.ui.view">
-            <field name="name">hr.evaluation.report.pivot</field>
-            <field name="model">hr.evaluation.report</field>
+    <record id="view_appraisal_report_pivot" model="ir.ui.view">
+            <field name="name">hr.appraisal.report.pivot</field>
+            <field name="model">hr.appraisal.report</field>
             <field name="arch" type="xml">
             <pivot string="Appraisal Analysis" disable_linking="True">
                  <field name="employee_id" type="row"/>
@@ -12,9 +12,9 @@
          </field>
     </record>
 
-    <record id="view_evaluation_report_graph" model="ir.ui.view">
-            <field name="name">hr.evaluation.report.graph</field>
-            <field name="model">hr.evaluation.report</field>
+    <record id="view_appraisal_report_graph" model="ir.ui.view">
+            <field name="name">hr.appraisal.report.graph</field>
+            <field name="model">hr.appraisal.report</field>
             <field name="arch" type="xml">
             <graph string="Appraisal Analysis">
                  <field name="employee_id" type="row"/>
@@ -24,9 +24,9 @@
          </field>
     </record>
 
-    <record id="view_evaluation_report_search" model="ir.ui.view">
-        <field name="name">hr.evaluation.report.search</field>
-        <field name="model">hr.evaluation.report</field>
+    <record id="view_appraisal_report_search" model="ir.ui.view">
+        <field name="name">hr.appraisal.report.search</field>
+        <field name="model">hr.appraisal.report</field>
         <field name="arch" type="xml">
             <search string="Appraisal Analysis">
                 <filter string="To Start" icon="terp-camera_test" domain="[('state', '=' ,'new')]" help = "In progress Evaluations"/>
@@ -49,29 +49,29 @@
         </field>
     </record>
 
-    <record id="action_evaluation_report_all" model="ir.actions.act_window">
+    <record id="view_appraisal_report_all" model="ir.actions.act_window">
         <field name="name">Appraisal Analysis</field>
-        <field name="res_model">hr.evaluation.report</field>
+        <field name="res_model">hr.appraisal.report</field>
         <field name="view_type">form</field>
         <field name="view_mode">graph</field>
         <field name="context">{'search_default_employee':1,'group_by_no_leaf':1,'group_by':[]}</field>
-        <field name="search_view_id" ref="view_evaluation_report_search"/>
+        <field name="search_view_id" ref="view_appraisal_report_search"/>
     </record>
 
-    <record model="ir.actions.act_window.view" id="action_evaluation_view_report_pivot">
+    <record model="ir.actions.act_window.view" id="action_appraisal_view_report_pivot">
         <field name="sequence" eval="2"/>
         <field name="view_mode">pivot</field>
-        <field name="view_id" ref="view_evaluation_report_pivot"/>
-        <field name="act_window_id" ref="action_evaluation_report_all"/>
+        <field name="view_id" ref="view_appraisal_report_pivot"/>
+        <field name="act_window_id" ref="view_appraisal_report_all"/>
     </record>
-    <record model="ir.actions.act_window.view" id="action_evaluation_view_report_graph">
+    <record model="ir.actions.act_window.view" id="action_appraisal_view_report_graph">
         <field name="sequence" eval="2"/>
         <field name="view_mode">graph</field>
-        <field name="view_id" ref="view_evaluation_report_graph"/>
-        <field name="act_window_id" ref="action_evaluation_report_all"/>
+        <field name="view_id" ref="view_appraisal_report_graph"/>
+        <field name="act_window_id" ref="view_appraisal_report_all"/>
     </record>
 
 
-    <menuitem action="action_evaluation_report_all" id="menu_evaluation_report_all" parent="hr.menu_hr_reporting" sequence="2" groups="base.group_hr_manager"/>
+    <menuitem action="view_appraisal_report_all" id="menu_appraisal_report_all" parent="hr.menu_hr_reporting" sequence="2" groups="base.group_hr_manager"/>
 
 </odoo>

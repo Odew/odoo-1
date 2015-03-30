@@ -6,16 +6,16 @@ from openerp import fields
 from openerp.tests.common import TransactionCase
 
 
-class TestHrEvaluation(TransactionCase):
+class TestHrAppraisal(TransactionCase):
     """ Test used to check that when doing appraisal creation."""
 
     def setUp(self):
-        super(TestHrEvaluation, self).setUp()
+        super(TestHrAppraisal, self).setUp()
         self.HrEmployee = self.env['hr.employee']
-        self.HrEvaluation = self.env['hr.evaluation']
+        self.HrAppraisal = self.env['hr.appraisal']
         self.main_company = self.env.ref('base.main_company')
 
-    def test_hr_evaluation(self):
+    def test_hr_appraisal(self):
         # I create a new Employee with appraisal configuration.
         self.hr_employee = self.HrEmployee.create(dict(
             name="Michael Hawkins",
@@ -43,25 +43,25 @@ class TestHrEvaluation(TransactionCase):
         self.HrEmployee.run_employee_evaluation()  # cronjob
 
         # I check whether new appraisal is created for above employee or not
-        evaluations = self.HrEvaluation.search([('employee_id', '=', self.hr_employee.id)])
-        self.assertTrue(evaluations, "Appraisal not created")
+        appraisals = self.HrAppraisal.search([('employee_id', '=', self.hr_employee.id)])
+        self.assertTrue(appraisals, "Appraisal not created")
 
-        # I check next evaluation date
-        self.assertEqual(self.hr_employee.evaluation_date, str(date.today() + relativedelta(years=1)), 'Next appraisal date is wrong')
+        # I check next appraisal date
+        self.assertEqual(self.hr_employee.appraisal_date, str(date.today() + relativedelta(years=1)), 'Next appraisal date is wrong')
 
-        # I start the evaluation process by click on "Start Appraisal" button.
-        evaluations.write({'date_close': str(date.today() + relativedelta(days=5))})
-        evaluations.button_send_appraisal()
+        # I start the appraisal process by click on "Start Appraisal" button.
+        appraisals.write({'date_close': str(date.today() + relativedelta(days=5))})
+        appraisals.button_send_appraisal()
 
         # I check that state is "Appraisal Sent".
-        self.assertEqual(evaluations.state, 'pending', "Evaluation should be 'Appraisal Sent' state")
+        self.assertEqual(appraisals.state, 'pending', "Evaluation should be 'Appraisal Sent' state")
         # I check that "Final Interview Date" is set or not.
-        evaluations.write({'interview_deadline': str(date.today() + relativedelta(months=1))})
-        self.assertTrue(evaluations.interview_deadline, "Interview Date is not created")
+        appraisals.write({'interview_deadline': str(date.today() + relativedelta(months=1))})
+        self.assertTrue(appraisals.interview_deadline, "Interview Date is not created")
         # I check whether final interview meeting is created or not
-        evaluations = self.HrEvaluation.search([('employee_id', '=', self.hr_employee.id)])
-        self.assertTrue(evaluations.meeting_id, "Meeting is not created")
+        appraisals = self.HrAppraisal.search([('employee_id', '=', self.hr_employee.id)])
+        self.assertTrue(appraisals.meeting_id, "Meeting is not created")
         # I close this Apprisal by click on "Done" button
-        evaluations.button_done_appraisal()
+        appraisals.button_done_appraisal()
         # I check that state of Evaluation is done.
-        self.assertEqual(evaluations.state, 'done', "Evaluation should be in done state")
+        self.assertEqual(appraisals.state, 'done', "Evaluation should be in done state")

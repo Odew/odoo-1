@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <menuitem name="Appraisal" parent="hr.menu_hr_root" id="menu_eval_hr" sequence="25"/>
-    <menuitem name="Periodic Appraisal" parent="hr.menu_hr_configuration" id="menu_eval_hr_config" sequence="4"/>
+    <menuitem name="Appraisal" parent="hr.menu_hr_root" id="menu_appraisal_hr" sequence="25"/>
+    <menuitem name="Periodic Appraisal" parent="hr.menu_hr_configuration" id="menu_appraisal_hr_config" sequence="4"/>
 
-    <record model="ir.ui.view" id="view_hr_evaluation_form">
-        <field name="name">hr.evaluation.form</field>
-        <field name="model">hr.evaluation</field>
+    <record model="ir.ui.view" id="view_hr_appraisal_form">
+        <field name="name">hr.appraisal.form</field>
+        <field name="model">hr.appraisal</field>
         <field name="arch" type="xml">
             <form string="Appraisal">
             <header>
@@ -79,9 +79,9 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="view_hr_evaluation_tree">
-        <field name="name">hr.evaluation.tree</field>
-        <field name="model">hr.evaluation</field>
+    <record model="ir.ui.view" id="view_hr_appraisal_tree">
+        <field name="name">hr.appraisal.tree</field>
+        <field name="model">hr.appraisal</field>
         <field name="arch" type="xml">
             <tree string="Appraisal">
                 <field name="employee_id" string="Name"/>
@@ -94,9 +94,9 @@
         </field>
     </record>
 
-   <record id="hr_evaluation.evaluation_search" model="ir.ui.view">
-        <field name="name">hr_evaluation.evaluation_search</field>
-        <field name="model">hr.evaluation</field>
+   <record id="hr_appraisal_search" model="ir.ui.view">
+        <field name="name">hr.appraisal.search</field>
+        <field name="model">hr.appraisal</field>
         <field name="arch" type="xml">
             <search string="Search Appraisal">
                 <field name="employee_id"/>
@@ -107,9 +107,9 @@
         </field>
     </record>
 
-    <record id="hr_evaluation.evaluation_kanban" model="ir.ui.view">
-        <field name="name">hr_evaluation.evaluation_kanban</field>
-        <field name="model">hr.evaluation</field>
+    <record id="hr_appraisal_kanban" model="ir.ui.view">
+        <field name="name">hr.appraisal.kanban</field>
+        <field name="model">hr.appraisal</field>
         <field name="arch" type="xml">
             <kanban default_group_by="state" quick_create="0">
                 <field name="employee_id"/>
@@ -167,9 +167,9 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="open_view_hr_evaluation_tree">
+    <record model="ir.actions.act_window" id="open_view_hr_appraisal_tree">
         <field name="name">Appraisal</field>
-        <field name="res_model">hr.evaluation</field>
+        <field name="res_model">hr.appraisal</field>
         <field name="view_type">form</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="context">{"search_default_next_month":1}</field>
@@ -184,12 +184,12 @@
         </field>
     </record>
 
-    <menuitem name="Appraisal" parent="menu_eval_hr" id="menu_open_view_hr_evaluation_tree"
-        action="open_view_hr_evaluation_tree" groups="base.group_user"/>
+    <menuitem name="Appraisal" parent="menu_appraisal_hr" id="menu_open_view_hr_appraisal_tree"
+        action="open_view_hr_appraisal_tree" groups="base.group_user"/>
 
-    <record model="ir.actions.act_window" id="open_view_hr_evaluation_tree2">
+    <record model="ir.actions.act_window" id="open_view_hr_appraisal_tree2">
         <field name="name">Appraisal</field>
-        <field name="res_model">hr.evaluation</field>
+        <field name="res_model">hr.appraisal</field>
         <field name="view_type">form</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="context">{"search_default_employee_id": [active_id]}</field>
@@ -201,7 +201,7 @@
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
 	    <xpath expr="//div[@name='button_box']" position="inside">
-	        <button name="%(open_view_hr_evaluation_tree2)d"
+	        <button name="%(open_view_hr_appraisal_tree2)d"
 	            class="oe_stat_button"
 	            icon="fa-sitemap"
 	            type="action">
@@ -255,10 +255,10 @@
 
     <record id="hr_appraisal_action_from_department" model="ir.actions.act_window">
             <field name="name">Appraisal to start</field>
-            <field name="res_model">hr.evaluation</field>
+            <field name="res_model">hr.appraisal</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="hr_evaluation.evaluation_search"/>
+            <field name="search_view_id" ref="hr_appraisal_search"/>
             <field name="domain">[('employee_id.department_id', '=', active_id), ('state', '=', 'new')]</field>
     </record>
      <!--Hr Department Inherit Kanban view-->
