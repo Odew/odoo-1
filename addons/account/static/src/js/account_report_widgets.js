@@ -299,10 +299,7 @@ var ReportWidget = Widget.extend({
         e.stopPropagation();
         e.preventDefault();
         self = this;
-        var report_name = $(e.target).parents("div.page").attr("data-report-name");
-        var context_id = $(e.target).parents("div.page").attr("data-context");
         self.curFootNoteTarget = $(e.target).parents("div.dropdown").find("span.account_id");
-        var contextModel = new Model(this.context_by_reportname[report_name]);
         var type = $(e.target).parents('tr').data('type');
         var target_id = $(e.target).parents('tr').data('id');
         var column = $(e.target).parents('td').index();
@@ -352,10 +349,7 @@ var ReportWidget = Widget.extend({
             }
         }
         else if ($(e.target).parent().parent().find("sup").length == 0) {
-            var report_name = $(e.target).parents("div.page").attr("data-report-name");
-            var context_id = $(e.target).parents("div.page").attr("data-context");
             self.curFootNoteTarget = $(e.target).parent().parent();
-            var contextModel = new Model(this.context_by_reportname[report_name]);
             var type = $(e.target).parents('tr').data('type');
             var target_id = $(e.target).parents('tr').data('id');
             var column = $(e.target).parents('td').index();
@@ -403,7 +397,7 @@ var ReportWidget = Widget.extend({
         }
         else {
             var num = $(e.target).parent().parent().text().split('.')[0].replace(/ /g,'').replace(/\r?\n/g,'');
-            this.$("sup b a:contains('" + num + "')").remove();
+            this.$("sup b a:contains('" + num + "')").parents('sup').remove();
             $(e.target).parent().parent().remove();
             var report_name = window.$("div.page").attr("data-report-name");
             var context_id = window.$("div.page").attr("data-context");
