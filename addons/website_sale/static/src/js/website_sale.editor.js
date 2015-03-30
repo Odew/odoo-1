@@ -2,9 +2,10 @@
     "use strict";
 
     var website = openerp.website;
+    var web_editor = openerp.web_editor;
     var _t = openerp._t;
 
-    website.EditorBarContent.include({
+    website.TopBarContent.include({
         new_product: function() {
             website.prompt({
                 id: "editor_new_product",
@@ -18,7 +19,7 @@
         },
     });
 
-    website.snippet.options.website_sale = website.snippet.Option.extend({
+    web_editor.snippet.options.website_sale = web_editor.snippet.Option.extend({
         start: function () {
             var self = this;
             this.product_tmpl_id = parseInt(this.$target.find('[data-oe-model="product.template"]').data('oe-id'));

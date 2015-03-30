@@ -7,10 +7,11 @@
     }
 
     var website = openerp.website;
-    website.add_template_file('/website_gengo/static/src/xml/website.gengo.xml');
+    var web_editor = openerp.web_editor;
+    web_editor.add_template_file('/website_gengo/static/src/xml/website.gengo.xml');
 
-    website.EditorBar.include({
-        events: _.extend({}, website.EditorBar.prototype.events, {
+    website.TopBar.include({
+        events: _.extend({}, website.TopBar.prototype.events, {
             'click a[data-action=translation_gengo_post]': 'translation_gengo_post',
             'click a[data-action=translation_gengo_info]': 'translation_gengo_info',
         }),
@@ -19,7 +20,7 @@
             this._super.apply(this, arguments);
             var self = this;
             var gengo_langs = ["ar_SY","id_ID","nl_NL","fr_CA","pl_PL","zh_TW","sv_SE","ko_KR","pt_PT","en_US","ja_JP","es_ES","zh_CN","de_DE","fr_FR","fr_BE","ru_RU","it_IT","pt_BR","pt_BR","th_TH","nb_NO","ro_RO","tr_TR","bg_BG","da_DK","en_GB","el_GR","vi_VN","he_IL","hu_HU","fi_FI"];
-            if (gengo_langs.indexOf(website.get_context()['lang']) != -1){   
+            if (gengo_langs.indexOf(web_editor.get_context()['lang']) != -1){   
                 self.$('.gengo_post,.gengo_wait,.gengo_inprogress,.gengo_info').remove();
                 self.$('button[data-action=save]')
                 .after(openerp.qweb.render('website.ButtonGengoTranslator'));
@@ -27,16 +28,16 @@
         },
         translation_gengo_display:function(){
             var self = this;
-            if($('.oe_translatable_todo').length == 0){
+            if($('.o_translatable_todo').length == 0){
                 self.$el.find('.gengo_post').addClass("hidden");
                 self.$el.find('.gengo_inprogress').removeClass("hidden");
             }
         },
         translation_gengo_post: function () {
             var self = this;
-            var translatable_list = $.find('.oe_translatable_todo');
+            var translatable_list = $.find('.o_translatable_todo');
             this.new_words =  0;
-            $('.oe_translatable_todo').each(function () {
+            $('.o_translatable_todo').each(function () {
                 self.new_words += $(this).text().trim().replace(/ +/g," ").split(" ").length;
             });
             openerp.jsonRpc('/website/check_gengo_set', 'call', {
@@ -50,7 +51,7 @@
                         self.$el.find('.gengo_post').addClass("hidden");
                         self.$el.find('.gengo_wait').removeClass("hidden");
                         var trans ={}
-                        $('.oe_translatable_todo').each(function () {
+                        $('.o_translatable_todo').each(function () {
                             var $node = $(this);
                             var data = $node.data();
                             if (!trans[data.oeTranslationViewId]) {
@@ -66,9 +67,9 @@
                         });
                         openerp.jsonRpc('/website/set_translations', 'call', {
                             'data': trans,
-                            'lang': website.get_context()['lang'],
+                            'lang': web_editor.get_context()['lang'],
                         }).then(function () {
-                            $('.oe_translatable_todo').addClass('oe_translatable_inprogress').removeClass('oe_translatable_todo');
+                            $('.o_translatable_todo').addClass('o_translatable_inprogress').removeClass('o_translatable_todo');
                             self.$el.find('.gengo_wait').addClass("hidden");
                             self.$el.find('.gengo_inprogress,.gengo_discard').removeClass("hidden");
                             openerp.jsonRpc('/website/post_gengo_jobs', 'call', {});
@@ -90,12 +91,12 @@
         translation_gengo_info: function () {
             var repr =  $(document.documentElement).data('mainObject');
             var translated_ids = [];
-            $('.oe_translatable_text').not(".oe_translatable_inprogress").each(function(){
+            $('.o_translatable_text').not(".o_translatable_inprogress").each(function(){
                 translated_ids.push($(this).attr('data-oe-translation-id'));
             });
             openerp.jsonRpc('/website/get_translated_length', 'call', {
                 'translated_ids': translated_ids,
-                'lang': website.get_context()['lang'],
+                'lang': web_editor.get_context()['lang'],
             }).done(function(res){
                 var dialog = new website.GengoTranslatorStatisticDialog(res);
                 dialog.appendTo($(document.body));
@@ -105,7 +106,7 @@
     });
     
     website.GengoTranslatorPostDialog = openerp.Widget.extend({
-        events: _.extend({}, website.EditorBar.prototype.events, {
+        events: _.extend({}, website.TopBar.prototype.events, {
             'hidden.bs.modal': 'destroy',
             'click button[data-action=service_level]': function (ev) {
                 this.trigger('service_level');
@@ -122,7 +123,7 @@
     });
     
     website.GengoTranslatorStatisticDialog = openerp.Widget.extend({
-        events: _.extend({}, website.EditorBar.prototype.events, {
+        events: _.extend({}, website.TopBar.prototype.events, {
             'hidden.bs.modal': 'destroy',
         }),
         template: 'website.GengoTranslatorStatisticDialog',
@@ -131,10 +132,10 @@
             this.inprogess =  0;
             this.new_words =  0;
             this.done =  res.done;
-            $('.oe_translatable_todo').each(function () {
+            $('.o_translatable_todo').each(function () {
                 self.new_words += $(this).text().trim().replace(/ +/g," ").split(" ").length;
             });
-            $('.oe_translatable_inprogress').each(function () {
+            $('.o_translatable_inprogress').each(function () {
                 self.inprogess += $(this).text().trim().replace(/ +/g," ").split(" ").length;
             });
             this.total = this.done + this.inprogess;
@@ -145,7 +146,7 @@
         },
     });
     website.GengoApiConfigDialog = openerp.Widget.extend({
-        events: _.extend({}, website.EditorBar.prototype.events, {
+        events: _.extend({}, website.TopBar.prototype.events, {
             'hidden.bs.modal': 'destroy',
             'click button[data-action=set_config]': 'set_config'
         }),

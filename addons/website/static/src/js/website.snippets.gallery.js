@@ -1,13 +1,14 @@
 (function() {
     'use strict';
     
+    var web_editor = openerp.web_editor;
     var website = openerp.website,
         _t = openerp._t;
 
     /*--------------------------------------------------------------------------
      Template files to load
      --------------------------------------------------------------------------*/
-    website.add_template_file('/website/static/src/xml/website.gallery.xml');
+    web_editor.add_template_file('/website/static/src/xml/website.gallery.xml');
 
     /*--------------------------------------------------------------------------
       Gallery Snippet
@@ -15,7 +16,7 @@
       This is the snippet responsible for configuring the image galleries.
       Look at /website/views/snippets.xml for the available options
       ------------------------------------------------------------------------*/
-    website.snippet.options.gallery = website.snippet.Option.extend({
+    web_editor.snippet.options.gallery = web_editor.snippet.Option.extend({
         start  : function() {
             this._super();
             this.bind_change();
@@ -210,7 +211,7 @@
             this.$target.off('slide.bs.carousel').off('slid.bs.carousel');
             this.$target.find('li.fa').off('click');
             if (this.$target.data("snippet-view", view)) {
-                var view = new website.snippet.animationRegistry.gallery_slider(this.$target, true);
+                var view = new web_editor.snippet.animationRegistry.gallery_slider(this.$target, true);
                 this.$target.data("snippet-view", view);
             } else {
                 this.$target.data("snippet-view").start(true);
@@ -227,7 +228,7 @@
             if(type !== "click") return;
             var self = this;
             var $container = this.$target.find(".container:first");
-            var editor = new website.editor.MediaDialog(this.$target.closest('.o_editable'), null, {select_images: true});
+            var editor = new web_editor.widgets.MediaDialog(this.$target.closest('.o_editable'), null, {select_images: true});
             editor.appendTo(document.body);
             var index = Math.max(_.map(this.$target.find("img").get(), function (img) { return img.dataset.index | 0; })) + 1;
             editor.on('saved', this, function (attachments) {
@@ -328,10 +329,10 @@
                 .parent().parent().toggle(["grid", "masonry"].indexOf(mode) !== -1);
             this.$el.find('[data-interval]:first').parent().parent().toggle(mode === "slideshow");
         },
-    }); // website.snippet.Option.extend
+    }); // web_editor.snippet.Option.extend
 
 
-    website.snippet.options.gallery_img = website.snippet.Option.extend({
+    web_editor.snippet.options.gallery_img = web_editor.snippet.Option.extend({
         position: function (type, value) {
             if (type !== "click") return;
 
@@ -361,7 +362,7 @@
             if (type !== "click") return;
 
             var self = this;
-            var $parent = website.snippet.globalSelector.closest(this.$target.parent());
+            var $parent = web_editor.snippet.globalSelector.closest(this.$target.parent());
             this.BuildingBlock.make_active(false);
             this.$target.remove();
             setTimeout(function () {

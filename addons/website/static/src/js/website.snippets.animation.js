@@ -2,10 +2,10 @@
     'use strict';
 
 
-    var website = openerp.website;
+    var web_editor = openerp.web_editor || (openerp.web_editor = {});
+    var snippet = web_editor.snippet || (web_editor.snippet = {});
 
-    if (!website.snippet) website.snippet = {};
-    website.snippet.readyAnimation = [];
+    snippet.readyAnimation = [];
 
     function load_called_template () {
         var ids_or_xml_ids = _.uniq($("[data-oe-call]").map(function () {return $(this).data('oe-call');}).get());
@@ -23,9 +23,9 @@
         }
     }
 
-    website.snippet.start_animation = function (editable_mode, $target) {
-        for (var k in website.snippet.animationRegistry) {
-            var Animation = website.snippet.animationRegistry[k];
+    snippet.start_animation = function (editable_mode, $target) {
+        for (var k in snippet.animationRegistry) {
+            var Animation = snippet.animationRegistry[k];
             var selector = "";
             if (Animation.prototype.selector) {
                 if (selector != "") selector += ", " 
@@ -41,7 +41,7 @@
                 if (    !$snipped_id.parents("#oe_snippets").length &&
                         !$snipped_id.parent("body").length &&
                         !$snipped_id.data("snippet-view")) {
-                    website.snippet.readyAnimation.push($snipped_id);
+                    snippet.readyAnimation.push($snipped_id);
                     $snipped_id.data("snippet-view", new Animation($snipped_id, editable_mode));
                 } else if ($snipped_id.data("snippet-view")) {
                     $snipped_id.data("snippet-view").start(editable_mode);
@@ -49,8 +49,8 @@
             });
         }
     };
-    website.snippet.stop_animation = function () {
-        $(website.snippet.readyAnimation).each(function() {
+    snippet.stop_animation = function () {
+        $(snippet.readyAnimation).each(function() {
             var $snipped_id = $(this);
             if ($snipped_id.data("snippet-view")) {
                 $snipped_id.data("snippet-view").stop();
@@ -58,20 +58,21 @@
         });
     };
 
-    load_called_template(); // if asset is placed into head, move this call into $(document).ready
+    /*-------------------------------------------------------------------------*/
 
     $(document).ready(function () {
+        load_called_template();
+        snippet.start_animation();
         if ($(".o_gallery:not(.oe_slideshow)").size()) {
             // load gallery modal template
-            website.add_template_file('/website/static/src/xml/website.gallery.xml');
+            web_editor.add_template_file('/website/static/src/xml/website.gallery.xml');
         }
-
-        website.snippet.start_animation();
     });
 
+    /*-------------------------------------------------------------------------*/
 
-    website.snippet.animationRegistry = {};
-    website.snippet.Animation = openerp.Class.extend({
+    snippet.animationRegistry = {};
+    snippet.Animation = openerp.Class.extend({
         selector: false,
         $: function () {
             return this.$el.find.apply(this.$el, arguments);
@@ -94,7 +95,9 @@
         },
     });
 
-    website.snippet.animationRegistry.slider = website.snippet.Animation.extend({
+    /*-------------------------------------------------------------------------*/
+
+    snippet.animationRegistry.slider = snippet.Animation.extend({
         selector: ".carousel",
         start: function () {
             this.$target.carousel();
@@ -105,7 +108,7 @@
         },
     });
 
-    website.snippet.animationRegistry.parallax = website.snippet.Animation.extend({
+    snippet.animationRegistry.parallax = snippet.Animation.extend({
         selector: ".parallax",
         start: function () {
             var self = this;
@@ -158,7 +161,7 @@
         }
     });
 
-    website.snippet.animationRegistry.share = website.snippet.Animation.extend({
+    snippet.animationRegistry.share = snippet.Animation.extend({
         selector: ".oe_share",
         start: function () {
             var url = encodeURIComponent(window.location.href);
@@ -176,7 +179,7 @@
         }
     });
 
-    website.snippet.animationRegistry.media_video = website.snippet.Animation.extend({
+    snippet.animationRegistry.media_video = snippet.Animation.extend({
         selector: ".media_iframe_video",
         start: function () {
             if (!this.$target.has('.media_iframe_video_size')) {
@@ -187,7 +190,7 @@
         },
     });
     
-    website.snippet.animationRegistry.ul = website.snippet.Animation.extend({
+    snippet.animationRegistry.ul = snippet.Animation.extend({
         selector: "ul.o_ul_folded, ol.o_ul_folded",
         start: function (editable_mode) {
             this.$('.o_ul_toggle_self').off('click').on('click', function (event) {
@@ -210,7 +213,7 @@
     This ads a Modal window containing a slider when an image is clicked 
     inside a gallery 
    -------------------------------------------------------------------------*/
-    website.snippet.animationRegistry.gallery = website.snippet.Animation.extend({
+    snippet.animationRegistry.gallery = snippet.Animation.extend({
         selector: ".o_gallery:not(.o_slideshow)",
         start: function() {
             var self = this;
@@ -266,11 +269,11 @@
                 $modal.find(".modal-content, .modal-body.o_slideshow").css("height", "100%");
                 $modal.appendTo(document.body);
 
-                this.carousel = new website.snippet.animationRegistry.gallery_slider($modal.find(".carousel").carousel());
+                this.carousel = new snippet.animationRegistry.gallery_slider($modal.find(".carousel").carousel());
             }
         } // click_handler  
     });
-    website.snippet.animationRegistry.gallery_slider = website.snippet.Animation.extend({
+    snippet.animationRegistry.gallery_slider = snippet.Animation.extend({
         selector: ".o_slideshow",
         start: function() {
             var $carousel = this.$target.is(".carousel") ? this.$target : this.$target.find(".carousel");

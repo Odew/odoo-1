@@ -2,9 +2,10 @@
     "use strict";
 
     var website = openerp.website;
+    var web_editor = openerp.web_editor;
     var _t = openerp._t;
 
-    website.add_template_file('/website_crm_score/static/src/xml/track_page.xml');
+    web_editor.add_template_file('/website_crm_score/static/src/xml/track_page.xml');
 
     website.seo.Configurator.include({
         track: null,
@@ -28,7 +29,7 @@
             if (!obj) {
                 return $.Deferred().reject();
             } else {
-                return website.session.model(obj.model).call('read', [[obj.id], ['track'], website.get_context()]);
+                return website.session.model(obj.model).call('read', [[obj.id], ['track'], web_editor.get_context()]);
             }
         },
         update: function () {
@@ -49,7 +50,7 @@
             if (!obj) {
                 return $.Deferred().reject();
             } else {
-                return website.session.model(obj.model).call('write', [[obj.id], { track: val }, website.get_context()]);
+                return website.session.model(obj.model).call('write', [[obj.id], { track: val }, web_editor.get_context()]);
             }
         },
     });

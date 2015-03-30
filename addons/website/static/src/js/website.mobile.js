@@ -2,7 +2,7 @@
     'use strict';
 
     var website = openerp.website;
-    website.add_template_file('/website/static/src/xml/website.xml');
+    openerp.web_editor.add_template_file('/website/static/src/xml/website.xml');
 
     website.MobilePreview = openerp.Widget.extend({
         template: 'website.mobile_preview',

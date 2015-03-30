@@ -4,7 +4,7 @@
     var _t = openerp._t;
     var website = openerp.website;
     var qweb = openerp.qweb;
-    website.add_template_file('/website/static/src/xml/website.share.xml');
+    openerp.web_editor.add_template_file('/website/static/src/xml/website.share.xml');
 
     website.social_share = openerp.Widget.extend({
         template: 'website.social_hover',

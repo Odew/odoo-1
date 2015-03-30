@@ -1,0 +1,342 @@
+@import "compass/css3"
+@import "compass/css3/user-interface"
+@import "compass/css3/transition"
+@import "compass/support"
+
+
+/* ---- SummerNote Minimal Reset ---- {{{ */
+
+.note-popover
+    .popover
+        position: fixed !important
+        top: -9px !important
+        right: auto !important
+        left: 300px !important
+        border: 0
+        background: transparent
+        box-shadow: none
+        -webkit-box-shadow: none
+        z-index: 1040
+    .popover-content
+        padding: 0 !important
+        margin: 0 0 0 6px !important
+        > div
+            padding-top: 0 !important
+            margin-top: 0 !important
+        > a
+            border-radius: 3px
+            background-color: #fff
+            border-color: #ccc
+            padding: 4px 10px
+            font-size: 14px
+            line-height: 1.5
+        .note-para .dropdown-menu
+            min-width: 148px !important
+            padding: 5px 0 5px 5px !important
+        .note-ul .dropdown-menu
+            min-width: 150px !important
+            padding: 5px 0 5px 5px !important
+            .note-li
+                margin-right: 5px
+        > span
+            display: inline-block
+            max-width: 200px
+            overflow: hidden
+            text-overflow: ellipsis
+            white-space: nowrap
+            vertical-align: middle
+            border-radius: 3px
+            background-color: white
+            border-color: #cccccc
+            padding: 4px 10px
+            font-size: 14px
+            line-height: 1.5
+
+        .colorpicker
+            margin: 0
+            td > *
+                width: 20px
+                height: 20px
+                padding: 0
+                margin: 0
+                border: 1px solid #fff
+
+    .popover .popover-content .dropdown-menu a
+        display: block
+    .arrow
+        display: none
+
+.o_editable
+    &:not(:empty),&[data-oe-type]
+        &:not([data-oe-model="ir.ui.view"]):not([data-oe-type="html"]):hover
+            /* to do change into primary color in less */
+            -moz-box-shadow: #3071a9 0 0 5px 2px inset
+            -webkit-box-shadow: #3071a9 0 0 5px 2px inset
+            box-shadow: #3071a9 0 0 5px 2px inset
+    &:focus,&[data-oe-type]
+        min-height: 0.8em
+        min-width: 8px
+    &.o_is_inline_editable
+        display: inline-block
+.editor_enable [data-oe-readonly]:hover
+    cursor: default
+
+// }}}
+
+/* Prevent the text contents of draggable elements from being selectable. */
+[draggable]
+    -moz-user-select: none
+    -khtml-user-select: none
+    -webkit-user-select: none
+    user-select: none
+
+/* Prevent firefox handler. */
+.o_editable .btn
+    -webkit-user-select: auto
+    -moz-user-select: auto
+    -ms-user-select: auto
+    user-select: auto
+
+/* ---- OpenERP Style ---- {{{ */
+
+.o_editable:focus
+    outline: none !important
+
+.css_editable_display
+    display: block !important
+
+.css_editable_hidden
+    display: none !important
+
+.editor_enable .css_editable_mode_hidden
+    display: none
+
+.editor_enable .css_non_editable_mode_hidden
+    display: block !important
+
+.o_editable .media_iframe_video .css_editable_mode_display
+    display: block !important
+ 
+.oe_empty[data-oe-placeholder]:empty
+    min-height: 220px !important
+    background-repeat: no-repeat
+    background-position: center
+
+    &:not(.o_editable)
+        background-image: url('/web_editor/static/src/img/edit_here.png') !important
+
+    &:after, &:before
+        opacity: 0.4
+        overflow: hidden
+        z-index: -1
+        min-height: 1em
+
+    &:after
+        text-align: center
+        padding-top: 160px
+        display: block
+        content: " \00a0 " attr(data-oe-placeholder)
+        font-size: 24px
+
+    &.o_no_placeholder_image
+        background-image: none
+        text-align: left
+        padding-top: 0
+
+    &[data-oe-type=html]
+        &:after
+            font-size: 16px
+.editor_has_snippets .oe_empty[data-oe-placeholder]:empty
+    background-image: url('/web_editor/static/src/img/drag_here.png') !important
+
+#web_editor-top-edit
+    width: 100%
+    min-height: 34px
+    height: 34px
+    > ul > li
+        margin: 0
+    form
+        margin: 0
+        button, a
+            padding: 4px 8px 4px 8px
+            margin-top: 2px
+            font-size: 13px
+
+// }}}
+
+/* ---- HACK FOR COVERING UP EDITOR BOGUS P INSERTION --- */
+
+.oe_structure.oe_empty > .oe_drop_zone.oe_insert:only-child, [data-oe-type=html] > .oe_drop_zone.oe_insert:only-child
+    position: static
+
+.css_editable_display
+    display: none
+
+/* ---- EDITOR BAR ---- {{{ */
+
+table.editorbar-panel
+    cursor: pointer
+    width: 100%
+    td
+        border: 1px solid #aaa
+    td.selected
+        background-color: #b1c9d9
+
+.link-style
+    .dropdown > .btn
+        min-width: 160px
+    .link-style
+        display: none
+    li
+        text-align: center
+        label
+            width: 100px
+            margin: 0 5px
+    .col-sm-2 > *
+        line-height: 2em
+
+// }}}
+
+/* ---- TRANSLATIONS ---- {{{ */
+
+.oe_translate_or
+    color: white
+    padding: 0 0 0 1em
+.oe_translate_examples li
+    margin: 10px
+    padding: 4px
+.o_translatable_text
+    outline: 1px solid black
+.o_translatable_field
+    outline: 1px dashed black
+.o_translatable_text.o_dirty, .o_translatable_field.o_dirty
+    outline-color: red
+.o_translatable_text.o_dirty:empty
+    padding: 0 10px
+.o_translatable_todo
+    background: rgb(255, 255, 182)
+    &:hover
+        background: inherit
+        cursor: text
+
+// }}}
+
+/* ---- RTE ---- {{{ */
+
+// bootstrap makes .btn elements unselectable -> RTE double-click can't know
+// about them either
+.o_editable .btn, .btn.o_editable
+    +user-select(auto)
+    cursor: text !important
+
+.modal-dialog.select-media
+    width: 80%
+
+.modal .existing-attachments
+    .pager
+        margin: 0
+
+.modal .image-preview
+    margin-bottom: 0.5em
+
+.modal-footer
+    text-align: left
+
+.modal.nosave
+    .wait
+        display: inline-block !important
+        visibility: visible !important
+    .modal-body
+        .filepicker, .image-preview
+            display: none
+        .wait
+            width: 100%
+    .modal-footer .save
+        display: none
+
+// fontawesome modal
+.modal
+    .font-icons-icons
+        font-size: 2em
+        max-height: 9em
+        overflow: auto
+
+        .font-icons-icon
+            display: inline-block
+            width: 2em
+            padding: 0.25em
+            text-align: center
+            cursor: pointer
+
+    .font-icons
+        position: relative
+        display: block
+
+        &:before
+            +opacity(0.7)
+            position: absolute
+            top: 2px
+            left: 3px
+            font-size: 2em
+    #icon-search
+        padding-left: 2.5em
+
+    .font-icons-selected
+        background-color: #ddd
+
+$attachment-border-color: #848490
+.existing-attachments
+    .pager .disabled
+        display: none
+
+    .existing-attachment-cell
+        position: relative
+        .img
+            border: 1px solid $attachment-border-color
+        .existing-attachment-remove
+            position: absolute
+            top: 0
+            left: 15px // padding-left on col-*
+
+            cursor: pointer
+            background: white
+            padding: 2px
+            border: 1px solid $attachment-border-color
+            border-top: none
+            border-left: none
+            +border-bottom-right-radius(8px)
+        &.media_selected
+            > i, > img 
+                border-width: 5px
+                border-color: rgb(0, 248, 248)
+
+.oe_carlos_danger
+    outline: 1px solid red !important
+    background-color: #ffd9dd !important
+
+.hover-edition
+    display: inline-block
+    position: absolute
+    top: 0
+    left: 0
+    // This z-index is due to .navbar of bootstrap & jQuery-transfo
+    z-index: 1001
+.preview-container
+    text-align: center
+    line-height: 100px
+    height: 100px
+    > *
+        max-height: 100px
+        line-height: 100px
+        margin: 0 auto
+        display: inline-block
+
+// fontawesome
+.note-editable .fa
+    cursor: pointer
+
+.img-responsive
+    text-align: center
+
+
+// }}}

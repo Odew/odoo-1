@@ -2,7 +2,8 @@
     'use strict';
 
     var website = openerp.website;
-    website.add_template_file('/website/static/src/xml/website.seo.xml');
+    var web_editor = openerp.web_editor;
+    web_editor.add_template_file('/website/static/src/xml/website.seo.xml');
 
     website.seo = {};
 
@@ -461,7 +462,7 @@
             } else {
                 var fields = ['website_meta_title', 'website_meta_description', 'website_meta_keywords'];
                 var model = website.session.model(obj.model);
-                model.call('read', [[obj.id], fields, website.get_context()]).then(function (data) {
+                model.call('read', [[obj.id], fields, web_editor.get_context()]).then(function (data) {
                     if (data.length) {
                         var meta = data[0];
                         meta.model = obj.model;
@@ -481,7 +482,7 @@
                 return $.Deferred().reject();
             } else {
                 var model = website.session.model(obj.model);
-                return model.call('write', [[obj.id], data, website.get_context()]);
+                return model.call('write', [[obj.id], data, web_editor.get_context()]);
             }
         },
         titleChanged: function () {
@@ -516,10 +517,13 @@
         },
     });
 
-    website.ready().done(function() {
-        $(document.body).on('click', 'a[data-action=promote-current-page]', function() {
-            new website.seo.Configurator(this).appendTo($(document.body));
-        });
+    website.TopBar.include({
+        start: function () {
+            this.$el.on('click', 'a[data-action=promote-current-page]', function() {
+                new website.seo.Configurator(this).appendTo($(document.body));
+            });
+            return this._super();
+        }
     });
 
 })();

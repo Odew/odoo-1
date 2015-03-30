@@ -125,14 +125,14 @@ var Tour = {
             if (snippet) {
                 step.snippet = snippet[1];
             } else if (step.snippet) {
-                step.element = '#oe_snippets '+step.snippet+' .oe_snippet_thumbnail';
+                step.element = '#o_left_bar '+step.snippet+' .oe_snippet_thumbnail';
                 tour.steps.splice(index, 0, {
                     id: index,
                     waitNot: step.waitNot,
                     waitFor: step.waitFor,
                     title: openerp._t("Move your mouse"),
                     content: openerp._t("Move your mouse here to open the insert block"),
-                    element: '#oe_snippets',
+                    element: '#o_left_bar',
                     onend: function () {
                         $("#oe_snippets").addClass("o_open");
                     }
@@ -253,7 +253,7 @@ var Tour = {
             $("body").append('<div class="tour-backdrop"></div>');
         }
 
-        if (step.backdrop || $element.parents("#website-top-navbar, .oe_navbar, .modal").size()) {
+        if (step.backdrop || $element.parents("#web_editor-top-edit, .oe_navbar, .modal").size()) {
             $tip.css("z-index", 2010);
         }
 
@@ -688,7 +688,7 @@ var Tour = {
     },
     scrollIntoView: function ($element){
         // if element is not on window (screen) then it scroll down to get popup visible
-        if (!$element.is('body')){
+        if (!$element.is('body') && !$element.parents().filter(function () { return $(this).css("position") === "fixed";}).length){
             var element_top = $element.offset().top;
             var visible = ((element_top > $(window).scrollTop()) && (element_top < ($(window).scrollTop() + $(window).height())));
             if (!visible) {

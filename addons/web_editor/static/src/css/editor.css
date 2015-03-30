@@ -1,0 +1,383 @@
+/* ---- SummerNote Minimal Reset ---- {{{ */
+.note-popover .popover {
+  position: fixed !important;
+  top: -9px !important;
+  right: auto !important;
+  left: 300px !important;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  z-index: 1040;
+}
+.note-popover .popover-content {
+  padding: 0 !important;
+  margin: 0 0 0 6px !important;
+}
+.note-popover .popover-content > div {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+.note-popover .popover-content > a {
+  border-radius: 3px;
+  background-color: #fff;
+  border-color: #ccc;
+  padding: 4px 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.note-popover .popover-content .note-para .dropdown-menu {
+  min-width: 148px !important;
+  padding: 5px 0 5px 5px !important;
+}
+.note-popover .popover-content .note-ul .dropdown-menu {
+  min-width: 150px !important;
+  padding: 5px 0 5px 5px !important;
+}
+.note-popover .popover-content .note-ul .dropdown-menu .note-li {
+  margin-right: 5px;
+}
+.note-popover .popover-content > span {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  border-radius: 3px;
+  background-color: white;
+  border-color: #cccccc;
+  padding: 4px 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.note-popover .popover-content .colorpicker {
+  margin: 0;
+}
+.note-popover .popover-content .colorpicker td > * {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #fff;
+}
+.note-popover .popover .popover-content .dropdown-menu a {
+  display: block;
+}
+.note-popover .arrow {
+  display: none;
+}
+
+.o_editable:not(:empty):not([data-oe-model="ir.ui.view"]):not([data-oe-type="html"]):hover, .o_editable[data-oe-type]:not([data-oe-model="ir.ui.view"]):not([data-oe-type="html"]):hover {
+  /* to do change into primary color in less */
+  -moz-box-shadow: #3071a9 0 0 5px 2px inset;
+  -webkit-box-shadow: #3071a9 0 0 5px 2px inset;
+  box-shadow: #3071a9 0 0 5px 2px inset;
+}
+.o_editable:focus, .o_editable[data-oe-type] {
+  min-height: 0.8em;
+  min-width: 8px;
+}
+.o_editable.o_is_inline_editable {
+  display: inline-block;
+}
+
+.editor_enable [data-oe-readonly]:hover {
+  cursor: default;
+}
+
+/* Prevent the text contents of draggable elements from being selectable. */
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Prevent firefox handler. */
+.o_editable .btn {
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
+}
+
+/* ---- OpenERP Style ---- {{{ */
+.o_editable:focus {
+  outline: none !important;
+}
+
+.css_editable_display {
+  display: block !important;
+}
+
+.css_editable_hidden {
+  display: none !important;
+}
+
+.editor_enable .css_editable_mode_hidden {
+  display: none;
+}
+
+.editor_enable .css_non_editable_mode_hidden {
+  display: block !important;
+}
+
+.o_editable .media_iframe_video .css_editable_mode_display {
+  display: block !important;
+}
+
+.oe_empty[data-oe-placeholder]:empty {
+  min-height: 220px !important;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.oe_empty[data-oe-placeholder]:empty:not(.o_editable) {
+  background-image: url("/web_editor/static/src/img/edit_here.png") !important;
+}
+.oe_empty[data-oe-placeholder]:empty:after, .oe_empty[data-oe-placeholder]:empty:before {
+  opacity: 0.4;
+  overflow: hidden;
+  z-index: -1;
+  min-height: 1em;
+}
+.oe_empty[data-oe-placeholder]:empty:after {
+  text-align: center;
+  padding-top: 160px;
+  display: block;
+  content: "  " attr(data-oe-placeholder);
+  font-size: 24px;
+}
+.oe_empty[data-oe-placeholder]:empty.o_no_placeholder_image {
+  background-image: none;
+  text-align: left;
+  padding-top: 0;
+}
+.oe_empty[data-oe-placeholder]:empty[data-oe-type=html]:after {
+  font-size: 16px;
+}
+
+.editor_has_snippets .oe_empty[data-oe-placeholder]:empty {
+  background-image: url("/web_editor/static/src/img/drag_here.png") !important;
+}
+
+#web_editor-top-edit {
+  width: 100%;
+  min-height: 34px;
+  height: 34px;
+}
+#web_editor-top-edit > ul > li {
+  margin: 0;
+}
+#web_editor-top-edit form {
+  margin: 0;
+}
+#web_editor-top-edit form button, #web_editor-top-edit form a {
+  padding: 4px 8px 4px 8px;
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+/* ---- HACK FOR COVERING UP EDITOR BOGUS P INSERTION --- */
+.oe_structure.oe_empty > .oe_drop_zone.oe_insert:only-child, [data-oe-type=html] > .oe_drop_zone.oe_insert:only-child {
+  position: static;
+}
+
+.css_editable_display {
+  display: none;
+}
+
+/* ---- EDITOR BAR ---- {{{ */
+table.editorbar-panel {
+  cursor: pointer;
+  width: 100%;
+}
+table.editorbar-panel td {
+  border: 1px solid #aaa;
+}
+table.editorbar-panel td.selected {
+  background-color: #b1c9d9;
+}
+
+.link-style .dropdown > .btn {
+  min-width: 160px;
+}
+.link-style .link-style {
+  display: none;
+}
+.link-style li {
+  text-align: center;
+}
+.link-style li label {
+  width: 100px;
+  margin: 0 5px;
+}
+.link-style .col-sm-2 > * {
+  line-height: 2em;
+}
+
+/* ---- TRANSLATIONS ---- {{{ */
+.oe_translate_or {
+  color: white;
+  padding: 0 0 0 1em;
+}
+
+.oe_translate_examples li {
+  margin: 10px;
+  padding: 4px;
+}
+
+.o_translatable_text {
+  outline: 1px solid black;
+}
+
+.o_translatable_field {
+  outline: 1px dashed black;
+}
+
+.o_translatable_text.o_dirty, .o_translatable_field.o_dirty {
+  outline-color: red;
+}
+
+.o_translatable_text.o_dirty:empty {
+  padding: 0 10px;
+}
+
+.o_translatable_todo {
+  background: #ffffb6;
+}
+.o_translatable_todo:hover {
+  background: inherit;
+  cursor: text;
+}
+
+/* ---- RTE ---- {{{ */
+.o_editable .btn, .btn.o_editable {
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  -webkit-user-select: auto;
+  user-select: auto;
+  cursor: text !important;
+}
+
+.modal-dialog.select-media {
+  width: 80%;
+}
+
+.modal .existing-attachments .pager {
+  margin: 0;
+}
+
+.modal .image-preview {
+  margin-bottom: 0.5em;
+}
+
+.modal-footer {
+  text-align: left;
+}
+
+.modal.nosave .wait {
+  display: inline-block !important;
+  visibility: visible !important;
+}
+.modal.nosave .modal-body .filepicker, .modal.nosave .modal-body .image-preview {
+  display: none;
+}
+.modal.nosave .modal-body .wait {
+  width: 100%;
+}
+.modal.nosave .modal-footer .save {
+  display: none;
+}
+
+.modal .font-icons-icons {
+  font-size: 2em;
+  max-height: 9em;
+  overflow: auto;
+}
+.modal .font-icons-icons .font-icons-icon {
+  display: inline-block;
+  width: 2em;
+  padding: 0.25em;
+  text-align: center;
+  cursor: pointer;
+}
+.modal .font-icons {
+  position: relative;
+  display: block;
+}
+.modal .font-icons:before {
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
+  opacity: 0.7;
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-size: 2em;
+}
+.modal #icon-search {
+  padding-left: 2.5em;
+}
+.modal .font-icons-selected {
+  background-color: #ddd;
+}
+
+.existing-attachments .pager .disabled {
+  display: none;
+}
+.existing-attachments .existing-attachment-cell {
+  position: relative;
+}
+.existing-attachments .existing-attachment-cell .img {
+  border: 1px solid #848490;
+}
+.existing-attachments .existing-attachment-cell .existing-attachment-remove {
+  position: absolute;
+  top: 0;
+  left: 15px;
+  cursor: pointer;
+  background: white;
+  padding: 2px;
+  border: 1px solid #848490;
+  border-top: none;
+  border-left: none;
+  -moz-border-radius-bottomright: 8px;
+  -webkit-border-bottom-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+.existing-attachments .existing-attachment-cell.media_selected > i, .existing-attachments .existing-attachment-cell.media_selected > img {
+  border-width: 5px;
+  border-color: #00f8f8;
+}
+
+.oe_carlos_danger {
+  outline: 1px solid red !important;
+  background-color: #ffd9dd !important;
+}
+
+.hover-edition {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1001;
+}
+
+.preview-container {
+  text-align: center;
+  line-height: 100px;
+  height: 100px;
+}
+.preview-container > * {
+  max-height: 100px;
+  line-height: 100px;
+  margin: 0 auto;
+  display: inline-block;
+}
+
+.note-editable .fa {
+  cursor: pointer;
+}
+
+.img-responsive {
+  text-align: center;
+}

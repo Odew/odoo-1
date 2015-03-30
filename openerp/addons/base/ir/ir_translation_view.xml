@@ -24,6 +24,7 @@
             <field name="model">ir.translation</field>
             <field name="arch" type="xml">
                 <form string="Translations">
+                   <field name="field_type" invisible="1"/>
                    <header>
                         <field name="state" widget="statusbar" nolabel="1"/>
                    </header>
@@ -38,11 +39,11 @@
                             <field name="type"/>
                             <field name="res_id"/>
                         </group>
-                        <group string="Source Term">
-                           <field name="source" nolabel="1" height="400"/>
+                        <group string="Source Term" colspan="4" attrs="{'invisible': [('field_type','=', 'html')]}">
+                           <field name="source" nolabel="1" readonly="True"/>
                         </group>
-                        <group string="Translation">
-                           <field name="value" nolabel="1" height="400"/>
+                        <group string="Translation" colspan="4">
+                           <field name="value" nolabel="1" widget="html_translate"/>
                         </group>
                         <group string="Comments">
                            <field name="comments" nolabel="1" height="100"/>

@@ -1,10 +1,10 @@
 (function () {
     'use strict';
 
-    var website = openerp.website;
+    var web_editor = openerp.web_editor;
     var _t = openerp._t;
 
-    website.snippet.options.mailing_list_subscribe = website.snippet.Option.extend({
+    web_editor.snippet.options.mailing_list_subscribe = web_editor.snippet.Option.extend({
         choose_mailing_list: function (type, value) {
             var self = this;
             if (type !== "click") return;
@@ -14,7 +14,7 @@
                 select: _t("Newsletter"),
                 init: function (field) {
                     return website.session.model('mail.mass_mailing.list')
-                            .call('name_search', ['', []], { context: website.get_context() });
+                            .call('name_search', ['', []], { context: web_editor.get_context() });
                 },
             }).then(function (mailing_list_id) {
                 self.$target.attr("data-list-id", mailing_list_id);
@@ -32,7 +32,7 @@
         },
     });
 
-    website.snippet.options.newsletter_popup = website.snippet.Option.extend({
+    web_editor.snippet.options.newsletter_popup = web_editor.snippet.Option.extend({
         select_mailing_list: function (type) {
             var self = this;
             if (type !== "click") return;
@@ -42,13 +42,13 @@
                 select: _t("Newsletter"),
                 init: function () {
                     return website.session.model('mail.mass_mailing.list')
-                            .call('name_search', [], { context: website.get_context() });
+                            .call('name_search', [], { context: web_editor.get_context() });
                 },
             }).then(function (mailing_list_id) {
                 openerp.jsonRpc('/web/dataset/call', 'call', {
                     model: 'mail.mass_mailing.list',
                     method: 'read',
-                    args: [[parseInt(mailing_list_id)], ['popup_content'], website.get_context()],
+                    args: [[parseInt(mailing_list_id)], ['popup_content'], web_editor.get_context()],
                 }).then(function (data) {
                     self.$target.find(".o_popup_content_dev").empty();
                     if (data && data[0].popup_content) {
@@ -67,7 +67,7 @@
         },
     });
 
-    website.EditorBar.include({
+    web_editor.EditorBar.include({
             edit: function () {
                 this._super();
                 $('body').on('click','#edit_dialog',_.bind(this.edit_dialog, this.rte.editor));
@@ -79,7 +79,7 @@
                     $target.css("display", "none");
                     $('.o_popup_bounce_small').show();
                     if (!$target.find('.o_popup_content_dev').length) {
-                        $target.find('.o_popup_modal_body').prepend($('<div class="o_popup_content_dev" data-oe-placeholder="Type Here ..."></div>'));
+                        $target.find('.o_popup_modal_body').prepend($('<div class="o_popup_content_dev" data-oe-placeholder="' + _t("Type Here ...") + '"></div>'));
                     }
                     var content = $('#wrapwrap .o_popup_content_dev').html();
                     var newsletter_id = $target.parent().attr('data-list-id');
@@ -88,7 +88,7 @@
                         method: 'write',
                         args: [parseInt(newsletter_id),
                            {'popup_content':content},
-                           website.get_context()],
+                           web_editor.get_context()],
                     });
                 }
                 return this._super();

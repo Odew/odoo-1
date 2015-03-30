@@ -38,24 +38,20 @@
             {
                 title:     _t("Validate the version name"),
                 popover:   { fixed: true },
+                placement: 'right',
                 element:   '.modal button.btn-primary',
             },
             {
                 title:     _t("Confirm"),
                 popover:   { fixed: true },
                 waitNot:   '.modal input',
-                element:   '.modal button.o_confirm',
+                placement: 'right',
+                element:   '.modal:has(.modal-body p) button.o_confirm',
             },
             {
                 title:     _t("You are on your new version"),
                 content:   _t("All the modifications you will do, will be saved in this version."),
                 waitNot:   '.modal button.o_confirm',
-            },
-            {
-                title:     _t("Click on Edit"),
-                content:   _t("Every page of your website can be modified through the <i>Edit</i> button."),
-                waitFor:   'button[data-action="edit"]',
-                element:   'button[data-action="edit"]',
             },
             {
                 snippet:   '#snippet_structure .oe_snippet:first',
@@ -71,7 +67,6 @@
                 title:     _t("Customize banner's text"),
                 content:   _t("Click in the text and start editing it."),
                 sampleText: 'Here, a customized text',
-                popover:   { next: _t("Continue") },
             },
             {
                 waitNot:   '#wrap .carousel:first div.carousel-content:has(h2:'+
@@ -106,7 +101,7 @@
                 popover:   { fixed: true },
             },
             {
-                waitFor:   'button[data-action=save]:not(:visible)',
+                waitNot:   'button[data-action=save]:visible',
                 title:     _t("Good Job!"),
                 content:   _t("Well done, you created a version of your homepage."),
                 popover:   { next: _t("Continue") },
@@ -135,11 +130,12 @@
             {
                 title:     _t("Click on Publish button"),
                 element:   '.modal button.o_confirm',
-                placement: 'left',
+                placement: 'right',
             },
 
             {
                 title:     _t("Confirm"),
+                placement: 'right',
                 element:   '.modal button.o_confirm[data-dismiss]',
                 popover:   { fixed: true },
             },

@@ -10,12 +10,12 @@ $(document).ready(function () {
             openerp.jsonRpc("/shop/modal", 'call', {
                     'product_id': product_id,
                     kwargs: {
-                       context: openerp.website.get_context()
+                       context: openerp.web_editor.get_context()
                     },
                 }).then(function (modal) {
                     var $modal = $(modal);
 
-                    $modal.find('img:first').attr("src", "/website/image/product.product/" + product_id + "/image_medium");
+                    $modal.find('img:first').attr("src", "/web_editor/image/product.product/" + product_id + "/image_medium");
 
                     $modal.appendTo($form)
                         .modal()

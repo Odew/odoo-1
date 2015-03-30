@@ -246,7 +246,7 @@ openerp.website.if_dom_contains('div.o_website_links_create_tracked_url', functi
 
         // Recent Links Widgets
         var recent_links;
-        openerp.website.add_template_file('/website_links/static/src/xml/recent_link.xml')
+        openerp.web_editor.add_template_file('/website_links/static/src/xml/recent_link.xml')
             .then(function() {
                 recent_links = new openerp.website_links.RecentLinks();
                 recent_links.appendTo($("#o_website_links_recent_links"));

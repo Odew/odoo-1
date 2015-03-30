@@ -825,9 +825,8 @@
 </div>
 
 <div id="snippet_options" class="hidden">
-
+    <t t-call="web_editor.snippet_options"/>
     <t t-call="website.snippet_options"/>
-
 </div>
 </template>
 
@@ -955,11 +954,6 @@
         <li data-remove="remove"><a>Remove from gallery</a></li>
     </div>
 
-    <div data-js='media'
-        data-selector="img, .media_iframe_video, span.fa, i.fa, .glyphicon">
-        <li data-edition="edition"><a>Change...</a></li>
-    </div>
-
     <div data-js='carousel'
         data-selector=":not(.o_gallery > .container) > .carousel">
         <li class="dropdown-submenu">
@@ -1054,13 +1048,6 @@
     <div data-js='ul'
          data-selector=":not(li) > ul:has(ul,ol), :not(li) > ol:has(ul,ol)">
         <li data-toggle_class="o_ul_folded"> <a href="#">Folded list</a> </li>
-    </div>
-
-    <!-- t-field -->
-
-    <div data-js='many2one'
-        data-selector="[data-oe-many2one-model]"
-        data-no-check="true">
     </div>
 
 </template>

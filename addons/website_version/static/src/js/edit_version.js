@@ -2,12 +2,10 @@
     'use strict';
     var hash = "#advanced-view-editor";
     var _t = openerp._t;
-    
-    var website=openerp.website;
 
-    website.action= {};
+    var web_editor = openerp.web_editor;
     
-    website.EditorBar.include({
+    web_editor.EditorBar.include({
         start: function() {
             var self = this;
             this.$el.on('click', '#save_as_new_version', function() {
@@ -42,7 +40,7 @@
             
             });
             this.$el.on('click', '#save_and_publish', function() {
-                var version_id = parseInt($('html').data('version_id'));
+                var version_id = web_editor.get_context().version_id;
                 if(version_id)
                 {
                     self.save();
@@ -63,16 +61,22 @@
                 self.$el.find(".o_second_choice").remove();
                 var name = $('#version-menu-button').data('version_name');
                 if(name){
-                    self.$el.find(".o_first_choice").before(openerp.qweb.render("all_options", {version:'Save on '+name}));
+                    self.$el.find(".o_first_choice").before(openerp.qweb.render("website_version.all_options", {version:'Save on '+name}));
                 }
                 else{
-                    self.$el.find(".o_first_choice").before(openerp.qweb.render("all_options", {version:'Save and Publish'}));
+                    self.$el.find(".o_first_choice").before(openerp.qweb.render("website_version.all_options", {version:'Save and Publish'}));
                 }
 
             });
-            
+
+            this.$('button[data-action=save]').parent().find("button, a").prop('disabled', true);
+
             return this._super();
-        }
+        },
+        rte_changed: function () {
+            this.$('button[data-action=save]').parent().find("button, a").prop('disabled', false);
+            return this._super();
+        },
     });
 
     

@@ -163,6 +163,18 @@ class ir_translation(osv.osv):
     _name = "ir.translation"
     _log_access = False
 
+    def _get_object_field_type(self, cr, uid, ids, name, arg, context=None):
+        if context is None:
+            context = {}
+        res = dict.fromkeys(ids, False)
+        for record in self.browse(cr, uid, ids, context=context):
+            if record.type == 'model':
+                model_name, field = record.name.split(',')
+                model = self.pool.get(model_name)
+                if model is not None:
+                    res[record.id] = model._fields[field].type
+        return res
+
     def _get_language(self, cr, uid, context):
         lang_model = self.pool.get('res.lang')
         lang_ids = lang_model.search(cr, uid, [('translatable', '=', True)], context=context)
@@ -212,6 +224,7 @@ class ir_translation(osv.osv):
         'res_id': fields.integer('Record ID', select=True),
         'lang': fields.selection(_get_language, string='Language'),
         'type': fields.selection(TRANSLATION_TYPE, string='Type', select=True),
+        'field_type': fields.function(_get_object_field_type, type='char', string='Object Field Type'),
         'src': fields.text('Old source'),
         'source': fields.function(_get_src, fnct_inv=_set_src, type='text', string='Source'),
         'value': fields.text('Translation Value'),
