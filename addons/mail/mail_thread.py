@@ -129,6 +129,9 @@ class mail_thread(osv.AbstractModel):
             if alias_ids and len(alias_ids) == 1:
                 alias = alias_obj.browse(cr, uid, alias_ids[0], context=context)
 
+        if document_name == 'document' or not help or help.find("oe_view_nocontent_create") != -1:
+            return help
+
         if alias:
             alias_email = alias.name_get()[0][1]
             return _("""<p class='oe_view_nocontent_create'>
@@ -140,14 +143,11 @@ class mail_thread(osv.AbstractModel):
                         'email': alias_email,
                         'static_help': help or ''
                     }
-
-        if document_name != 'document' and help and help.find("oe_view_nocontent_create") == -1:
+        else:
             return _("<p class='oe_view_nocontent_create'>Click here to add new %(document)s</p>%(static_help)s") % {
                         'document': document_name,
                         'static_help': help or '',
                     }
-
-        return help
 
     def _get_message_data(self, cr, uid, ids, name, args, context=None):
         """ Computes:
