@@ -1067,7 +1067,7 @@ class AccountChartTemplate(models.Model):
         account_ref.update(account_template_ref)
 
         # writing account values after creation of accounts
-        company.transfer_account_id = account_template_ref[transfer_account_id.id]
+        # company.transfer_account_id = account_template_ref[transfer_account_id.id]
         for key, value in generated_tax_res['account_dict'].items():
             if value['refund_account_id'] or value['account_id']:
                 AccountTaxObj.browse(key).write({
@@ -1306,7 +1306,7 @@ class WizardMultiChartsAccounts(models.TransientModel):
     purchase_tax = fields.Many2one('account.tax.template', string='Default Purchase Tax')
     sale_tax_rate = fields.Float(string='Sales Tax(%)')
     use_anglo_saxon = fields.Boolean(string='Use Anglo-Saxon Accounting', related='chart_template_id.use_anglo_saxon')
-    transfer_account_id = fields.Many2one('account.account.template', required=True, string='Transfer Account',
+    transfer_account_id = fields.Many2one('account.account.template', string='Transfer Account',
         domain=lambda self: [('reconcile', '=', True), ('user_type.id', '=', self.env.ref('account.data_account_type_current_assets').id)],
         help="Intermediary account used when moving money from a liquidity account to another")
     purchase_tax_rate = fields.Float(string='Purchase Tax(%)')
