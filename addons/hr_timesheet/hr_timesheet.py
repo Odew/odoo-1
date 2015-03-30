@@ -143,9 +143,8 @@ class account_analytic_line(models.Model):
 
     @api.onchange('date')
     def on_change_date(self):
-        if self.is_timesheet:
-            if self._origin.date and (self._origin.date != self.date):
-                raise exceptions.Warning(_('Changing the date will let this entry appear in the timesheet of the new date.'))
+        if self.is_timesheet and self._origin.date and (self._origin.date != self.date):
+            raise exceptions.Warning(_('Changing the date will let this entry appear in the timesheet of the new date.'))
 
 class account_analytic_account(models.Model):
     _inherit = 'account.analytic.account'

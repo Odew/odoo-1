@@ -141,6 +141,8 @@ class hr_timesheet_sheet(osv.osv):
     
     def _count_attendances(self, cr, uid, ids, field_name, arg, context=None):
         Attendance = self.pool['hr.attendance']
+        import pudb
+        pudb.set_trace()
         return {
             sheet_id: {
                 'attendance_count': Attendance.search_count(cr,uid, [('sheet_id', '=', sheet_id)], context=context)
@@ -569,13 +571,14 @@ class hr_timesheet_sheet_sheet_day(osv.osv):
                         ((
                             select
                                 min(l.id) as id,
+                                p.tz as timezone,
                                 l.date::date as name,
                                 s.id as sheet_id,
                                 sum(l.unit_amount) as total_timesheet,
                                 0 as orphan_attendances,
                                 0.0 as total_attendance
                             from
-                            	analytic_line l WHERE l.is_timesheet
+                            	account_analytic_line l
                                 LEFT JOIN hr_timesheet_sheet_sheet s ON s.id = l.sheet_id
                                 JOIN hr_employee e ON s.employee_id = e.id
                                 JOIN resource_resource r ON e.resource_id = r.id

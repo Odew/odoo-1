@@ -107,8 +107,8 @@ var WeeklyTimesheet = form_common.FormWidget.extend(form_common.ReinitializeWidg
         var accounts;
         var account_names;
         var default_get;
-        return this.render_drop.add(new Model("hr.analytic.timesheet").call("default_get", [
-            ['account_id','general_account_id', 'journal_id','date','name','user_id','product_id','product_uom_id','to_invoice','amount','unit_amount'],
+        return this.render_drop.add(new Model("account_analytic_timesheet").call("default_get", [
+            ['account_id','general_account_id', 'journal_id','date','name','user_id','product_id','product_uom_id','to_invoice','amount','unit_amount', 'is_timesheet'],
             new data.CompoundContext({'user_id': self.get('user_id')})]).then(function(result) {
             default_get = result;
             // calculating dates
@@ -132,7 +132,7 @@ var WeeklyTimesheet = form_common.FormWidget.extend(form_common.ReinitializeWidg
 
             var account_ids = _.map(_.keys(accounts), function(el) { return el === "false" ? false : Number(el); });
 
-            return new Model("hr.analytic.timesheet").call("multi_on_change_account_id", [[], account_ids,
+            return new Model("account_analytic_line").call("multi_on_change_account_id", [[], account_ids,
                 new data.CompoundContext({'user_id': self.get('user_id')})]).then(function(accounts_defaults) {
                 accounts = _(accounts).chain().map(function(lines, account_id) {
                     var account_defaults = _.extend({}, default_get, (accounts_defaults[account_id] || {}).value || {});
