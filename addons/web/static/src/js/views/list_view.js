@@ -1042,7 +1042,7 @@ ListView.List = Class.extend( /** @lends instance.web.ListView.List# */{
                 var $row = $(e.target).closest('tr');
                 $(self).trigger('deleted', [[self.row_id($row)]]);
             })
-            .delegate('td.oe_list_field_cell button', 'click', function (e) {
+            .delegate('td button', 'click', function (e) {
                 e.stopPropagation();
                 var $target = $(e.currentTarget),
                       field = $target.closest('td').data('field'),

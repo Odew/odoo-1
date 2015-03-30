@@ -266,7 +266,7 @@ var search_filters = require('web.search_filters'),
 return Widget.extend({
     template: 'SearchView.FilterMenu',
     events: {
-        'click .oe-add-filter': function () {
+        'click .oe-add-filter': function (event) {
             event.preventDefault();
             this.toggle_custom_filter_menu();
         },
