@@ -259,12 +259,14 @@ class ir_property(osv.osv):
     @api.model
     def search_multi(self, name, model, operator, value):
         """ Return a domain for the records that match the given condition. """
+        default_matches = False
+
         field = self.env[model]._fields[name]
         if field.type == 'many2one':
             comodel = field.comodel_name
             def makeref(value):
                 return value and '%s,%s' % (comodel, value)
-            if operator in ('=', '!=', '<=', '<', '>', '>='):
+            if operator in ('!=', '<=', '<', '>', '>='):
                 value = makeref(value)
             elif operator in ('in', 'not in'):
                 value = map(makeref, value)
@@ -274,6 +276,11 @@ class ir_property(osv.osv):
                 target_names = target.name_search(value, operator=operator, limit=None)
                 target_ids = map(itemgetter(0), target_names)
                 operator, value = 'in', map(makeref, target_ids)
+            elif operator == "=":
+                value = makeref(value)
+                # if searching properties not set, search those not in those set
+                if value is False:
+                    default_matches = True
 
         # retrieve the properties that match the condition
         domain = self._get_domain(name, model)
@@ -283,7 +290,6 @@ class ir_property(osv.osv):
 
         # retrieve the records corresponding to the properties that match
         good_ids = []
-        default_matches = False
         for prop in props:
             if prop.res_id:
                 res_model, res_id = prop.res_id.split(',')
