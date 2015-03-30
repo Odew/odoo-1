@@ -6,3 +6,4 @@ from openerp.addons.account.tests.test_account_supplier_invoice import TestAccou
 from openerp.addons.account.tests.test_account_validate_account_move import TestAccountValidateAccount
 from openerp.addons.account.tests.test_search import TestSearch
 from openerp.addons.account.tests.test_tax import TestTax
+from openerp.addons.account.tests.test_account_move_closed_period import TestPeriodState

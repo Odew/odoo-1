@@ -515,7 +515,7 @@ class AccountMove(models.Model):
     @api.multi
     def _check_lock_date(self):
         for move in self:
-            lock_date = move.company_id.period_lock_date
+            lock_date = max(move.company_id.period_lock_date, move.company_id.fiscalyear_lock_date)
             if self.user_has_groups('account.group_account_manager'):
                 lock_date = move.company_id.fiscalyear_lock_date
             if move.date <= lock_date:
