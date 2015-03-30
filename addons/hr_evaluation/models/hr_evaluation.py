@@ -44,7 +44,7 @@ class HrEvaluation(models.Model):
     state = fields.Selection(EVALUATION_STATE, string='Status', track_visibility='onchange', required=True, readonly=True, copy=False, default='new', index=True)
     manager = fields.Boolean(string='Manager')
     manager_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_manager_rel', 'hr_evaluation_id')
-    manager_survey_id = fields.Many2one('survey.survey', string='Manager Appraisal', required=False)
+    manager_survey_id = fields.Many2one('survey.survey', string='Manager Appraisal')
     subordinates = fields.Boolean(string='Collaborator')
     subordinates_ids = fields.Many2many('hr.employee', 'evaluation_appraisal_subordinates_rel', 'hr_evaluation_id')
     subordinates_survey_id = fields.Many2one('survey.survey', string="collaborate's Appraisal")
@@ -156,25 +156,24 @@ class HrEvaluation(models.Model):
         MailTemplate = self.env['mail.template']
         for appraisal in self:
             appraisal_receiver = appraisal._prepare_user_input_receivers()
-            if not appraisal_receiver:
-                raise UserError(_("%s do not have configured evaluation plan.") % appraisal.employee_id.name_related)
             for survey, receivers in appraisal_receiver:
-                for employee in receivers:
-                    email = employee.related_partner_id.email or employee.work_email
-                    render_template = MailTemplate.with_context(email=email, survey=survey, employee=employee).generate_email_batch(appraisal.mail_template_id.id, [appraisal.id])
-                    values = {
-                        'survey_id': survey.id,
-                        'public': 'email_private',
-                        'partner_ids': employee.related_partner_id and [(4, employee.related_partner_id.id)] or False,
-                        'multi_email': email,
-                        'subject': survey.title,
-                        'body': render_template[appraisal.id]['body'],
-                        'date_deadline': appraisal.date_close,
-                        'model': appraisal._name,
-                        'res_id': appraisal.id,
-                    }
-                    wizard = ComposeMessage.create(values)
-                    wizard.send_mail()
+                if survey and receivers:
+                    for employee in receivers:
+                        email = employee.related_partner_id.email or employee.work_email
+                        render_template = MailTemplate.with_context(email=email, survey=survey, employee=employee).generate_email_batch(appraisal.mail_template_id.id, [appraisal.id])
+                        values = {
+                            'survey_id': survey.id,
+                            'public': 'email_private',
+                            'partner_ids': employee.related_partner_id and [(4, employee.related_partner_id.id)] or False,
+                            'multi_email': email,
+                            'subject': survey.title,
+                            'body': render_template[appraisal.id]['body'],
+                            'date_deadline': appraisal.date_close,
+                            'model': appraisal._name,
+                            'res_id': appraisal.id,
+                        }
+                        wizard = ComposeMessage.create(values)
+                        wizard.send_mail()
         return True
 
     @api.multi
