@@ -358,13 +358,13 @@ exports.PosModel = Backbone.Model.extend({
         model:  'account.fiscal.position',
         fields: ['country_id','auto_apply'],
         loaded: function(self, fiscal_position){
-            this.fiscal_position = fiscal_position;
+            self.fiscal_position = fiscal_position;
         },
     },{
         model:  'account.fiscal.position.tax',
         fields: ['position_id', 'tax_src_id', 'tax_dest_id'],
         loaded: function(self, fiscal_position_tax){
-            this.fiscal_position_tax = fiscal_position_tax;
+            self.fiscal_position_tax = fiscal_position_tax;
         },
      },  {
         label: 'fonts',
@@ -895,7 +895,7 @@ exports.Orderline = Backbone.Model.extend({
         this.type = 'unit';
         this.selected = false;
         this.id       = orderline_id++;
-        this.fiscal = this.get_fiscal_position_id();
+        this.fiscal_position_id = this.get_fiscal_position_id();
     },
     init_from_JSON: function(json) {
         this.product = this.pos.db.get_product_by_id(json.product_id);
@@ -1093,49 +1093,33 @@ exports.Orderline = Backbone.Model.extend({
     get_tax: function(){
         return this.get_all_prices().tax;
     },
-    get_fiscal_position: function(client){
-        var mdl = exports.PosModel.prototype.models;
-        for (var m = 0; m < mdl.length; m++){
-            if ( mdl[m].model == "account.fiscal.position"){
-                return mdl[m].fiscal_position;
-            }
-        }
-    },
-    get_fiscal_position_tax: function() {
-        var mdl = exports.PosModel.prototype.models;
-        for (var m = 0; m < mdl.length; m++){
-            if ( mdl[m].model == "account.fiscal.position.tax"){
-                return mdl[m].fiscal_position_tax;
-            }
-        }
-    },
     get_fiscal_position_id: function(){
         var client = this.order.changed.client;
-        var fposition = this.get_fiscal_position();
-        this.fiscal = false;
+        var fposition = this.pos.fiscal_position;
+        this.fiscal_position_id = false;
         if(client){
             if(client.property_account_position[0]){
                 for(var f = 0; f < fposition.length; f++){
                     if(fposition[f].id == client.property_account_position[0]){
-                        this.fiscal = fposition[f].id;
+                        this.fiscal_position_id = fposition[f].id;
                     }
                 }
             } else if (client.country_id){
                 for(var f = 0; f < fposition.length; f++){
                     if(fposition[f].auto_apply == true && fposition[f].country_id[0] == client.country_id[0] ){
-                        this.fiscal = fposition[f].id;
+                        this.fiscal_position_id = fposition[f].id;
                     }
                 }
             }
         }
-        return this.fiscal;
+        return this.fiscal_position_id;
     },
     get_fiscal_tax: function(){
         var fiscal_id = this.get_fiscal_position_id();
         var product = this.get_product().taxes_id;
         var ptaxes_ids = [];
         if(product && fiscal_id){
-            var fposition_tax = this.get_fiscal_position_tax();
+            var fposition_tax = this.pos.fiscal_position_tax;
             for(var f = 0; f < fposition_tax.length; f++ ){
                 if(fposition_tax[f].position_id[0] == fiscal_id){
                     for(var p = 0; p < product.length; p++){
@@ -1409,7 +1393,7 @@ exports.Order = Backbone.Model.extend({
             user_id: this.pos.cashier ? this.pos.cashier.id : this.pos.user.id,
             uid: this.uid,
             sequence_number: this.sequence_number,
-            fiscal: this.selected_orderline ? this.selected_orderline.fiscal : false,
+            fiscal_position_id: this.selected_orderline ? this.selected_orderline.fiscal_position_id : false,
         };
     },
     export_for_printing: function(){
