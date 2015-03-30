@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Employee Evaluations',
+    'name': 'Employee Appraisals',
     'version': '1.0',
     'author': 'Odoo S.A',
     'category': 'Human Resources',
@@ -30,14 +30,14 @@ Key Features
 """,
     "data": [
         'security/ir.model.access.csv',
-        'security/hr_evaluation_security.xml',
-        'views/hr_evaluation_view.xml',
-        'report/hr_evaluation_report_view.xml',
+        'security/hr_appraisal_security.xml',
+        'views/hr_appraisal_view.xml',
+        'report/hr_appraisal_report_view.xml',
         'data/survey_data_appraisal.xml',
-        'data/hr_evaluation_data.xml',
-        'views/hr_evaluation.xml',
+        'data/hr_appraisal_data.xml',
+        'views/hr_appraisal.xml',
     ],
-    "demo": ["data/hr_evaluation_demo.xml"],
+    "demo": ["data/hr_appraisal_demo.xml"],
     'installable': True,
     'application': True,
 }

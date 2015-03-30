@@ -246,7 +246,7 @@
 	                </div>
 	                <field name="appraisal_repeat_number" attrs="{'invisible':[('appraisal_repeat','=',False)], 'required':[('appraisal_repeat','=',True)]}"/>
 	                <field name="appraisal_repeat_delay" attrs="{'invisible':[('appraisal_repeat','=',False)], 'required':[('appraisal_repeat','=',True)]}" nolabel="1"/>
-	                <field name="evaluation_date" attrs="{'invisible':[('appraisal_repeat','=',False)], 'required':[('appraisal_repeat','=',True)]}"/>
+	                <field name="appraisal_date" attrs="{'invisible':[('appraisal_repeat','=',False)], 'required':[('appraisal_repeat','=',True)]}"/>
 	            </group>
 	        </page>
 	    </xpath>
