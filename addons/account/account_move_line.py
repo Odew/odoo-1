@@ -869,7 +869,7 @@ class AccountMoveLine(models.Model):
         amount_currency = False
         if src_currency and src_currency != company_currency:
             amount_currency = amount
-            amount = src_currency.compute(amount, company_currency)
+            amount = src_currency.with_context(self._context).compute(amount, company_currency)
         debit = amount > 0 and amount or 0.0
         credit = amount < 0 and -amount or 0.0
         return debit, credit, amount_currency
@@ -944,7 +944,7 @@ class AccountPartialReconcile(models.Model):
 
     debit_move_id = fields.Many2one('account.move.line')
     credit_move_id = fields.Many2one('account.move.line')
-    amount = fields.Float()
+    amount = fields.Float(help="Amount concerned by this matching. Assumed to be always positive")
     amount_currency = fields.Float(string="Amount in Currency")
     currency_id = fields.Many2one('res.currency', string='Currency')
     company_id = fields.Many2one('res.company', related='debit_move_id.company_id', store=True, string='Currency')
@@ -989,7 +989,7 @@ class AccountPartialReconcile(models.Model):
                     rec.env['account.partial.reconcile'].create({
                         'debit_move_id': amount_diff < 0 and line_to_reconcile.id or rec.debit_move_id.id,
                         'credit_move_id': amount_diff > 0 and line_to_reconcile.id or rec.credit_move_id.id,
-                        'amount': amount_diff,
+                        'amount': abs(amount_diff),
                         'amount_currency': 0.0,
                         'currency_id': rec.debit_move_id.currency_id.id,
                     })
