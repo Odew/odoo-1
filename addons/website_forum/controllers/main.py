@@ -110,37 +110,38 @@ class WebsiteForum(http.Controller):
         domain = [('forum_id', '=', forum.id), ('parent_id', '=', False), ('state', '=', 'active')]
         if search:
             Tag = request.env['forum.tag']
-            # filter search_options value and combine same key's value
+           
             search_options = {}
-            for search_dict in [match_obj.groupdict() for match_obj in re.finditer(r'''(?P<tag>(?:or\s|-)?\[.*?\])|(?P<word_phrase>".*?")|(?P<options>[a-z]+:\-?\w*)|(?P<other>\S+)''', search)]:
+            search_data_match = [match_obj.groupdict() for match_obj in re.finditer(r'''(?P<tag>(?:or\s|-)?\[.*?\])|(?P<word_phrase>".*?")|(?P<options>[a-z]+:\-?\w*)|(?P<other>\S+)''', search)]
+            # filter search_options value and combine same key's value
+            for search_dict in search_data_match:
                 for search_dict_key, search_dict_value in search_dict.items():
                     if search_dict_value:
                         search_options.setdefault(search_dict_key, []).append(search_dict_value)
-
             sub_domain = []
             search = {'search': search, 'display_tag': [], 'display_options': []}
             for search_option_key, search_option_value in search_options.items():
                 if search_option_key == 'tag':
                     for tag_name in search_option_value:
-                        tag_obj = re.search(r'''((?!\[)[\w\-\s{1}]+(?=\]))''', tag_name)
-                        if tag_obj:
+                        tag_match = re.search(r'''((?!\[)[\w\-\s{1}]+(?=\]))''', tag_name)
+                        if tag_match:
                             # add domain for negative_tag(excluded tag), to filter posts(remove negative_tag's post)
                             if '-' in tag_name.split('['):
                                 search['display_tag'].append("not")
-                                negative_tag_ids = Tag.search([('name', 'ilike', tag_obj.group().strip())]).ids
+                                negative_tag_ids = Tag.search([('name', 'ilike', tag_match.group().strip())]).ids
                                 if negative_tag_ids:
                                     sub_domain.append(('tag_ids', 'not in', negative_tag_ids))
                             else:
-                                sub_domain.insert(0, ('tag_ids.name', 'ilike', tag_obj.group().strip()))
+                                sub_domain.insert(0, ('tag_ids.name', 'ilike', tag_match.group().strip()))
                                 if 'or' in tag_name.split(' '):
                                     search['display_tag'].append("or")
                                     sub_domain.insert(0, '|')
-                            search['display_tag'].append(tag_obj.group().strip())
+                            search['display_tag'].append(tag_match.group().strip())
                 elif search_option_key == 'word_phrase':
                     for word_phrase in search_option_value:
-                        word_phrase_obj = re.findall(r'''"([^"]*)"''', word_phrase)
-                        if word_phrase_obj:
-                            sub_domain.extend(['|', ('name', 'ilike', word_phrase_obj[0]), ('content', 'ilike', word_phrase_obj[0])])
+                        word_phrase_match = re.findall(r'''"([^"]*)"''', word_phrase)
+                        if word_phrase_match:
+                            sub_domain.extend(['|', ('name', 'ilike', word_phrase_match[0]), ('content', 'ilike', word_phrase_match[0])])
                 elif search_option_key == 'options':
                     for options in search_option_value:
                         try:
