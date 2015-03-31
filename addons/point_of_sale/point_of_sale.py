@@ -1366,7 +1366,6 @@ class pos_order_line(osv.osv):
 
         result['price_subtotal'] = taxes['total']
         result['price_subtotal_incl'] = taxes['total_included']
-        result['tax_ids'] = tax_ids
         result['price_unit'] = price
         return {'value': result}
 
@@ -1388,7 +1387,7 @@ class pos_order_line(osv.osv):
         'discount': fields.float('Discount (%)', digits_compute=dp.get_precision('Account')),
         'order_id': fields.many2one('pos.order', 'Order Ref', ondelete='cascade'),
         'create_date': fields.datetime('Creation Date', readonly=True),
-        'tax_ids': fields.many2many('account.tax', string='Taxes'),
+        'tax_ids': fields.many2many('account.tax', string='Taxes', readonly=True),
     }
 
     _defaults = {
