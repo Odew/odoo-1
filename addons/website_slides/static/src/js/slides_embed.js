@@ -13,6 +13,7 @@ $(document).ready(function () {
 
         // define embedded viewer (minimal object of the website.slide.PDFViewer widget)
         var EmbeddedViewer = function($viewer){
+            $('#first, #previous, #next, #last').hide();    // Hide the navigation arrow at loading time
             var self = this;
             this.viewer = $viewer;
             this.slide_url = $viewer.find('#PDFSlideViewer').data('slideurl');
@@ -32,6 +33,7 @@ $(document).ready(function () {
             },
             // post process action (called in '.then()')
             on_loaded_file: function(){
+                (this.pdf_viewer.pdf_page_total > 1) ? $('#first, #previous, #next, #last').show() : null;
                 this.$('canvas').show();
                 this.$('#page_count').text(this.pdf_viewer.pdf_page_total);
                 this.$('#PDFViewerLoader').hide();
