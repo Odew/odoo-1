@@ -477,6 +477,7 @@ class AccountBankStatementLine(models.Model):
         """ Returns the move lines that the method auto_reconcile cann use to try to reconcile the statement line """
         pass
 
+    @api.multi
     def auto_reconcile(self):
         """ Try to automatically reconcile the statement.line ; return the counterpart journal entry/ies if the automatic reconciliation succeeded, False otherwise.
             TODO : this method could be greatly improved and made extensible

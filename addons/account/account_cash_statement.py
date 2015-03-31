@@ -105,15 +105,15 @@ class AccountCashStatement(models.Model):
             if statement.difference == 0.0:
                 continue
             elif statement.difference < 0.0:
-                account = statement.journal_id.loss_account_id
+                account = statement.journal_id.default_debit_account_id
                 name = _('Loss')
-                if not statement.journal_id.loss_account_id:
+                if not statement.journal_id.default_debit_account_id:
                     raise UserError(_('There is no Loss Account on the journal %s.') % (statement.journal_id.name,))
             else:
                 # statement.difference > 0.0
-                account = statement.journal_id.profit_account_id
+                account = statement.journal_id.default_credit_account_id
                 name = _('Profit')
-                if not statement.journal_id.profit_account_id:
+                if not statement.journal_id.default_credit_account_id:
                     raise UserError(_('There is no Profit Account on the journal %s.') % (statement.journal_id.name,))
 
             values = {
