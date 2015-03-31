@@ -10,39 +10,6 @@
       </xpath>
     </template>
 
-    <template id="cc_form" name="Add a Payment Method" page="True">
-        <t t-call="website.layout">
-            <div id="wrap">
-                <div class="container">
-                    <h3>Register your credit card</h3>
-                    <p>Card numbers are stored on our provider's secure servers.</p>
-                    <div class="row">
-                        <div t-if="error_message" class="alert alert-danger">
-                          <t t-foreach="error_message" t-as="err"><t t-esc="err"/><br /></t>
-                        </div>
-                        <div class="row">
-                            <div t-attf-class="form-group #{error.get('name') and 'has-error' or ''}" t-if='len(acquirers)>1'>
-                                <label class="control-label" for="pm_acquirer_id">Acquirer</label>
-                                <select name="pm_acquirer_id" class="form-control">
-                                    <t t-foreach="acquirers" t-as="acquirer">
-                                        <option t-att-value="acquirer['id']" t-esc="acquirer['name']"/>
-                                    </t>
-                                </select>
-                            </div>
-                            <t t-foreach="acquirers" t-as="acquirer">
-                                <div t-raw="acquirer['template']" t-att-data-acquirer-id="acquirer['id']" t-attf-class="acquirer #{'hidden' if acquirer!=acquirers[0] else ''}"/>
-                            </t>
-                            <div class="form-group">
-                                <input type="checkbox" name="cc_default"/>
-                                <label class="control-label" for="cc_default">Use as default</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </t>
-    </template>
-
     <template id="pay_methods" name="Payment Methods">
         <t t-call="website.layout">
             <t t-set="additional_title">Payment Methods</t>
@@ -57,38 +24,40 @@
                         </div>
                     </div>
                     <h1>Payment Methods</h1>
-                    <h4>Select your default payment method:</h4>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <form method="post">
-                                <div class="form-group">
-                                    <label class="control-label" for="default_pm">Default Payment Method</label><br/>
-                                    <t t-foreach='pms' t-as='pm'>
-                                        <input type="radio" t-att-value="pm['id']" name="default_pm" t-att-checked="'checked' if pm['id']==def_pm['id'] else ''"> <span t-esc="pm['name']"/><a t-att-href="'/account/payment_method/delete/'+str(pm['id'])"> <span class="fa fa-trash-o"/></a></input><br/>
-                                    </t>
-                                </div>
-                                <div class="clearfix"></div>
-                                <button class="btn btn-primary pull-right">Confirm <span class="fa fa-long-arrow-right"></span></button>
-                            </form>
-                        </div>
-                    </div>
                     <h4>Add a new payment method:</h4>
                     <div class="row">
                         <div class="col-md-6">
                             <div t-if="error_message" class="alert alert-danger">
                               <t t-foreach="error_message" t-as="err"><t t-esc="err"/><br /></t>
                             </div>
-                            <div t-attf-class="form-group #{error.get('name') and 'has-error' or ''}" t-if='len(acquirers)>1'>
+                            <div t-if='len(acquirers)>1'>
                                 <label class="control-label" for="pm_acquirer_id">Acquirer</label>
                                 <select name="pm_acquirer_id" class="form-control">
                                     <t t-foreach="acquirers" t-as="acquirer">
-                                        <option t-att-value="acquirer['id']" t-esc="acquirer['name']"/>
+                                        <option t-att-value="acquirer.id" t-esc="acquirer.name"/>
                                     </t>
                                 </select>
                             </div>
                             <t t-foreach="acquirers" t-as="acquirer">
-                                <div t-raw="acquirer['template']" t-att-data-acquirer-id="acquirer['id']" t-attf-class="acquirer #{'hidden' if acquirer!=acquirers[0] else ''}"/>
+                                <div t-raw="acquirer.form" t-att-data-acquirer-id="acquirer.id" t-attf-class="acquirer #{'hidden' if acquirer!=acquirers[0] else ''}"/>
                             </t>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <h4>Delete a payment method:</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form method="post" action="/account/payment_method/delete/">
+                                <div class="form-group">
+                                    <select name="delete_pm_id" class="form-control" >
+                                        <t t-foreach="pms" t-as="pm">
+                                            <option t-att-value="pm.id" t-esc="pm.name"/>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="clearfix"></div>
+                                <button class="btn btn-primary pull-right">Delete <span class="fa fa-long-arrow-right"></span></button>
+                            </form>
                         </div>
                     </div>
                 </div>

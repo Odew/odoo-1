@@ -10,7 +10,6 @@
                 <field name="arch" type="xml">
                     <xpath expr='//group[@name="purchase"]' position="after">
                         <group string="Payment" colspan="2">
-                            <field name="default_payment_method_id" groups="base.group_sale_salesman"/>
                             <field name="payment_method_ids" groups="base.group_sale_salesman">
                                 <tree editable="bottom" create="false">
                                     <field name="name"/>

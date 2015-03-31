@@ -186,7 +186,6 @@
                                         <label class="control-label" for="pay_meth">Change Payment Method:</label>
                                         <select class="form-control" name="pay_meth">
                                             <option value="-2">Current: <span t-field="account.payment_method_id.name"/></option>
-                                            <option  t-if="part_def_pm" value="0">Default for <span t-field="account.partner_id"/>: <span t-field="part_def_pm.name"/></option>
                                             <option value="-1">New</option>
                                             <optgroup label="All Payment Methods">
                                                 <t t-foreach="part_pms" t-as="pm">
@@ -200,7 +199,7 @@
                                     <button class="btn btn-primary pull-right">Confirm<span t-if="account.state=='pending'"> and pay</span> <span class="fa fa-long-arrow-right"></span></button>
                                 </form>
                                 <div id="new_payment_method" class="hidden">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div t-if="error_message" class="alert alert-danger">
                                           <t t-foreach="error_message" t-as="err"><t t-esc="err"/><br /></t>
                                         </div>
@@ -209,12 +208,12 @@
                                                 <label class="control-label" for="pm_acquirer_id">Acquirer</label>
                                                 <select name="pm_acquirer_id" class="form-control">
                                                     <t t-foreach="acquirers" t-as="acquirer">
-                                                        <option t-att-value="acquirer['id']" t-esc="acquirer['name']"/>
+                                                        <option t-att-value="acquirer.id" t-esc="acquirer.name"/>
                                                     </t>
                                                 </select>
                                             </div>
                                             <t t-foreach="acquirers" t-as="acquirer">
-                                                <div t-raw="acquirer['template']" t-att-data-acquirer-id="acquirer['id']" t-attf-class="acquirer #{'hidden' if acquirer!=acquirers[0] else ''}"/>
+                                                <div t-raw="acquirer.form" t-att-data-acquirer-id="acquirer.id" t-attf-class="acquirer #{'hidden' if acquirer!=acquirers[0] else ''}"/>
                                             </t>
                                         </div>
                                         

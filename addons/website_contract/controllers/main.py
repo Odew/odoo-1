@@ -45,10 +45,9 @@ class website_contract(http.Controller):
         else:
             account_cust = account_res.browse(account_id)
   
-        acquirers = request.env['payment.acquirer'].search([('website_published', '=', True)])
+        acquirers = list(request.env['payment.acquirer'].search([('website_published', '=', True), ('s2s_support', '=', True)]))
         acc_pm = account_cust.payment_method_id
         part_pms = account_cust.partner_id.payment_method_ids
-        part_def_pm = account_cust.partner_id.default_payment_method_id
         inactive_options = account_cust.sudo().recurring_inactive_lines
         display_close = account_cust.template_id.sudo().user_closable and account_cust.state != 'close'
         active_plan = account_cust.template_id.sudo()
@@ -61,12 +60,11 @@ class website_contract(http.Controller):
             'acquirers': acquirers,
             'acc_pm': acc_pm,
             'part_pms': part_pms,
-            'part_def_pm': part_def_pm,
             'is_salesman': request.env['res.users'].sudo(request.uid).has_group('base.group_sale_salesman'),
         }
-        values.update({
-            'acquirers': [{'id': acquirer.id, 'name': acquirer.name, 'template': acquirer.s2s_render(account_cust.partner_id.id, values)[0]} for acquirer in acquirers]
-        })
+        render_context = dict(values.items() + {'json': True}.items())
+        for acquirer in acquirers:
+            acquirer.form = acquirer.s2s_render(account_cust.partner_id.id, render_context)[0]
         return request.website.render("website_contract.contract", values)
 
     @http.route(['/account/contract/payment/<int:account_id>/',
@@ -82,12 +80,7 @@ class website_contract(http.Controller):
 
         if post.get('pay_meth'):
             # no change
-            if int(post.get('pay_meth')) == -2:
-                pass
-            # partner default
-            elif int(post.get('pay_meth')) == 0:
-                account_cust.payment_method_id = account_cust.partner_id.default_payment_method_id
-            else:
+            if int(post.get('pay_meth'), 0) > 0:
                 account_cust.payment_method_id = int(post['pay_meth'])
 
         if post.get('pay_now'):

@@ -268,8 +268,6 @@ class PaymentTxOgone(osv.Model):
                                                   'acquirer_id': tx.acquirer_id.id,
                                                   'acquirer_ref': alias
                                                   })
-                if not tx.partner_id.default_payment_method_id:
-                    tx.partner_id.default_payment_method_id = ref
                 tx.partner_reference = alias
 
         return tx
