@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from openerp import api, fields, models, _
-from openerp.osv import osv, expression
+from openerp.osv import expression
 from openerp.report import report_sxw
 from openerp.tools import float_compare, float_round
 from openerp.exceptions import UserError, ValidationError, RedirectWarning
@@ -428,7 +428,7 @@ class AccountBankStatementLine(models.Model):
             elif comparator == '=':
                 domain = [(f, '=', float_round(amount, precision_digits=p))]
             else:
-                raise osv.except_osv(_("Programmation error : domain_maker_move_line_amount requires comparator '=' or '<'"))
+                raise UserError(_("Programmation error : domain_maker_move_line_amount requires comparator '=' or '<'"))
             domain += [('currency_id', '=', c)]
             return domain
 

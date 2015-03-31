@@ -2,7 +2,7 @@
 
 import time
 from openerp import api, fields, models, _
-from openerp.osv import osv, expression
+from openerp.osv import expression
 from openerp.exceptions import RedirectWarning, UserError
 from openerp.report import report_sxw
 from openerp.tools import float_is_zero
@@ -663,7 +663,7 @@ class AccountMoveLine(models.Model):
         if line:
             return line
         else:
-            raise osv.except_osv(_('Programming Error'), _('Writeoff improperly created.'))
+            raise UserError(_('Writeoff improperly created.'))
 
     @api.multi
     def remove_move_reconcile(self):
