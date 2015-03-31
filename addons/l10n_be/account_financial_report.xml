@@ -7,7 +7,7 @@
         -->
 
         <record id="account_financial_report_be_balancesheet0" model="account.financial.report">
-            <field name="name">Bilan après répartition</field>
+            <field name="name">Bilan</field>
             <field name="debit_credit" eval="True"/>
             <field name="report_type">no_date_range</field>
         </record>
@@ -19,10 +19,16 @@
         </record>
         <menuitem id="menu_action_account_report_bebs" name="Bilan" action="action_account_report_bebs" parent="account.menu_finance_reports"/>
 
+        <record id="account_financial_report_be_actif_title0" model="account.financial.report.line">
+            <field name="name">ACTIF</field>
+            <field name="sequence" eval="0"/>
+            <field name="financial_report_id" ref="account_financial_report_be_balancesheet0"/>
+            <field name="level" eval="1" />
+        </record>
         <record id="account_financial_report_be_actif0" model="account.financial.report.line">
             <field name="name">TOTAL DE L'ACTIF</field>
             <field name="code">BE_ACTIF</field>
-            <field name="financial_report_id" ref="account_financial_report_be_balancesheet0"/>
+            <field name="parent_id" ref='account_financial_report_be_actif_title0'/>
             <field name="formulas">balance = BE_20_28.balance + BE_29_58.balance; credit = BE_20_28.credit + BE_29_58.credit; debit = BE_20_28.debit + BE_29_58.debit</field>
             <field name="sequence" eval="1"/>
             <field name="level" eval="0" />
@@ -255,11 +261,17 @@
             <field name="sequence" eval="6"/>
             <field name="level" eval="2" />
         </record>
+        <record id="account_financial_report_be_passif_title0" model="account.financial.report.line">
+            <field name="name">PASSIF</field>
+            <field name="sequence" eval="1"/>
+            <field name="financial_report_id" ref="account_financial_report_be_balancesheet0"/>
+            <field name="level" eval="1" />
+        </record>
         <record id="account_financial_report_be_passif0" model="account.financial.report.line">
             <field name="name">TOTAL DU PASSIF</field>
             <field name="code">BE_ACTIF</field>
-            <field name="financial_report_id" ref="account_financial_report_be_balancesheet0"/>
-            <field name="formulas">balance = BE_10_15.balance + BE_16.balance + BE_17_49.balance; credit = BE_10_15.credit + BE_16.credit + BE_17_49.credit; debit = BE_10_15.debit + BE_16.debit + BE_17_49.debit</field>
+            <field name="parent_id" ref="account_financial_report_be_passif_title0"/>
+            <field name="formulas">balance = BE_UNAFFECTED_EARNINGS.balance + BE_10_15.balance + BE_16.balance + BE_17_49.balance; credit = BE_UNAFFECTED_EARNINGS.credit + BE_10_15.credit + BE_16.credit + BE_17_49.credit; debit = BE_UNAFFECTED_EARNINGS.debit + BE_10_15.debit + BE_16.debit + BE_17_49.debit</field>
             <field name="sequence" eval="2"/>
             <field name="level" eval="0" />
         </record>
@@ -393,6 +405,16 @@
             <field name="groupby">account_id</field>
             <field name="formulas">balance = -sum.balance; credit = sum.credit; debit = sum.debit</field>
             <field name="sequence" eval="5"/>
+            <field name="level" eval="2" />
+        </record>
+        <record id="account_financial_be_current_year_earnings0" model="account.financial.report.line">
+            <field name="name">149 - Bénéfice (Perte) en cours</field>
+            <field name="code">BE_UNAFFECTED_EARNINGS</field>
+            <field name="domain" eval="[('account_id.user_type', '=', ref('account.data_unaffected_earnings'))]" />
+            <field name="formulas">balance = NEP.balance - sum.balance</field>
+            <field name="sequence" eval="1"/>
+            <field name="special_date_changer">from_beginning</field>
+            <field name="parent_id" ref='account_financial_report_be_capitaux_propres0'/>
             <field name="level" eval="2" />
         </record>
         <record id="account_financial_report_be_subsides_capital0" model="account.financial.report.line">
@@ -666,6 +688,9 @@
             <field name="target">self</field>
         </record>
         <menuitem id="menu_action_account_report_bepnl" name="Compte des résultats" action="action_account_report_bepnl" parent="account.menu_finance_reports"/>
+        <record id="account_financial_be_current_year_earnings0" model="account.financial.report.line">
+            <field name="action_id" ref='action_account_report_bepnl' />
+        </record>
 
         <record id="account_financial_report_be_produits0" model="account.financial.report.line">
             <field name="name">Produits et charges d'exploitation</field>
