@@ -1,17 +1,11 @@
 
-// .oe_kanban_vignette, .oe_kanban_content {
-//     background-color: white;
-// }
-
 .o-kanban-view {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
     align-content: stretch;
     margin-top: 8px;
 }
 
-.o-kanban-record {
+.o_kanban_record {
     width: 328px;
     background-color: white;
     margin: 8px;
@@ -107,6 +101,7 @@
         color: #6d2c70;
     }
 
+
 .oe_dropdown_kanban {
   float: right;
   display: none;
@@ -123,4 +118,24 @@
   margin-right: 6px;
 }
 
+}
+
+.o_kanban_grouped {
+
+}
+
+.o_kanban_ungrouped {
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.o_kanban_group {
+  .o_kanban_header {
+    color: white;
+    margin: 8px;
+  }
+
+  flex-shrink: 0;
+  flex-grow: 0;
+  padding: 5px;
 }

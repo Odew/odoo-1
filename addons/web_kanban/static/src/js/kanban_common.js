@@ -242,11 +242,11 @@ var QuickCreate = Widget.extend({
 
 var KanbanRecord = Widget.extend({
     template: 'KanbanView.record',
-    init: function (parent, record) {
+    init: function (parent, record, view) {
         this._super(parent);
         this.group = parent;
         this.id = null;
-        this.view = parent;
+        this.view = view;
         this.set_record(record);
         // if (!this.view.state.records[this.id]) {
         //     this.view.state.records[this.id] = {
@@ -547,8 +547,26 @@ var KanbanRecord = Widget.extend({
     }
 });
 
-
 var KanbanGroup = Widget.extend({
+    template: "KanbanView.Group",
+
+    init: function(parent, group_data) {
+        this._super(parent);
+        this.parent = parent;
+        this.group_data = group_data;
+        this.records = group_data.records;
+        this.title = group_data.values.display_name;
+    },
+    start: function() {
+        var self = this;
+        _.each(this.records, function (record) {
+            var kanban_record = new KanbanRecord(self, record, self.parent);
+            kanban_record.appendTo(self.$el);
+        });
+    },
+});
+
+var OldKanbanGroup = Widget.extend({
     template: 'KanbanView.group_header',
     init: function (parent, records, group, dataset) {
         var self = this;

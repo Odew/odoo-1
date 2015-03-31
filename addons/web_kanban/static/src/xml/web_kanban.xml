@@ -20,6 +20,14 @@
         </div>
     </t>
 </t>
+<t t-name="KanbanView.Group">
+    <div class="o_kanban_group">
+        <div class="o_kanban_header">
+            <t t-esc="widget.title"/>
+        </div>
+    </div>
+</t>
+
 <t t-name="KanbanView.group_header">
     <td class="oe_kanban_group_header">
         <t t-if="widget.view.group_by">
@@ -72,7 +80,7 @@
     </td>
 </t>
 <t t-name="KanbanView.record">
-    <div class="o-kanban-record">
+    <div class="o_kanban_record">
         <t t-raw="content"/>
     </div>
 </t>
