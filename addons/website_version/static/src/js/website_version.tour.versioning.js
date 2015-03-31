@@ -28,6 +28,7 @@ Tour.register({
         {
             title:     _t("Click on New version"),
             popover:   { fixed: true },
+            placement: 'left',
             element:   'a[data-action="duplicate_version"]:first',
         },
         {
@@ -133,6 +134,7 @@ Tour.register({
 
         {
             title:     _t("Click on Publish Version"),
+            placement: 'left',
             element:   'a[data-action="publish_version"]:first',
             popover:   { fixed: true },
         },
