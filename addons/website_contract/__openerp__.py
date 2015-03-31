@@ -12,7 +12,8 @@ Allows your customers to manage their contract from a beautiful web interface.
         'sale_contract',
         'website_sale',
         'website_portal',
-        'website_quote'
+        'website_quote',
+        'website_payment'
     ],
     'data': [
         'views/templates.xml',

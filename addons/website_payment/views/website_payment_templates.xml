@@ -10,48 +10,96 @@
       </xpath>
     </template>
 
-    <template id="cc_form" name="Paypal (Test)" page="True">
+    <template id="cc_form" name="Add a Payment Method" page="True">
         <t t-call="website.layout">
             <div id="wrap">
                 <div class="container">
                     <h3>Register your credit card</h3>
                     <p>Card numbers are stored on our provider's secure servers.</p>
                     <div class="row">
-                        <form class="form-horizontal col-sm-4 oe_cc" role="form" method="post">
-                            <div class="form-group col-sm-8">
-                                <label class="control-label" for="cc_number">Card number</label>
-                                <input type="tel" name="cc_number" id="cc_number" class="form-control" placeholder="&#8226;&#8226;&#8226;&#8226;&#32;&#8226;&#8226;&#8226;&#8226;&#32;&#8226;&#8226;&#8226;&#8226;&#32;&#8226;&#8226;&#8226;&#8226;&#32;"/>
-                                <input type="hidden" name="cc_brand" value=""/>
-                                <div class="card_placeholder"></div>
-                                <div class="visa"></div>
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label class="control-label" for="cc_cvc">Card code</label>
-                                <input type="text" name="cc_cvc" id="cc_cvc" class="form-control" maxlength="4" placeholder="CVC"/>
-                            </div>
-                            <div class="form-group col-sm-7">
-                                <label class="control-label" for="cc_holder_name">Holder Name</label>
-                                <input type="text" name="cc_holder_name" id="cc_holder_name" class="form-control"/>
-                            </div>
-                            <div class="form-group col-sm-5">
-                                <label class="control-label" for="cc_expires_mm">Expires</label>
-                                <input type="text" name="cc_expiry" id="cc_expiry" class="form-control" maxlength="7" placeholder="MM / YY"/>
-                            </div>
-                            <div class="form-group col-sm-6" t-if='len(acquirers)>1'>
-                                <label class="control-label" for="cc_acquirer">Acquirer</label>
-                                <select name="cc_acquirer">
+                        <div t-if="error_message" class="alert alert-danger">
+                          <t t-foreach="error_message" t-as="err"><t t-esc="err"/><br /></t>
+                        </div>
+                        <div class="row">
+                            <div t-attf-class="form-group #{error.get('name') and 'has-error' or ''}" t-if='len(acquirers)>1'>
+                                <label class="control-label" for="pm_acquirer_id">Acquirer</label>
+                                <select name="pm_acquirer_id" class="form-control">
                                     <t t-foreach="acquirers" t-as="acquirer">
                                         <option t-att-value="acquirer['id']" t-esc="acquirer['name']"/>
                                     </t>
                                 </select>
                             </div>
-                            <div class="clearfix"></div>
-                            <button class="btn btn-primary pull-right">Add Card</button>
-                        </form>
+                            <t t-foreach="acquirers" t-as="acquirer">
+                                <div t-raw="acquirer['template']" t-att-data-acquirer-id="acquirer['id']" t-attf-class="acquirer #{'hidden' if acquirer!=acquirers[0] else ''}"/>
+                            </t>
+                            <div class="form-group">
+                                <input type="checkbox" name="cc_default"/>
+                                <label class="control-label" for="cc_default">Use as default</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </t>
+    </template>
+
+    <template id="pay_methods" name="Payment Methods">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Payment Methods</t>
+            <div id="wrap">
+                <div class="container">
+                  <div class="row">
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb mt8">
+                                <li><a href="/account">My Account</a></li>
+                                <li>Payment Methods</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <h1>Payment Methods</h1>
+                    <h4>Select your default payment method:</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form method="post">
+                                <div class="form-group">
+                                    <label class="control-label" for="default_pm">Default Payment Method</label><br/>
+                                    <t t-foreach='pms' t-as='pm'>
+                                        <input type="radio" t-att-value="pm['id']" name="default_pm" t-att-checked="'checked' if pm['id']==def_pm['id'] else ''"> <span t-esc="pm['name']"/><a t-att-href="'/account/payment_method/delete/'+str(pm['id'])"> <span class="fa fa-trash-o"/></a></input><br/>
+                                    </t>
+                                </div>
+                                <div class="clearfix"></div>
+                                <button class="btn btn-primary pull-right">Confirm <span class="fa fa-long-arrow-right"></span></button>
+                            </form>
+                        </div>
+                    </div>
+                    <h4>Add a new payment method:</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div t-if="error_message" class="alert alert-danger">
+                              <t t-foreach="error_message" t-as="err"><t t-esc="err"/><br /></t>
+                            </div>
+                            <div t-attf-class="form-group #{error.get('name') and 'has-error' or ''}" t-if='len(acquirers)>1'>
+                                <label class="control-label" for="pm_acquirer_id">Acquirer</label>
+                                <select name="pm_acquirer_id" class="form-control">
+                                    <t t-foreach="acquirers" t-as="acquirer">
+                                        <option t-att-value="acquirer['id']" t-esc="acquirer['name']"/>
+                                    </t>
+                                </select>
+                            </div>
+                            <t t-foreach="acquirers" t-as="acquirer">
+                                <div t-raw="acquirer['template']" t-att-data-acquirer-id="acquirer['id']" t-attf-class="acquirer #{'hidden' if acquirer!=acquirers[0] else ''}"/>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="pay_meth_link" inherit_id="website_portal.account">
+        <xpath expr="//div[@id='details']" position="inside">
+            <a href="/account/payment_method">Manage your payment methods</a>
+        </xpath>
     </template>
 </data>
 </openerp>

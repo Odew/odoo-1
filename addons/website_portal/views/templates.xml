@@ -25,7 +25,7 @@
                       <t t-call="website_portal.contact" />
                       <div class="oe_structure"/>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" id="details">
                         <h3 class="page-header">Your Details <a href="account/details" class="btn btn-default btn-xs">Change</a></h3>
                         <div t-field="user.partner_id" t-field-options='{"widget": "contact", "fields": ["email", "phone", "address", "name"]}'/>
                     </div>

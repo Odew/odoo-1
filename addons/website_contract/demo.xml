@@ -222,6 +222,7 @@ Access your Odoo Instance using your own domain.</field>
         <field name="type">contract</field>
         <field name="date_start" eval="(DateTime.now() - timedelta(days=9))"/>
         <field name="recurring_next_date" eval="(DateTime.now() + timedelta(days=21))"/>
+        <field name="recurring_invoices">True</field>
         <field name="description">
 Payment
 All payments are due upon receipt. If a payment is not received or payment method is declined, the buyer forfeits the ownership of any items purchased. If no payment is received, no items will be shipped.

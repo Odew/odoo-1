@@ -263,13 +263,14 @@ class PaymentTxOgone(osv.Model):
             cardholder = data.get('CN')
             if not method_obj.search_count(cr, uid, domain, context=context):
                 _logger.info('Ogone: saving alias %s for partner %s' % (data.get('CARDNO'), tx.partner_id))
-                ref = method_obj.create(cr, uid, {'name': data.get('CARDNO') + (' - '+cardholder if cardholder else ''),
+                ref = method_obj.create(cr, uid, {'name': data.get('CARDNO') + (' - ' + cardholder if cardholder else ''),
                                                   'partner_id': tx.partner_id.id,
                                                   'acquirer_id': tx.acquirer_id.id,
                                                   'acquirer_ref': alias
                                                   })
                 if not tx.partner_id.default_payment_method_id:
                     tx.partner_id.default_payment_method_id = ref
+                tx.partner_reference = alias
 
         return tx
 

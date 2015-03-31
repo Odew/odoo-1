@@ -740,68 +740,73 @@ class account_analytic_account(osv.osv):
         tx_obj.s2s_do_transaction(cr, uid, tx_id, context=context)
         return tx_obj.browse(cr, uid, tx_id, context=context)
 
-    def _recurring_create_invoice(self, cr, uid, ids, automatic=False, context=None):
+    def _recurring_create_invoice(self, cr, uid, ids, automatic=False, invoice_only=False, context=None):
         context = context or {}
         invoice_ids = []
-        current_date =  time.strftime('%Y-%m-%d')
+        current_date = time.strftime('%Y-%m-%d')
         if ids:
             contract_ids = ids
         else:
-            contract_ids = self.search(cr, uid, [('recurring_next_date','<=', current_date), ('state','in', ['open', 'pending']), ('recurring_invoices','=', True), ('type', '=', 'contract')])
-        if contract_ids:
-            cr.execute('SELECT company_id, array_agg(id) as ids FROM account_analytic_account WHERE id IN %s GROUP BY company_id', (tuple(contract_ids),))
-            for company_id, ids in cr.fetchall():
-                for contract in self.browse(cr, uid, ids, context=dict(context, company_id=company_id, force_company=company_id)):
-                    if contract.payment_mandatory and (contract.payment_method_id or contract.partner_id.default_payment_method_id):
-                        try:
-                            payment_method = contract.payment_method_id or contract.partner_id.default_payment_method_id
-                            invoice_values = self._prepare_invoice(cr, uid, contract, context=context)
-                            new_invoice_id = self.pool['account.invoice'].create(cr, uid, invoice_values, context=context)
-                            new_invoice = self.pool ['account.invoice'].browse(cr, uid, new_invoice_id, context=context)
-                            amount, currency_id = new_invoice.amount_total, new_invoice.currency_id.id
-                            tx = self._do_payment(cr, uid, contract, payment_method, amount, currency_id, context=context)
-                            if tx.state != 'done':
-                                raise ValueError('Payment not validated by provider')
-                            new_invoice.validate()
-                            # pay and reconcile the stuff and do the thingy, i guess?
-                            # what about deferred revenues?
-                            # accounts and journals need to be defined for these things, do that at install?
-                            # install of what? payment? payment_ogone? sale_contract?
-                            period_id = self.pool['account.period'].find(cr, uid, current_date, context=context)
-                            journal_id = tx.acquirer_id.journal_id
-                            new_invoice.pay_and_reconcile(cr, uid, tx.amount_total, journal_id.account_id.id, period_id, journal_id)
-                            invoice_ids.append(new_invoice_id)
-                            next_date = datetime.datetime.strptime(contract.recurring_next_date or current_date, "%Y-%m-%d")
-                            periods = {'daily': 'days', 'weekly': 'weeks', 'monthly': 'months', 'yearly': 'years'}
-                            invoicing_period = relativedelta(**{periods[contract.recurring_rule_type]: contract.recurring_interval})
-                            new_date = next_date + invoicing_period
-                            self.write(cr, uid, [contract.id], {'recurring_next_date': new_date.strftime('%Y-%m-%d')}, context=context)
-                            if automatic:
-                                cr.commit()
-                        except Exception:
-                            if automatic:
-                                cr.rollback()
-                                _logger.exception('Fail to create recurring invoice for contract %s', contract.code)
-                            else:
-                                raise
-                    else:
-                        try:
-                            invoice_values = self._prepare_invoice(cr, uid, contract, context=context)
-                            new_invoice_id = self.pool['account.invoice'].create(cr, uid, invoice_values, context=context)
-                            invoice_ids.append(new_invoice_id)
-                            next_date = datetime.datetime.strptime(contract.recurring_next_date or current_date, "%Y-%m-%d")
-                            periods = {'daily': 'days', 'weekly': 'weeks', 'monthly': 'months', 'yearly': 'years'}
-                            invoicing_period = relativedelta(**{periods[contract.recurring_rule_type]: contract.recurring_interval})
-                            new_date = next_date + invoicing_period
-                            self.write(cr, uid, [contract.id], {'recurring_next_date': new_date.strftime('%Y-%m-%d')}, context=context)
-                            if automatic:
-                                cr.commit()
-                        except Exception:
-                            if automatic:
-                                cr.rollback()
-                                _logger.exception('Fail to create recurring invoice for contract %s', contract.code)
-                            else:
-                                raise
+            domain = [('recurring_next_date', '<=', current_date),
+                      ('state', 'in', ['open', 'pending']),
+                      ('recurring_invoices', '=', True),
+                      ('type', '=', 'contract'),
+                      ('contract_type', '=', 'subscription')]
+            contract_ids = self.search(cr, uid, domain)
+
+        cr.execute('SELECT company_id, array_agg(id) as ids FROM account_analytic_account WHERE id IN %s GROUP BY company_id', (tuple(contract_ids),))
+        for company_id, ids in cr.fetchall():
+            for contract in self.browse(cr, uid, ids, context=dict(context, company_id=company_id, force_company=company_id)):
+                if contract.payment_mandatory and not invoice_only:
+                    try:
+                        payment_method = contract.payment_method_id
+                        invoice_values = self._prepare_invoice(cr, uid, contract, context=context)
+                        new_invoice_id = self.pool['account.invoice'].create(cr, uid, invoice_values, context=context)
+                        new_invoice = self.pool['account.invoice'].browse(cr, uid, new_invoice_id, context=context)
+                        amount, currency_id = new_invoice.amount_total, new_invoice.currency_id.id
+                        tx = self._do_payment(cr, uid, contract, payment_method, amount, currency_id, context=context)
+                        if tx.state != 'done':
+                            raise ValueError('Payment not validated by provider')
+                        # self.pool['account.invoice'].invoice_validate(cr, uid, new_invoice_id, context=context)
+                        new_invoice.signal_workflow('invoice_open')
+                        # pay and reconcile the stuff and do the thingy, i guess?
+                        # what about deferred revenues?
+                        period_id = self.pool['account.period'].find(cr, uid, current_date, context=context)[0]
+                        journal = tx.acquirer_id.journal_id
+                        self.pool['account.invoice'].pay_and_reconcile(cr, uid, new_invoice_id, tx.amount, journal.default_credit_account_id.id,
+                                                                       period_id, journal.id, False, False, False, context=context)
+                        invoice_ids.append(new_invoice_id)
+                        next_date = datetime.datetime.strptime(contract.recurring_next_date or current_date, "%Y-%m-%d")
+                        periods = {'daily': 'days', 'weekly': 'weeks', 'monthly': 'months', 'yearly': 'years'}
+                        invoicing_period = relativedelta(**{periods[contract.recurring_rule_type]: contract.recurring_interval})
+                        new_date = next_date + invoicing_period
+                        self.write(cr, uid, [contract.id], {'recurring_next_date': new_date.strftime('%Y-%m-%d'), 'state': 'open'}, context=context)
+                        if automatic:
+                            cr.commit()
+                    except Exception:
+                        if automatic:
+                            cr.rollback()
+                            _logger.exception('Fail to create recurring invoice for contract %s', contract.code)
+                        else:
+                            raise
+                else:
+                    try:
+                        invoice_values = self._prepare_invoice(cr, uid, contract, context=context)
+                        new_invoice_id = self.pool['account.invoice'].create(cr, uid, invoice_values, context=context)
+                        invoice_ids.append(new_invoice_id)
+                        next_date = datetime.datetime.strptime(contract.recurring_next_date or current_date, "%Y-%m-%d")
+                        periods = {'daily': 'days', 'weekly': 'weeks', 'monthly': 'months', 'yearly': 'years'}
+                        invoicing_period = relativedelta(**{periods[contract.recurring_rule_type]: contract.recurring_interval})
+                        new_date = next_date + invoicing_period
+                        self.write(cr, uid, [contract.id], {'recurring_next_date': new_date.strftime('%Y-%m-%d')}, context=context)
+                        if automatic:
+                            cr.commit()
+                    except Exception:
+                        if automatic:
+                            cr.rollback()
+                            _logger.exception('Fail to create recurring invoice for contract %s', contract.code)
+                        else:
+                            raise
         return invoice_ids
 
 

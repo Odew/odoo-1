@@ -76,12 +76,13 @@
                         <input type="text" name="cc_expiry" id="cc_expiry" class="form-control" maxlength="7" placeholder="MM / YY"/>
                     </div>
                     <input type="hidden" name="acquirer_id" t-att-value="id"/>
-                    <input t-if="return_success" type="hidden" name="return_success" t-att-value="return_success"/>
-                    <input t-if="return_fail" type="hidden" name="return_fail" t-att-value="return_fail"/>
                     <input t-if="partner_id" type="hidden" name="partner_id" t-att-value="partner_id"/>
                     <div class="clearfix"/>
                 </div>
-                <button class="btn btn-primary pull-right" type="submit">Confirm <span class="fa fa-long-arrow-right"></span></button>
+                <button class="btn btn-primary pull-right" t-att-class="submit_class" type="submit">
+                    <span t-if="not submit_txt">Confirm <span class="fa fa-long-arrow-right"></span></span>
+                    <span t-if="submit_txt"><t t-esc="submit_txt"/> <span class="fa fa-long-arrow-right"/></span>
+                </button>
             </form>
         </template>
 

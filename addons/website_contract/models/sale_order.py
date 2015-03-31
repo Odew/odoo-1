@@ -11,6 +11,11 @@ class sale_order(models.Model):
 
     def create_contract(self):
         """ Create a contract based on the order's quote template's contract template """
+        self.ensure_one()
+        tx = self.env['payment.transaction'].search([('reference', '=', self.name)])
+        tx.ensure_one()
+        payment_method = self.env['payment.method'].search([('acquirer_ref', '=', tx.partner_reference)])
+        payment_method.ensure_one()
         if self.template_id and self.template_id.contract_template:
             values = {
                 'name': self.template_id.contract_template.name,
@@ -31,7 +36,8 @@ class sale_order(models.Model):
                 'hours_qtt_est': self.template_id.contract_template.hours_qtt_est,
                 'to_invoice': self.template_id.contract_template.to_invoice.id,
                 'pricelist_id': self.template_id.contract_template.pricelist_id and self.template_id.contract_template.pricelist_id.id or False,
-                'user_closable': self.template_id.contract_template.user_closable
+                'user_closable': self.template_id.contract_template.user_closable,
+                'payment_method_id': payment_method.id,
             }
             if values['contract_type'] == 'subscription':
                 values.update({
@@ -81,7 +87,7 @@ class sale_order(models.Model):
     def _website_product_id_change(self, cr, uid, ids, order_id, product_id, qty=0, line_id=None, context=None):
         res = super(sale_order, self)._website_product_id_change(cr, uid, ids, order_id, product_id, qty, line_id, context=context)
         if line_id:
-            line = self.pool['sale.order.line'].browse(cr, uid, line_id)
+            line = self.env['sale.order.line'].browse(cr, uid, line_id)
             if line.force_price:
                 forced_price = line.price_unit
                 res['price_unit'] = forced_price
