@@ -64,5 +64,11 @@
             <field name="default" eval="False"/>
             <field name="description">Meeting Scheduled</field>
         </record>
+        <record id="mt_appraisal_sent" model="mail.message.subtype">
+            <field name="name">Appraisal sent</field>
+            <field name="res_model">hr.appraisal</field>
+            <field name="default" eval="False"/>
+            <field name="description">Appraisal Sent</field>
+        </record>
     </data>
 </odoo>

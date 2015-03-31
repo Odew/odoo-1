@@ -1,4 +1,7 @@
 .oe_appraisal_kanban_box {
-    height : auto;
-    width : 300px;
+    height: auto;
+    width: 300px;
+}
+.openerp .oe_stat_button:hover .oe_form_x2many_counter a{
+    color: white
 }

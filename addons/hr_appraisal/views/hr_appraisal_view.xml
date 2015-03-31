@@ -17,7 +17,7 @@
             <sheet>
                 <div class="oe_right oe_button_box">
                     <button class="oe_inline oe_stat_button" name="action_get_users_input" type="object" icon="fa-reply" context="{'answers':True}">
-                        <div><strong><field name="completed_user_input_count"/></strong><br/>Answers</div>
+                        <div><strong><field name="completed_user_input_ids" widget="x2many_counter"/></strong></div>
                     </button>
                 </div>
                 <label for="employee_id" class="oe_edit_only"/>
@@ -88,8 +88,8 @@
                 <field name="date_close"/>
                 <field name="interview_deadline"/>
                 <field name="state"/>
-                <field name="user_input_count" readonly="0"/>
-                <field name="completed_user_input_count" readonly="0"/>
+                <field name="user_input_ids" readonly="0"/>
+                <field name="completed_user_input_ids" readonly="0"/>
             </tree>
         </field>
     </record>
@@ -119,7 +119,8 @@
                 <field name="manager_ids"/>
                 <field name="date_close"/>
                 <field name="state"/>
-                <field name="user_input_count"/>
+                <field name="user_input_ids"/>
+                <field name="completed_user_input_ids"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click oe_appraisal_kanban_box">
@@ -149,8 +150,8 @@
                                 </li>
                             </div>
                             <div style="display: inline-block">
-                                <a name="action_get_users_input" type="object"><field name="user_input_count" widget="gauge" style="width:120px; height: 90px;" options="{'max_field': 'user_input_count'}">Sent Appraisal </field></a>
-                                <a name="action_get_users_input" type="object" context="{'answers':True}"><field name="completed_user_input_count" widget="gauge" style="width:120px; height: 90px;" options="{'max_field': 'user_input_count'}">Answers </field></a>
+                                <a name="action_get_users_input" type="object"><field name="user_input_ids" widget="gauge" style="width:120px; height: 90px;" options="{'max_field': 'user_input_ids'}">Sent Appraisal </field></a>
+                                <a name="action_get_users_input" type="object" context="{'answers':True}"><field name="completed_user_input_ids" widget="gauge" style="width:120px; height: 90px;" options="{'max_field': 'user_input_ids'}">Answers </field></a>
                             </div>
                             <div class="oe_kanban_bottom_right_appraisal">
                                 <img t-att-src="kanban_image('hr.employee', 'image_small', record.employee_id.raw_value)" t-att-title="record.employee_id.value" width="24" height="24" class="oe_kanban_avatar pull-right"/>

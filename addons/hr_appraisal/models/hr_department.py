@@ -8,7 +8,7 @@ class hr_department(models.Model):
     @api.multi
     def action_number_of_answers(self):
         self.ensure_one()
-        action_hr_evaluation = self.env.ref('hr_evaluation.hr_appraisal_action_from_department').read()[0]
+        action_hr_evaluation = self.env.ref('hr_appraisal.hr_appraisal_action_from_department').read()[0]
         action_hr_evaluation['display_name'] = _('Appraisal to Process')
         action_hr_evaluation['domain'] = str([('id', 'in', self.to_process_appraisal_ids.ids)])
         return action_hr_evaluation

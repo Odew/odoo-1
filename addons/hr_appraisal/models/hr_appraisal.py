@@ -26,21 +26,12 @@ class HrAppraisal(models.Model):
             return 'hr_appraisal.mt_appraisal_meeting'
         return super(HrAppraisal, self)._track_subtype(init_values)
 
-    @api.one
-    def _compute_user_input_count(self):
-        self.user_input_count = len(self.user_input_ids)
-
-    @api.one
-    def _compute_completed_user_input(self):
-        self.completed_user_input_count = len(self.user_input_ids.filtered(lambda r: r.state == 'done'))
-
     action_plan = fields.Text(string="Action Plan", help="If the evaluation does not meet the expectations, you can propose an action plan")
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
     color = fields.Integer(string='Color Index')
     department_id = fields.Many2one('hr.department', related='employee_id.department_id', string='Department', store=True)
     date_close = fields.Datetime(string='Appraisal Deadline', index=True, required=True)
     employee_id = fields.Many2one('hr.employee', required=True, string='Employee', index=True)
-    completed_user_input_count = fields.Integer(string='Completed Survey', compute="_compute_completed_user_input")
     state = fields.Selection(APPRAISAL_STATE, string='Status', track_visibility='onchange', required=True, readonly=True, copy=False, default='new', index=True)
     manager = fields.Boolean(string='Manager')
     manager_ids = fields.Many2many('hr.employee', 'appraisal_manager_rel', 'hr_appraisal_id')
@@ -54,8 +45,8 @@ class HrAppraisal(models.Model):
     appraisal_self = fields.Boolean(string='Employee')
     appraisal_employee = fields.Char(related='employee_id.name', string='Employee Name')
     appraisal_self_survey_id = fields.Many2one('survey.survey', string='Self Appraisal')
-    user_input_ids = fields.One2many('survey.user_input', 'survey_res_id', string='suvrey Answers', auto_join=True, domain=lambda self: [('survey_model', '=', self._name)])
-    user_input_count = fields.Integer(string='Sent Survey', compute='_compute_user_input_count')
+    user_input_ids = fields.One2many('survey.user_input', 'survey_res_id', string='Sent Forms', auto_join=True, domain=lambda self: [('survey_model', '=', self._name)])
+    completed_user_input_ids = fields.One2many('survey.user_input', 'survey_res_id', string='Answers', auto_join=True, domain=lambda self: [('survey_model', '=', self._name), ('state', '=', 'done')])
     mail_template_id = fields.Many2one('mail.template', string="Email Template For Appraisal", default=lambda self: self.env.ref('hr_appraisal.send_appraisal_template'))
     meeting_id = fields.Many2one('calendar.event', string='Meeting')
     interview_deadline = fields.Date(string="Final Interview", index=True, track_visibility='onchange')
@@ -140,13 +131,13 @@ class HrAppraisal(models.Model):
         @return: returns a list of tuple (survey, employee).
         """
         appraisal_receiver = []
-        if self.manager and self.manager_ids:
+        if self.manager and self.manager_ids and self.manager_survey_id:
             appraisal_receiver.append((self.manager_survey_id, self.manager_ids))
-        if self.colleagues and self.colleagues_ids:
+        if self.colleagues and self.colleagues_ids and self.colleagues_survey_id:
             appraisal_receiver.append((self.colleagues_survey_id, self.colleagues_ids))
-        if self.subordinates and self.subordinates_ids:
+        if self.subordinates and self.subordinates_ids and self.subordinates_survey_id:
             appraisal_receiver.append((self.subordinates_survey_id, self.subordinates_ids))
-        if self.appraisal_self and self.appraisal_employee:
+        if self.appraisal_self and self.appraisal_employee and self.appraisal_self_survey_id:
             appraisal_receiver.append((self.appraisal_self_survey_id, self.employee_id))
         return appraisal_receiver
 
@@ -157,23 +148,23 @@ class HrAppraisal(models.Model):
         for appraisal in self:
             appraisal_receiver = appraisal._prepare_user_input_receivers()
             for survey, receivers in appraisal_receiver:
-                if survey and receivers:
-                    for employee in receivers:
-                        email = employee.related_partner_id.email or employee.work_email
-                        render_template = MailTemplate.with_context(email=email, survey=survey, employee=employee).generate_email_batch(appraisal.mail_template_id.id, [appraisal.id])
-                        values = {
-                            'survey_id': survey.id,
-                            'public': 'email_private',
-                            'partner_ids': employee.related_partner_id and [(4, employee.related_partner_id.id)] or False,
-                            'multi_email': email,
-                            'subject': survey.title,
-                            'body': render_template[appraisal.id]['body'],
-                            'date_deadline': appraisal.date_close,
-                            'model': appraisal._name,
-                            'res_id': appraisal.id,
-                        }
-                        wizard = ComposeMessage.create(values)
-                        wizard.send_mail()
+                for employee in receivers:
+                    email = employee.related_partner_id.email or employee.work_email
+                    render_template = MailTemplate.with_context(email=email, survey=survey, employee=employee).generate_email_batch(appraisal.mail_template_id.id, [appraisal.id])
+                    values = {
+                        'survey_id': survey.id,
+                        'public': 'email_private',
+                        'partner_ids': employee.related_partner_id and [(4, employee.related_partner_id.id)] or False,
+                        'multi_email': email,
+                        'subject': survey.title,
+                        'body': render_template[appraisal.id]['body'],
+                        'date_deadline': appraisal.date_close,
+                        'model': appraisal._name,
+                        'res_id': appraisal.id,
+                    }
+                    wizard = ComposeMessage.create(values)
+                    wizard.send_mail()
+            appraisal.message_post(body=_("Appraisal(s) form have been sent"), subtype="hr_appraisal.mt_appraisal_sent")
         return True
 
     @api.multi
