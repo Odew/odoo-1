@@ -163,6 +163,7 @@
             <link rel="stylesheet" href="/web/static/src/less/utils.less"/>
             <link rel="stylesheet" href="/web/static/src/less/webclient.less"/>
             <link rel="stylesheet" href="/web/static/src/less/webclient_layout.less"/>
+            <link rel="stylesheet" href="/web/static/src/less/debug_manager.less"/>
             <link rel="stylesheet" href="/web/static/src/less/control_panel.less"/>
             <link rel="stylesheet" href="/web/static/src/less/pivot_view.less"/>
             <link rel="stylesheet" href="/web/static/src/less/graph_view.less"/>

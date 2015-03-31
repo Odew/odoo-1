@@ -507,13 +507,37 @@
 </t>
 
 <t t-name="WebClient.DebugManager">
-    <li class="oe_debug_manager">
-        <a href="#" t-att-title='_t("Open Debug Menu")' class="dropdown-toggle oe_debug_button" data-toggle="dropdown">
-            <span class="fa fa-bug"/>
-            <b class="caret"/>
-        </a>
-        <ul class="dropdown-menu js_debug_dropdown" role="menu"/>
-    </li>
+    <div class="row o-debug-manager">
+        <div class="col-md-3 o-debug-title">
+            Debug Manager
+        </div>
+        <div class="col-md-8 btn-group btn-group-sm">
+            <button class="btn btn-default btn-sm dropdown-toggle o-debug-button" data-toggle="dropdown" type="button">
+                <span>Debug</span>
+                <b class="caret"/>
+            </button>
+            <ul class="dropdown-menu o-debug-dropdown" role="menu"/>
+            <!-- <button class="btn btn-default dropdown-toggle o-debug-views-button" data-toggle="dropdown" type="button">
+                <span>Manage views</span>
+                <b class="caret"/>
+            </button>
+            <button class="btn btn-default dropdown-toggle o-debug-fields-button" data-toggle="dropdown" type="button">
+                <span>Fields</span>
+                <b class="caret"/>
+            </button>
+            <button class="btn btn-default dropdown-toggle o-debug-workflow-button" data-toggle="dropdown" type="button">
+                <span>Workflow</span>
+                <b class="caret"/>
+            </button>
+            <button class="btn btn-default dropdown-toggle o-debug-misc-button" data-toggle="dropdown" type="button">
+                <span>Misc.</span>
+                <b class="caret"/>
+            </button>  -->
+        </div>
+        <div class="col-md-1">
+            <a class="fa fa-close fa-sm o-debug-leave" href="#"/>
+        </div>
+    </div>
 </t>
 <t t-name="WebClient.DebugDropdown">
     <t t-if="active_view.type === 'form'">
@@ -532,8 +556,6 @@
         <li class="oe_edit_action" t-if="action"><a href="#" data-action="edit" t-att-data-model="action.type" t-att-data-id="action.id">Edit Action</a></li> 
         <li class="oe_edit_workflow"><a href="#" data-action="edit_workflow">Edit Workflow</a></li>
         <li class="oe_print_workflow"><a href="#" data-action="print_workflow">Print Workflow</a></li>
-        <li class="divider"/>
-        <li class="oe_leave"><a href="#" data-action="leave_debug">Leave Debug Mode</a></li>
     </t>
 </t>
 <t t-name="WebClient.DebugViewLog">

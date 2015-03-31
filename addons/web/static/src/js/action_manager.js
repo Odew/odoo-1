@@ -5,6 +5,7 @@ var ControlPanel = require('web.ControlPanel');
 var core = require('web.core');
 var crash_manager = require('web.crash_manager');
 var data = require('web.data');
+var DebugManager = require('web.DebugManager');
 var Dialog = require('web.Dialog');
 var framework = require('web.framework');
 var pyeval = require('web.pyeval');
@@ -156,6 +157,12 @@ var ActionManager = Widget.extend({
     start: function() {
         this._super();
 
+        // Instantiate the DebugManager in debug mode and insert it into the DOM
+        if (core.debug) {
+            this.debug_manager = new DebugManager(this);
+            this.debug_manager.insertBefore(this.$el);
+        }
+
         // Instantiate a unique main ControlPanel used by widgets of actions in this.action_stack
         this.main_control_panel = new ControlPanel(this);
         // Listen to event "on_breadcrumb_click" trigerred on the control panel when
@@ -227,6 +234,9 @@ var ActionManager = Widget.extend({
         // document only when it's ready
         var new_widget_fragment = document.createDocumentFragment();
         return $.when(this.inner_widget.appendTo(new_widget_fragment)).done(function() {
+            // Update the Debug Manager
+            self.debug_manager.trigger("update", self.inner_widget);
+
             // Detach the fragment of the previous action and store it within the action
             if (old_action) {
                 old_action.set_fragment(self.$el.contents().detach());

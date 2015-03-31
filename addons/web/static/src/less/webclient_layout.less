@@ -11,7 +11,9 @@
 @o-overlay-zindex: @zindex-tooltip + 1;
 
 @o-navbar-zindex: @zindex-tooltip + 4;
-@o-control-panel-zindex: 5;
+@o-control-panel-first-zindex: 6;
+@o-control-panel-second-zindex: 5;
+@o-debug-manager-zindex: 7;
 
 // Mixins
 .o-menu-boilerplate() {
@@ -82,12 +84,17 @@ html {
                 display: block;
                 margin-left: 0;
             }
+            .o-debug-manager {
+                .o-flex(0, 0, auto);
+                z-index: @o-debug-manager-zindex;
+            }
             .o-control-panel-first-row {
                 .o-flex(0, 0, auto);
+                z-index: @o-control-panel-first-zindex;
             }
             .o-control-panel-second-row {
                 .o-flex(0, 0, auto);
-                z-index: @o-control-panel-zindex;
+                z-index: @o-control-panel-second-zindex;
             }
             .o-content {
                 .o-flex(1, 1, auto);
