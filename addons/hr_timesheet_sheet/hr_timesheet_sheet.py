@@ -140,15 +140,11 @@ class hr_timesheet_sheet(osv.osv):
         return hr_employee.attendance_action_change(cr, uid, employee_ids, context=context)
     
     def _count_attendances(self, cr, uid, ids, field_name, arg, context=None):
-        Attendance = self.pool['hr.attendance']
-        import pudb
-        pudb.set_trace()
-        return {
-            sheet_id: {
-                'attendance_count': Attendance.search_count(cr,uid, [('sheet_id', '=', sheet_id)], context=context)
-            }
-            for sheet_id in ids
-        }
+        res = dict.fromkeys(ids, 0)
+        attendances_groups = self.pool['hr.attendance'].read_group(cr, uid, [('sheet_id' , 'in' , ids)], ['sheet_id'], 'sheet_id', context=context)
+        for attendances in attendances_groups:
+            res[attendances['sheet_id'][0]] = attendances['sheet_id_count']
+        return res
 
     _columns = {
         'name': fields.char('Note', select=1,
@@ -384,7 +380,7 @@ class account_analytic_line(osv.osv):
         return True
 
     def multi_on_change_account_id(self, cr, uid, ids, account_ids, context=None):
-        return dict([(account_id, self.on_change_account_id(cr, uid, ids, account_id, is_timesheet=True, user_id=context.get('user_id', uid), context=context)) for account_id in account_ids])
+        return dict([(account_id, self.on_change_account_id(cr, uid, ids, account_id, user_id=context.get('user_id', uid), is_timesheet=True, context=context)) for account_id in account_ids])
 
 
 class hr_attendance(osv.osv):

@@ -29,18 +29,11 @@ class project_issue(osv.osv):
     def _hours_get(self, cr, uid, ids, field_names, args, context=None):
         res = {}
         for issue in self.browse(cr, uid, ids, context=context):
-            progress = 0.0
-            if issue.task_id:
-                progress = issue.task_id.progress
-            res[issue.id] = {'progress' : progress}
+            res[issue.id] = { 'progress' : issue.task_id.progress or 0.0 }
         return res
 
     def _get_issue_task(self, cr, uid, task_ids, context=None):
-        issues = []
-        issue_pool = self.pool.get('project.issue')
-        for task in self.pool.get('project.task').browse(cr, uid, task_ids, context=context):
-            issues += issue_pool.search(cr, uid, [('task_id','=',task.id)])
-        return issues
+        return self.pool['project.issue'].search(cr, uid, [('task_id', 'in', task_ids)], context=context)
 
     _columns = {
         'progress': fields.function(_hours_get, string='Progress (%)', multi='line_id', group_operator="avg", help="Computed as: Time Spent / Total Time.",

@@ -79,7 +79,7 @@
             <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='timesheet_ids']/form/field[@name='account_id']" position="attributes">
-                    <attribute name="on_change">on_change_account_id(account_id, is_timesheet, user_id, unit_amount, context)</attribute>
+                    <attribute name="on_change">on_change_account_id(account_id, user_id, unit_amount, is_timesheet, context)</attribute>
                     <attribute name="context">{'default_invoice_on_timesheets': 1}</attribute>
                 </xpath>
             </field>
@@ -92,7 +92,7 @@
             <field name="inherit_id" ref="hr_timesheet_invoice.hr_timesheet_line_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='account_id']" position="attributes">
-                    <attribute name="on_change">on_change_account_id(account_id, is_timesheet, user_id, unit_amount, context)</attribute>
+                    <attribute name="on_change">on_change_account_id(account_id, user_id, unit_amount, is_timesheet, context)</attribute>
                 </xpath>
             </field>
         </record>
@@ -103,7 +103,7 @@
             <field name="inherit_id" ref="hr_timesheet_invoice.hr_timesheet_line_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='user_id']" position="replace">
-                    <field name="user_id"  required="1" on_change="on_change_user_id(user_id, is_timesheet, context, unit_amount, account_id)"/>
+                    <field name="user_id"  required="1" on_change="on_change_user_id(user_id, unit_amount, account_id, is_timesheet, context)"/>
                 </xpath>
             </field>
         </record>
@@ -114,10 +114,10 @@
             <field name="inherit_id" ref="hr_timesheet_invoice.hr_timesheet_line_tree"/>
             <field name="arch" type="xml">
                 <xpath expr="/tree/field[@name='account_id']" position="attributes">
-                    <attribute name="on_change">on_change_account_id(account_id, is_timesheet, user_id, unit_amount, context)</attribute>
+                    <attribute name="on_change">on_change_account_id(account_id, user_id, unit_amount, is_timesheet, context)</attribute>
                 </xpath>
                 <xpath expr="/tree/field[@name='user_id']" position="replace">
-                    <field name="user_id"  required="1" on_change="on_change_user_id(user_id, is_timesheet, context, unit_amount, account_id)" context="{'default_groups_ref': ['base.group_user']}"/>
+                    <field name="user_id"  required="1" on_change="on_change_user_id(user_id, unit_amount, account_id, is_timesheet, context)" context="{'default_groups_ref': ['base.group_user']}"/>
                 </xpath>
             </field>
         </record>
