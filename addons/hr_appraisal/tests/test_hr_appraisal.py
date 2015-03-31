@@ -30,17 +30,17 @@ class TestHrAppraisal(TransactionCase):
             appraisal_manager_survey_id=self.env.ref('survey.feedback_form').id,
             appraisal_colleagues=True,
             appraisal_colleagues_ids=[self.env.ref('hr.employee_stw')],
-            appraisal_colleagues_survey_id=self.env.ref('hr_evaluation.opinion_form').id,
+            appraisal_colleagues_survey_id=self.env.ref('hr_appraisal.opinion_form').id,
             appraisal_self=True,
-            appraisal_self_survey_id=self.env.ref('hr_evaluation.appraisal_form').id,
+            appraisal_self_survey_id=self.env.ref('hr_appraisal.appraisal_form').id,
             appraisal_repeat=True,
             appraisal_repeat_number=1,
             appraisal_repeat_delay='year',
-            evaluation_date=fields.Date.today()
+            appraisal_date=fields.Date.today()
         ))
 
         # I run the scheduler
-        self.HrEmployee.run_employee_evaluation()  # cronjob
+        self.HrEmployee.run_employee_appraisal()  # cronjob
 
         # I check whether new appraisal is created for above employee or not
         appraisals = self.HrAppraisal.search([('employee_id', '=', self.hr_employee.id)])

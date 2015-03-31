@@ -1,4 +1,4 @@
-odoo.define('hr_evaluation.hr_evaluation', function (require) {
+odoo.define('hr_appraisal.hr_appraisal', function (require) {
 
 var KanbanView = require('web_kanban.KanbanView');
 var data = require('web.data');
