@@ -1099,11 +1099,7 @@ exports.Orderline = Backbone.Model.extend({
         this.fiscal_position_id = false;
         if(client){
             if(client.property_account_position[0]){
-                for(var f = 0; f < fposition.length; f++){
-                    if(fposition[f].id == client.property_account_position[0]){
-                        this.fiscal_position_id = fposition[f].id;
-                    }
-                }
+                this.fiscal_position_id = client.property_account_position[0]
             } else if (client.country_id){
                 for(var f = 0; f < fposition.length; f++){
                     if(fposition[f].auto_apply == true && fposition[f].country_id[0] == client.country_id[0] ){
