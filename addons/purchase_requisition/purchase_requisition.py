@@ -115,6 +115,7 @@ class purchase_requisition(osv.osv):
         res['context'] = {
             'search_default_groupby_product': True,
             'search_default_hide_cancelled': True,
+            'tender_id': ids[0],
         }
         res['domain'] = [('id', 'in', [line.id for line in po_lines])]
         return res
@@ -299,7 +300,7 @@ class purchase_requisition_line(osv.osv):
     _rec_name = 'product_id'
 
     _columns = {
-        'product_id': fields.many2one('product.product', 'Product'),
+        'product_id': fields.many2one('product.product', 'Product', domain=[('purchase_ok', '=', True)]),
         'product_uom_id': fields.many2one('product.uom', 'Product Unit of Measure'),
         'product_qty': fields.float('Quantity', digits_compute=dp.get_precision('Product Unit of Measure')),
         'requisition_id': fields.many2one('purchase.requisition', 'Call for Bids', ondelete='cascade'),

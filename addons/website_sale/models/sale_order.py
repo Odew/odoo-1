@@ -22,8 +22,8 @@ class sale_order(osv.Model):
             help='Order Lines to be displayed on the website. They should not be used for computation purpose.',
         ),
         'cart_quantity': fields.function(_cart_qty, type='integer', string='Cart Quantity'),
-        'payment_acquirer_id': fields.many2one('payment.acquirer', 'Payment Acquirer', on_delete='set null'),
-        'payment_tx_id': fields.many2one('payment.transaction', 'Transaction', on_delete='set null'),
+        'payment_acquirer_id': fields.many2one('payment.acquirer', 'Payment Acquirer', on_delete='set null', copy=False),
+        'payment_tx_id': fields.many2one('payment.transaction', 'Transaction', on_delete='set null', copy=False),
     }
 
     def _get_errors(self, cr, uid, order, context=None):
@@ -59,7 +59,7 @@ class sale_order(osv.Model):
             values['name'] = line.name
         else:
             product = self.pool.get('product.product').browse(cr, uid, product_id, context=context)
-            values['name'] = product.description_sale or product.name
+            values['name'] = "%s\n%s" % (product.display_name, product.description_sale)
 
         values['product_id'] = product_id
         values['order_id'] = order_id
@@ -158,7 +158,6 @@ class website(orm.Model):
                     pricelist_id = pricelist_ids[0]
                     request.session['sale_order_code_pricelist_id'] = pricelist_id
                     update_pricelist = True
-                request.session['sale_order_code_pricelist_id'] = False
 
             pricelist_id = request.session.get('sale_order_code_pricelist_id') or partner.property_product_pricelist.id
 
@@ -175,7 +174,7 @@ class website(orm.Model):
                     values.update(sale_order_obj.onchange_fiscal_position(cr, SUPERUSER_ID, [],
                         values['fiscal_position'], [[6, 0, order_lines]], context=context)['value'])
 
-                values['partner_id'] = partner.id
+                values['partner_id'] = partner.id  # ------> TODO stop this mother fucker
                 sale_order_obj.write(cr, SUPERUSER_ID, [sale_order_id], values, context=context)
 
                 if flag_pricelist or values.get('fiscal_position') != fiscal_position:

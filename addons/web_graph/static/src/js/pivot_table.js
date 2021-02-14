@@ -18,7 +18,7 @@ openerp.web_graph.PivotTable = openerp.web.Class.extend({
 		this.updating = false;
 		this.model = model;
 		this.fields = fields;
-        this.fields.__count = {type: 'integer', string:_t('Quantity')};
+        this.fields.__count = {type: 'integer', string:_t('Count')};
         this.measures = options.measures || [];
         this.rows = { groupby: options.row_groupby, headers: null };
         this.cols = { groupby: options.col_groupby, headers: null };
@@ -346,6 +346,10 @@ openerp.web_graph.PivotTable = openerp.web.Class.extend({
             return self.isEqual(header.path, _.initial(path, 1));
         });
 
+        if(!parent || !parent.children) {
+           return '';
+        }
+
         var previous = parent.children.length ? _.last(parent.children) : parent;
         headers.splice(headers.indexOf(previous) + 1, 0, hdr);
         parent.children.push(hdr);
@@ -432,7 +436,7 @@ openerp.web_graph.PivotTable = openerp.web.Class.extend({
                         var grp = grouped_on[i],
                             field = self.fields[grp];
                         if (attrs.value[i] === false) {
-                            return _t('Undefined');
+                            return _t('false');
                         } else if (attrs.value[i] instanceof Array) {
                             return attrs.value[i][1];
                         } else if (field && field.type === 'selection') {

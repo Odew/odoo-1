@@ -274,8 +274,13 @@ class account_move_line(osv.osv):
             journal_data = journal_obj.browse(cr, uid, context['journal_id'], context=context)
             account = total > 0 and journal_data.default_credit_account_id or journal_data.default_debit_account_id
             #map the account using the fiscal position of the partner, if needed
-            part = data.get('partner_id') and partner_obj.browse(cr, uid, data['partner_id'], context=context) or False
-            if account and data.get('partner_id'):
+            if isinstance(data.get('partner_id'), (int, long)):
+                part = partner_obj.browse(cr, uid, data['partner_id'], context=context)
+            elif isinstance(data.get('partner_id'), (tuple, list)):
+                part = partner_obj.browse(cr, uid, data['partner_id'][0], context=context)
+            else:
+                part = False
+            if account and part:
                 account = fiscal_pos_obj.map_account(cr, uid, part and part.property_account_position or False, account.id)
                 account = account_obj.browse(cr, uid, account, context=context)
             data['account_id'] =  account and account.id or False
@@ -434,7 +439,7 @@ class account_move_line(osv.osv):
                 move[line.move_id.id] = True
         move_line_ids = []
         if move:
-            move_line_ids = self.pool.get('account.move.line').search(cr, uid, [('journal_id','in',move.keys())], context=context)
+            move_line_ids = self.pool.get('account.move.line').search(cr, uid, [('move_id','in',move.keys())], context=context)
         return move_line_ids
 
 
@@ -794,51 +799,45 @@ class account_move_line(osv.osv):
             # Amount residual can be negative
             debit = line.debit
             credit = line.credit
-            total_amount = abs(debit - credit)
-            total_amount_currency = line.amount_currency
-            amount_residual = line.amount_residual
-            amount_residual_currency = line.amount_residual_currency
+            amount = line.amount_residual
+            amount_currency = line.amount_residual_currency
             if line.amount_residual < 0:
                 debit, credit = credit, debit
-                amount_residual = -amount_residual
-                amount_residual_currency = -amount_residual_currency
+                amount = -amount
+                amount_currency = -amount_currency
 
             # Get right debit / credit:
+            target_currency = target_currency or company_currency
             line_currency = line.currency_id or company_currency
             amount_currency_str = ""
             total_amount_currency_str = ""
-            if line.currency_id and line.amount_currency:
-                amount_currency_str = rml_parser.formatLang(amount_residual_currency, currency_obj=line.currency_id)
-                total_amount_currency_str = rml_parser.formatLang(total_amount_currency, currency_obj=line.currency_id)
-            if target_currency and line_currency == target_currency and target_currency != company_currency:
-                debit = debit > 0 and amount_residual_currency or 0.0
-                credit = credit > 0 and amount_residual_currency or 0.0
-                amount_currency_str = rml_parser.formatLang(amount_residual, currency_obj=company_currency)
-                total_amount_currency_str = rml_parser.formatLang(total_amount, currency_obj=company_currency)
-                amount_str = rml_parser.formatLang(debit or credit, currency_obj=target_currency)
-                total_amount_str = rml_parser.formatLang(total_amount_currency, currency_obj=target_currency)
+            if line_currency != company_currency:
+                total_amount = line.amount_currency
+                actual_debit = debit > 0 and amount_currency or 0.0
+                actual_credit = credit > 0 and amount_currency or 0.0
             else:
-                debit = debit > 0 and amount_residual or 0.0
-                credit = credit > 0 and amount_residual or 0.0
-                amount_str = rml_parser.formatLang(debit or credit, currency_obj=company_currency)
-                total_amount_str = rml_parser.formatLang(total_amount, currency_obj=company_currency)
-                if target_currency and target_currency != company_currency:
-                    amount_currency_str = rml_parser.formatLang(debit or credit, currency_obj=line_currency)
-                    total_amount_currency_str = rml_parser.formatLang(total_amount, currency_obj=line_currency)
-                    ctx = context.copy()
-                    if target_date:
-                        ctx.update({'date': target_date})
-                    debit = currency_obj.compute(cr, uid, company_currency.id, target_currency.id, debit, context=ctx)
-                    credit = currency_obj.compute(cr, uid, company_currency.id, target_currency.id, credit, context=ctx)
-                    amount_str = rml_parser.formatLang(debit or credit, currency_obj=target_currency)
-                    total_amount = currency_obj.compute(cr, uid, company_currency.id, target_currency.id, total_amount, context=ctx)
-                    total_amount_str = rml_parser.formatLang(total_amount, currency_obj=target_currency)
+                total_amount = abs(debit - credit)
+                actual_debit = debit > 0 and amount or 0.0
+                actual_credit = credit > 0 and amount or 0.0
+            if line_currency != target_currency:
+                amount_currency_str = rml_parser.formatLang(actual_debit or actual_credit, currency_obj=line_currency)
+                total_amount_currency_str = rml_parser.formatLang(total_amount, currency_obj=line_currency)
+                ret_line['credit_currency'] = actual_credit
+                ret_line['debit_currency'] = actual_debit
+                ctx = context.copy()
+                if target_date:
+                    ctx.update({'date': target_date})
+                total_amount = currency_obj.compute(cr, uid, line_currency.id, target_currency.id, total_amount, context=ctx)
+                actual_debit = currency_obj.compute(cr, uid, line_currency.id, target_currency.id, actual_debit, context=ctx)
+                actual_credit = currency_obj.compute(cr, uid, line_currency.id, target_currency.id, actual_credit, context=ctx)
+            amount_str = rml_parser.formatLang(actual_debit or actual_credit, currency_obj=target_currency)
+            total_amount_str = rml_parser.formatLang(total_amount, currency_obj=target_currency)
 
-            ret_line['credit'] = credit
-            ret_line['debit'] = debit
+            ret_line['debit'] = actual_debit
+            ret_line['credit'] = actual_credit
             ret_line['amount_str'] = amount_str
+            ret_line['total_amount_str'] = total_amount_str
             ret_line['amount_currency_str'] = amount_currency_str
-            ret_line['total_amount_str'] = total_amount_str # For partial reconciliations
             ret_line['total_amount_currency_str'] = total_amount_currency_str
             ret.append(ret_line)
         return ret
@@ -1152,9 +1151,10 @@ class account_move_line(osv.osv):
         move_ids = set()
         for line in self.browse(cr, uid, ids, context=context):
             move_ids.add(line.move_id.id)
-            context['journal_id'] = line.journal_id.id
-            context['period_id'] = line.period_id.id
-            result = super(account_move_line, self).unlink(cr, uid, [line.id], context=context)
+            localcontext = dict(context)
+            localcontext['journal_id'] = line.journal_id.id
+            localcontext['period_id'] = line.period_id.id
+            result = super(account_move_line, self).unlink(cr, uid, [line.id], context=localcontext)
         move_ids = list(move_ids)
         if check and move_ids:
             move_obj.validate(cr, uid, move_ids, context=context)
@@ -1172,9 +1172,11 @@ class account_move_line(osv.osv):
             raise osv.except_osv(_('Unable to change tax!'), _('You cannot change the tax, you should remove and recreate lines.'))
         if ('account_id' in vals) and not account_obj.read(cr, uid, vals['account_id'], ['active'])['active']:
             raise osv.except_osv(_('Bad Account!'), _('You cannot use an inactive account.'))
-        if update_check:
-            if ('account_id' in vals) or ('journal_id' in vals) or ('period_id' in vals) or ('move_id' in vals) or ('debit' in vals) or ('credit' in vals) or ('date' in vals):
-                self._update_check(cr, uid, ids, context)
+
+        affects_move = any(f in vals for f in ('account_id', 'journal_id', 'period_id', 'move_id', 'debit', 'credit', 'date'))
+
+        if update_check and affects_move:
+            self._update_check(cr, uid, ids, context)
 
         todo_date = None
         if vals.get('date', False):
@@ -1198,7 +1200,8 @@ class account_move_line(osv.osv):
             if journal.centralisation:
                 self._check_moves(cr, uid, context=ctx)
         result = super(account_move_line, self).write(cr, uid, ids, vals, context)
-        if check:
+
+        if affects_move and check and not context.get('novalidate'):
             done = []
             for line in self.browse(cr, uid, ids):
                 if line.move_id.id not in done:
@@ -1218,7 +1221,7 @@ class account_move_line(osv.osv):
         period = period_obj.browse(cr, uid, period_id, context=context)
         for (state,) in result:
             if state == 'done':
-                raise osv.except_osv(_('Error!'), _('You can not add/modify entries in a closed period %s of journal %s.' % (period.name,journal.name)))
+                raise osv.except_osv(_('Error!'), _('You can not add/modify entries in a closed period %s of journal %s.') % (period.name,journal.name))
         if not result:
             jour_period_obj.create(cr, uid, {
                 'name': (journal.code or journal.name)+':'+(period.name or ''),
@@ -1340,24 +1343,23 @@ class account_move_line(osv.osv):
                 account_id = 'account_paid_id'
                 base_sign = 'ref_base_sign'
                 tax_sign = 'ref_tax_sign'
-            tmp_cnt = 0
+            base_adjusted = False
             for tax in tax_obj.compute_all(cr, uid, [tax_id], total, 1.00, force_excluded=False).get('taxes'):
                 #create the base movement
-                if tmp_cnt == 0:
-                    if tax[base_code]:
-                        tmp_cnt += 1
-                        if tax_id.price_include:
-                            total = tax['price_unit']
-                        newvals = {
-                            'tax_code_id': tax[base_code],
-                            'tax_amount': tax[base_sign] * abs(total),
-                        }
-                        if tax_id.price_include:
-                            if tax['price_unit'] < 0:
-                                newvals['credit'] = abs(tax['price_unit'])
-                            else:
-                                newvals['debit'] = tax['price_unit']
-                        self.write(cr, uid, [result], newvals, context=context)
+                if base_adjusted == False:
+                    base_adjusted = True
+                    if tax_id.price_include:
+                        total = tax['price_unit']
+                    newvals = {
+                        'tax_code_id': tax[base_code],
+                        'tax_amount': tax[base_sign] * abs(total),
+                    }
+                    if tax_id.price_include:
+                        if tax['price_unit'] < 0:
+                            newvals['credit'] = abs(tax['price_unit'])
+                        else:
+                            newvals['debit'] = tax['price_unit']
+                    self.write(cr, uid, [result], newvals, context=context)
                 else:
                     data = {
                         'move_id': vals['move_id'],
@@ -1373,9 +1375,10 @@ class account_move_line(osv.osv):
                         'credit': 0.0,
                         'debit': 0.0,
                     }
-                    if data['tax_code_id']:
-                        self.create(cr, uid, data, context)
+                    self.create(cr, uid, data, context)
                 #create the Tax movement
+                if not tax['amount'] and not tax[tax_code]:
+                    continue
                 data = {
                     'move_id': vals['move_id'],
                     'name': tools.ustr(vals['name'] or '') + ' ' + tools.ustr(tax['name'] or ''),
@@ -1390,11 +1393,11 @@ class account_move_line(osv.osv):
                     'credit': tax['amount']<0 and -tax['amount'] or 0.0,
                     'debit': tax['amount']>0 and tax['amount'] or 0.0,
                 }
-                if data['tax_code_id']:
-                    self.create(cr, uid, data, context)
+                self.create(cr, uid, data, context)
             del vals['account_tax_id']
 
-        if check and not context.get('novalidate') and (context.get('recompute', True) or journal.entry_posted):
+        recompute = journal.env.recompute and context.get('recompute', True)
+        if check and not context.get('novalidate') and (recompute or journal.entry_posted):
             tmp = move_obj.validate(cr, uid, [vals['move_id']], context)
             if journal.entry_posted and tmp:
                 move_obj.button_validate(cr,uid, [vals['move_id']], context)

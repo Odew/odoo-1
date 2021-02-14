@@ -70,7 +70,7 @@
 <!-- Product item used by /shop and /shop/cart -->
 
 <template id="products_item" name="Product item">
-  <form action="/shop/cart/update" method="post" style="display: inline-block;">
+  <form action="/shop/cart/update" method="post">
   <div itemscope="itemscope" itemtype="http://schema.org/Product">
   <div class="ribbon-wrapper">
     <div class="ribbon btn btn-danger">Sale</div>
@@ -87,7 +87,7 @@
               <t t-if="(compute_currency(product.lst_price) - product.price) &gt; 0.1">
                 <del class="text-danger" style="white-space: nowrap;" t-field="product.lst_price" t-field-options='{
                   "widget": "monetary",
-                  "from_currency": "website.currency_id",
+                  "from_currency": "product.company_id.currency_id",
                   "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
                 }'/>&amp;nbsp;
               </t>
@@ -428,22 +428,31 @@
 <template id="product_price">
   <div itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer" class="product_price mt16">
       <h4 class="oe_price_h4 css_editable_mode_hidden">
-          <span class="text-danger oe_default_price" style="text-decoration: line-through; white-space: nowrap;"
-            t-field="product.lst_price"
-            t-field-options='{
-              "widget": "monetary",
-              "from_currency": "website.currency_id",
-              "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
-           }'/>
+          <div>
+              Public Price *:
+              <span class="text-danger oe_default_price" style="text-decoration: line-through; white-space: nowrap; display: inline;"
+                t-field="product.lst_price"
+                t-field-options='{
+                  "widget": "monetary",
+                  "from_currency": "product.company_id.currency_id",
+                  "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
+               }'/>
+          </div>
+          <div>
+          Your Price *:
           <b class="oe_price" style="white-space: nowrap;"
             t-field="product.price"
             t-field-options='{
                "widget": "monetary",
                "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
            }'/>
+          </div>
           <span itemprop="price" style="display:none;" t-esc="product.price"/>
           <span itemprop="priceCurrency" style="display:none;" t-esc="user_id.partner_id.property_product_pricelist.currency_id.name"/>
       </h4>
+      <div>
+        * Prix HTVA en magasin.
+      </div>
       <h4 class="css_editable_mode_display" style="display: none;">
         <span t-field="product.lst_price"
             t-field-options='{
@@ -460,12 +469,12 @@
     <input type="hidden" t-if="len(product.product_variant_ids) == 1" name="product_id" t-att-value="product.product_variant_ids[0].id"/>
     <t t-if="len(product.product_variant_ids) &gt; 1">
       <label label-default="label-default" class="radio" t-foreach="product.product_variant_ids" t-as="variant_id">
-        <input type="radio" name="product_id" class="js_product_change" t-att-value="variant_id.id" t-att-data-lst_price="variant_id.lst_price" t-att-data-price="variant_id.price"/>
+        <input type="radio" name="product_id" class="js_product_change" t-att-checked="'checked' if variant_id_index == 0 else ''" t-att-value="variant_id.id" t-att-data-lst_price="variant_id.lst_price" t-att-data-price="variant_id.price"/>
         <span t-esc="variant_id.name_get()[0][1]"/>
         <span class="badge" t-if="variant_id.price_extra">
           <t t-esc="variant_id.price_extra > 0 and '+' or ''"/><span t-field="variant_id.price_extra" style="white-space: nowrap;" t-field-options='{
                 "widget": "monetary",
-                "from_currency": "website.currency_id",
+                "from_currency": "product.company_id.currency_id",
                 "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
               }'/>
         </span>
@@ -490,7 +499,7 @@
                   <span t-if="value_id.price_extra">
                       <t t-esc="value_id.price_extra > 0 and '+' or ''"/><span t-field="value_id.price_extra" style="white-space: nowrap;" t-field-options='{
                                "widget": "monetary",
-                                "from_currency": "website.currency_id",
+                                "from_currency": "product.company_id.currency_id",
                                "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
                            }'/>
                   </span>
@@ -510,7 +519,7 @@
                           <span class="badge" t-if="value_id.price_extra">
                               <t t-esc="value_id.price_extra > 0 and '+' or ''"/><span t-field="value_id.price_extra" style="white-space: nowrap;" t-field-options='{
                                       "widget": "monetary",
-                                      "from_currency": "website.currency_id",
+                                      "from_currency": "product.company_id.currency_id",
                                       "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
                                    }'/>
                           </span>
@@ -677,17 +686,17 @@
                               <td t-if="line.product_id.product_tmpl_id">
                                   <div>
                                       <a t-attf-href="/shop/product/#{ slug(line.product_id.product_tmpl_id) }">
-                                          <strong t-esc="line.product_id.name_get()[0][1]"/>
+                                          <strong t-esc="line.product_id.display_name"/>
                                       </a>
                                   </div>
-                                  <div class="text-muted" t-field="line.name"/>
+                                  <div class="text-muted" t-esc="'\n'.join(line.name.splitlines()[1:])"/>
                               </td>
                               <td class="text-center" name="price">
-                                <t t-if="(compute_currency(line.product_id.lst_price) - line.price_unit) &gt; 0.01">
+                                <t t-if="(compute_currency(line.product_id.lst_price) - line.price_unit) &gt; 1">
                                   <del class="text-danger" style="white-space: nowrap;"
                                     t-field="line.product_id.lst_price" t-field-options='{
                                         "widget": "monetary",
-                                        "from_currency": "website.currency_id",
+                                        "from_currency": "line.company_id.currency_id",
                                         "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
                                     }'/>&amp;nbsp;
                                 </t>
@@ -721,7 +730,7 @@
                   <t t-call="website_sale.total"/>
                   <div class="clearfix"/>
 
-                  <a t-if="not optional_products and website_sale_order and website_sale_order.website_order_line" class="btn btn-primary pull-right mb32" href="/shop/checkout">Process Checkout <span class="fa fa-long-arrow-right"/></a>
+                  <a t-if="not optional_products and website_sale_order and website_sale_order.website_order_line" class="btn btn-primary pull-right mb32" href="/shop/checkout">Confirm<span class="fa fa-long-arrow-right"/></a>
 
                   <div class="oe_structure"/>
               </div>
@@ -781,7 +790,7 @@
                         <del class="text-danger" style="white-space: nowrap;"
                           t-field="product.lst_price" t-field-options='{
                               "widget": "monetary",
-                              "from_currency": "website.currency_id",
+                              "from_currency": "product.company_id.currency_id",
                               "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
                           }'/>&amp;nbsp;
                       </t>
@@ -808,7 +817,7 @@
   </xpath>
 </template>
 
-<template id="reduction_code" inherit_id="website_sale.cart" active="False" customize_show="True" name="Reduction Code">
+<template id="reduction_code" inherit_id="website_sale.cart" active="False" customize_show="True" name="Coupon Code">
   <xpath expr="//div[@id='right_column']" position="inside">
       <h4>Coupon Code</h4>
       <p>
@@ -833,7 +842,7 @@
     <div id="wrap">
       <div class="container oe_website_sale">
           <ul class="wizard pull-right">
-              <li><a href="/shop/cart" class="text-success">Review Order<span class="chevron"></span></a></li>
+              <li><a href="/shop/cart" class="text-success">Shipping &amp; Billing<span class="chevron"></span></a></li>
               <li class="text-primary">Shipping &amp; Billing<span class="chevron"></span></li>
               <li class="text-muted">Payment<span class="chevron"></span></li>
               <li class="text-muted">Confirmation<span class="chevron"></span></li>
@@ -882,7 +891,7 @@
                       <input type="text" name="city" class="form-control" t-att-value="checkout.get('city')"/>
                   </div>
                   <div t-attf-class="form-group #{error.get('zip') and 'has-error' or ''} col-lg-6">
-                      <label class="control-label" for="zip">Zip / Postal Code</label>
+                      <label class="control-label" for="zip" style="font-weight: normal">Zip / Postal Code</label>
                       <input type="text" name="zip" class="form-control" t-att-value="checkout.get('zip')"/>
                   </div>
                   <div t-attf-class="form-group #{error.get('country_id') and 'has-error' or ''} col-lg-6">
@@ -921,7 +930,7 @@
                                 t-att-data-shipping_country_id="shipping.country_id and shipping.country_id.id"
                                 ><t t-esc="', '.join('\n'.join(shipping.name_get()[0][1].split(',')).split('\n')[1:])"/></option>
                           </t>
-                          <option value="-1">-- Create a new address --</option>
+                          <option value="-1" t-att-selected="error and len(error) > 0 and shipping_id == -1">-- Create a new address --</option>
                       </select>
                   </div>
               </div>
@@ -946,12 +955,12 @@
                       <input type="text" name="shipping_city" class="form-control" t-att-value="checkout.get('shipping_city', '')" t-att-readonly=" 'readonly' if shipping_id &gt;= 0 else ''"/>
                   </div>
                   <div t-attf-class="form-group #{error.get('shipping_zip') and 'has-error' or ''} col-lg-6">
-                      <label class="control-label" for="shipping_zip">Zip / Postal Code</label>
+                      <label class="control-label" for="shipping_zip" style="font-weight: normal">Zip / Postal Code</label>
                       <input type="text" name="shipping_zip" class="form-control" t-att-value="checkout.get('shipping_zip', '')" t-att-readonly=" 'readonly' if shipping_id &gt;= 0 else ''"/>
                   </div>
                   <div t-attf-class="form-group #{error.get('shipping_country_id') and 'has-error' or ''} col-lg-6">
                       <label class="control-label" for="shipping_country_id">Country</label>
-                      <select name="shipping_country_id" class="form-control" t-att-readonly="  'readonly' if shipping_id &gt;= 0 else ''">
+                      <select name="shipping_country_id" class="form-control" t-att-disabled="  'disabled' if shipping_id &gt;= 0 else ''">
                           <option value="">Country...</option>
                           <t t-foreach="countries or []" t-as="country">
                               <option t-att-value="country.id" t-att-selected="country.id == checkout.get('shipping_country_id')"><t t-esc="country.name"/></option>

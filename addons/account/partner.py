@@ -37,15 +37,25 @@ class account_fiscal_position(osv.osv):
         'account_ids': fields.one2many('account.fiscal.position.account', 'position_id', 'Account Mapping', copy=True),
         'tax_ids': fields.one2many('account.fiscal.position.tax', 'position_id', 'Tax Mapping', copy=True),
         'note': fields.text('Notes'),
-        'auto_apply': fields.boolean('Automatic', help="Apply automatically this fiscal position."),
+        'auto_apply': fields.boolean('Automatic', help="Apply automatically this fiscal position if the conditions match."),
         'vat_required': fields.boolean('VAT required', help="Apply only if partner has a VAT number."),
-        'country_id': fields.many2one('res.country', 'Countries', help="Apply only if delivery or invoicing country match."),
-        'country_group_id': fields.many2one('res.country.group', 'Country Group', help="Apply only if delivery or invocing country match the group."),
+        'country_id': fields.many2one('res.country', 'Country', help="Apply when the shipping or invoicing country matches. Takes precedence over positions matching on a country group."),
+        'country_group_id': fields.many2one('res.country.group', 'Country Group', help="Apply when the shipping or invoicing country is in this country group, and no position matches the country directly."),
     }
 
     _defaults = {
         'active': True,
     }
+
+    def _check_country(self, cr, uid, ids, context=None):
+        obj = self.browse(cr, uid, ids[0], context=context)
+        if obj.country_id and obj.country_group_id:
+            return False
+        return True
+
+    _constraints = [
+        (_check_country, 'You can not select a country and a group of countries', ['country_id', 'country_group_id']),
+    ]
 
     @api.v7
     def map_tax(self, cr, uid, fposition_id, taxes, context=None):
@@ -69,12 +79,13 @@ class account_fiscal_position(osv.osv):
     def map_tax(self, taxes):
         result = self.env['account.tax'].browse()
         for tax in taxes:
+            tax_count = 0
             for t in self.tax_ids:
                 if t.tax_src_id == tax:
+                    tax_count += 1
                     if t.tax_dest_id:
                         result |= t.tax_dest_id
-                    break
-            else:
+            if not tax_count:
                 result |= tax
         return result
 
@@ -115,10 +126,17 @@ class account_fiscal_position(osv.osv):
         domain = [
             ('auto_apply', '=', True),
             '|', ('vat_required', '=', False), ('vat_required', '=', partner.vat_subjected),
-            '|', ('country_id', '=', None), ('country_id', '=', delivery.country_id.id),
-            '|', ('country_group_id', '=', None), ('country_group_id.country_ids', '=', delivery.country_id.id)
         ]
-        fiscal_position_ids = self.search(cr, uid, domain, context=context)
+        if delivery.country_id.id:
+            fiscal_position_ids = self.search(cr, uid, domain + [('country_id', '=', delivery.country_id.id)], context=context, limit=1)
+            if fiscal_position_ids:
+                return fiscal_position_ids[0]
+
+            fiscal_position_ids = self.search(cr, uid, domain + [('country_group_id.country_ids', '=', delivery.country_id.id)], context=context, limit=1)
+            if fiscal_position_ids:
+                return fiscal_position_ids[0]
+
+        fiscal_position_ids = self.search(cr, uid, domain + [('country_id', '=', None), ('country_group_id', '=', None)], context=context, limit=1)
         if fiscal_position_ids:
             return fiscal_position_ids[0]
         return False
@@ -221,11 +239,46 @@ class res_partner(osv.osv):
     def _invoice_total(self, cr, uid, ids, field_name, arg, context=None):
         result = {}
         account_invoice_report = self.pool.get('account.invoice.report')
-        for partner in self.browse(cr, uid, ids, context=context):
-            domain = [('partner_id', 'child_of', partner.id)]
-            invoice_ids = account_invoice_report.search(cr, uid, domain, context=context)
-            invoices = account_invoice_report.browse(cr, uid, invoice_ids, context=context)
-            result[partner.id] = sum(inv.user_currency_price_total for inv in invoices)
+        user = self.pool['res.users'].browse(cr, uid, uid, context=context)
+        user_currency_id = user.company_id.currency_id.id
+        for partner_id in ids:
+            all_partner_ids = self.pool['res.partner'].search(
+                cr, uid, [('id', 'child_of', partner_id)], context=context)
+
+            # searching account.invoice.report via the orm is comparatively expensive
+            # (generates queries "id in []" forcing to build the full table).
+            # In simple cases where all invoices are in the same currency than the user's company
+            # access directly these elements
+
+            # generate where clause to include multicompany rules
+            where_query = account_invoice_report._where_calc(cr, uid, [
+                ('partner_id', 'in', all_partner_ids), ('state', 'not in', ['draft', 'cancel'])
+            ], context=context)
+            account_invoice_report._apply_ir_rules(cr, uid, where_query, 'read', context=context)
+            from_clause, where_clause, where_clause_params = where_query.get_sql()
+
+            query = """ WITH currency_rate (currency_id, rate, date_start, date_end) AS (
+                                SELECT r.currency_id, r.rate, r.name AS date_start,
+                                    (SELECT name FROM res_currency_rate r2
+                                     WHERE r2.name > r.name AND
+                                           r2.currency_id = r.currency_id
+                                     ORDER BY r2.name ASC
+                                     LIMIT 1) AS date_end
+                                FROM res_currency_rate r
+                                )
+                      SELECT SUM(price_total * cr.rate) as total
+                        FROM account_invoice_report account_invoice_report, currency_rate cr
+                       WHERE %s
+                         AND cr.currency_id = %%s
+                         AND (COALESCE(account_invoice_report.date, NOW()) >= cr.date_start)
+                         AND (COALESCE(account_invoice_report.date, NOW()) < cr.date_end OR cr.date_end IS NULL)
+                    """ % where_clause
+
+            # price_total is in the currency with rate = 1
+            # total_invoice should be displayed in the current user's currency
+            cr.execute(query, where_clause_params + [user_currency_id])
+            result[partner_id] = cr.fetchone()[0]
+
         return result
 
     def _journal_item_count(self, cr, uid, ids, field_name, arg, context=None):

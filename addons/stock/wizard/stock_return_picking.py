@@ -103,7 +103,7 @@ class stock_return_picking(osv.osv_memory):
         # Cancel assignment of existing chained assigned moves
         moves_to_unreserve = []
         for move in pick.move_lines:
-            to_check_moves = [move.move_dest_id]
+            to_check_moves = [move.move_dest_id] if move.move_dest_id.id else []
             while to_check_moves:
                 current_move = to_check_moves.pop()
                 if current_move.state not in ('done', 'cancel') and current_move.reserved_quant_ids:
@@ -133,10 +133,11 @@ class stock_return_picking(osv.osv_memory):
             new_qty = data_get.quantity
             if new_qty:
                 returned_lines += 1
+                values = move_obj.onchange_quantity(cr, uid, [], data_get.product_id.id, new_qty, move.product_uom.id, move.product_uos.id)
                 move_obj.copy(cr, uid, move.id, {
                     'product_id': data_get.product_id.id,
                     'product_uom_qty': new_qty,
-                    'product_uos_qty': uom_obj._compute_qty(cr, uid, move.product_uom.id, new_qty, move.product_uos.id),
+                    'product_uos_qty': values['value']['product_uos_qty'],
                     'picking_id': new_picking,
                     'state': 'draft',
                     'location_id': move.location_dest_id.id,
